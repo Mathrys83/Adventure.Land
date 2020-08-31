@@ -55,9 +55,16 @@ Here's a list of what the code is capable of so far:
 
 - Hotkeys: To load characters / create a party / stop characters
 - Auto-move to the designated farming spot, over several maps / continents.
-- Auto-Farm designated mob's
+- Auto-Farm designated MOB's
 - Auto-use potions (heal & mana)
 - Auto-Kite enemies. (All characters I use (Mage, Priest, Ranger) are ranged characters.)
+- Two Kiting-Modes (Walk backwards / circle around the target)
+- Fetch Hunting-Quests
+- Go hunting
+- Turn in fulfilled Hunting-Quests
+- (Farming / Hunting) Small enemies get attacked by individual characters
+- (Farming / Hunting) Big enemies get attacked by all characters (All characters target one single enemy)
+- Master-Mode (Define a master the other characters follow)
 
 ## Individual characters
 
@@ -75,7 +82,7 @@ I decided that, because the merchant cannot farm / generate gold on his own, he 
 
 So he takes care of a lot of things for you!
 
-Every 15 minutes, he does a round:
+Every 10 minutes, he does a round:
 
 - Close the merchant stand
 - Buys potions for all characters
@@ -110,30 +117,28 @@ There's a  module called "helperFunctions": It holds all functions in one place 
 
 ## Adjust the code
 
-I tried to make the code as open as possible. However, you have to change four things in the "Main"-Module, so the code knows *what you want to farm* and *who your merchant is*.
+I tried to make the code as open as possible. However, you have to change four things in the "Main"-Module, so the code knows *what you want to farm* and *who your characters are (names) *.
 
 Adjust these four variables, and you're good to go:
 
 ```javascript
-//Farming spots are found in G.maps
-const farmMonsterName = "arcticbee";
-const farmMap = "winterland";
-const farmMonsterNr = 10;
-const merchantName = "YourMechantsName";
+const merchantName = "Your-Merchants-Name";
+const characterNames = ["Character-Name1", "Character-Name2", "Character-Name3"];
+let master = characterNames[0];
+let hunterMaster = characterNames[0];
+const hunterToggle = true;
+let farmMonsterType = "Monster-To-Farm";
+let farmMonsterFallback = "Monster-To-Farm";
 ```
-- "farmMonsterName" needs to be a string. It's the name of the [monster you want to farm](https://adventure.land/docs/guide/all/monsters) (e.g. "arcticbee" or "crab").
-- "farmMap" also neets to be a string. It's the [map](https://adventure.land/docs/code/data/maps) you want to farm on. There are different maps, like "main" or "halloween" or  "winterland". Assign the map you want to farm on to "farmMap".
-- "farmMonsterNr" *is important*! Some monsters spawn on *multiple locations*!
-  Example: On the "main" continent, there are several spawns of bees.
-  - Put your character on the "main" map and enter this command into your console and run it: **smart_move({to:"bee"});**
-  - *Run the command several times*.
-  - Even though you entered the *same* command multiple times, your character will walk to *different* spawns of bees.
-  - Your farming-party will be scattered because of this
-  - The way to fix this is to look at all the spawns and find one that has a unique "count"-variable (which is the count of monsters that spawn there)
-  - Look into [G.maps](https://adventure.land/docs/code/data/maps), click the map you want to farm on and look for the monster-name you want to farm. If there are multiple spawns, check the "count" variables for each spawn. *Find a "count"-value that is unique!*
-  "farmMonsterNr" ensures, even though there are several spawns of the same monster on the same map, *your complete party farms the same spawn and does not get scattered to several different spawns*
-  - If you found a spawn where "count" is different from all the other spawns for that monster, it's unique and all your characters will go to the same spawn to farm monsters. Yay!
-- "merchantName" must be the name of your merchant, as a string. It's used to transfer the farming-party's loot / gold to the merchant etc.
+
+- "merchantName" - The name of your merchant, as a string. It's used to transfer the farming-party's loot / gold to the merchant etc.
+- "characterNames" - Fill in the names of your three remaining characters
+- "master" - One characte rmust act as a master when hunting big enemies. Put your tank-character's name here (or reference the characterNames-array) 
+- "hunterMaster" - One characte rmust act as a master when hunting big enemies. Put your tank-character's name here (or reference the characterNames-array) 
+- "hunterToggle" - Toggle hunting quests on or off. If you set this to false, normal farming will happen, indefinitely
+- "farmMonsterType" - The monster you want to farm
+- farmMonsterFallback - Fallback monster type, in case all hunting quests are too hard.
+
 
 ## To do's
 
@@ -145,7 +150,7 @@ const merchantName = "YourMechantsName";
 
 ## Recap
 
-The code can run on it's own several days, if you tweak tha values correctly. The merchant's inventory requires attention from time to time, because I don't want to auto-sell good items, so they keep piling up (intentionally). You can tweak that of course, the code is there.
+The code can run on it's own several days, if you tweak the values correctly. The merchant's inventory requires attention from time to time, because I don't want to auto-sell good items, so they keep piling up (intentionally). You can tweak that of course, the code is there.
 
 Enjoy!
 

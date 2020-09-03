@@ -53,14 +53,6 @@ function merchantSkills(){
 	//Buff players with merchant's luck
 	merchantsLuck();
 	
-	/*
-	if (new Date().getMinutes() === 00
-		|| new Date().getMinutes() === 15
-		|| new Date().getMinutes() === 30
-	   	|| new Date().getMinutes() === 45
-	   	|| new Date().getMinutes() === 48){
-	*/
-	
 	if(new Date().getMinutes() % 10 === 0){
 		
 		updateFarmingSpot();
@@ -252,7 +244,7 @@ function merchantsLuck(){
 	for (i in parent.entities){
 		if(parent.entities[i].player
 		  && parent.entities[i].ctype
-		  && !parent.entities[i].dead
+		  && !parent.entities[i].rip
 		  && !parent.entities[i].npc
 		  //&& !parent.entities[i].s.mluck
 		  && (!parent.entities[i].s.mluck
@@ -302,16 +294,17 @@ function restoreParty(){
 		log("Merchant restoring party.");
 		parent.close_merchant(41);
 		updateFarmingSpot();
-		smart_move({to:farmMap}, () => {
+		if(character.map !== farmMap){
+			smart_move({to:farmMap});
+		}
+		else{
 			let farmCoord = getFarmingSpot(farmMonsterType, "coord");
-			if(parent.party_list.length < 4){
-				smart_move({x:farmCoord.x, y:farmCoord.y}, () => {
-					for(let i = 0; i <= 3000; i += 500) initParty();
-					if(parent.party_list.length === 4) log("Merchant has restored party.");
-					openMerchantStand();
-				});
-			}
-		});
+			smart_move({x:farmCoord.x, y:farmCoord.y}, () => {
+				initParty();
+				setTimeout(() => {if(parent.party_list.length === 4)openMerchantStand();}, 8000);
+			});
+		}
+
 	}
 }
 
@@ -320,7 +313,7 @@ function openMerchantStand(){
 	if(character.map != "main"){
 		smart_move({to:"main"}, () => {
 			smart_move({to:"town"}, () => {
-				smart_move({x: character.x + 85, y: character.y - 110}, () => {
+				smart_move({x: character.x - 100, y: character.y - 40}, () => {
 					//parent.socket.emit("merchant",{num:41});
 					parent.open_merchant(41);
 				});
@@ -328,7 +321,7 @@ function openMerchantStand(){
 		});
 	}else{
 		smart_move({to:"town"}, () => {
-			smart_move({x: character.x + 85, y: character.y - 110}, () => {
+			smart_move({x: character.x - 100, y: character.y - 40}, () => {
 				//parent.socket.emit("merchant",{num:41});
 				parent.open_merchant(41);
 			});

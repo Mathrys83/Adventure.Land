@@ -12,6 +12,9 @@ map_key("5", "snippet", "loadCharacters()");
 map_key("6", "snippet", "initParty()");
 map_key("7", "snippet", "stopCharacters()");
 
+//Custom buttons!
+addButons();
+
 //Custom Settings
 //Farming spots are found in G.maps.main
 const merchantName = "Plutus";
@@ -19,8 +22,8 @@ const characterNames = ["Hierophant", "Magos", "Patroclus"];
 let master = "";
 const hunterMaster = characterNames[0];
 const hunterToggle = true;
-let farmMonsterType = "crabx";
-const farmMonsterFallback = "crabx";
+let farmMonsterType = "bat";
+const farmMonsterFallback = "bat";
 let farmMap = getFarmingSpot(farmMonsterType, "map");
 let farmCoord = getFarmingSpot(farmMonsterType, "coord");
 const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "crabx", "", "", ""];
@@ -39,8 +42,6 @@ function main() {
 		return;
 	}
 
-	//If the master is moving, lay breadcrumbs
-	if (master && character.name === master) masterBreadcrumbs();
 	//If character is moving, do nothing
 	if (is_moving(character) || smart.moving) return;
 	
@@ -84,6 +85,9 @@ function main() {
 }
 
 function tier2Actions() {
+	
+	//If the master is moving, lay breadcrumbs
+	if (master && character.name === master) masterBreadcrumbs();
 
 	//If character is moving, do nothing
 	if (is_moving(character) || smart.moving) return;
@@ -94,16 +98,16 @@ function tier2Actions() {
 	//Update farming spot
 	updateFarmingSpot();
 
-	//Puts potions on Slots not transferred to merchant
+	//Puts potions in specific slots
 	relocateItems();
 	//Arranges Inventory without gaps
 	tidyInventory();
 	//Transfer loot to merchant
-	transferLoot(merchantName);
+	if (character.ctype !== "merchant"){
+		drinkPotions();
+		transferLoot(merchantName);
+	}
 
 	//Run Merchant Skills
-	if (character.ctype === "merchant") {
-		merchantSkills();
-		return;
-	}
+	if (character.ctype === "merchant") merchantSkills();
 }

@@ -28,13 +28,6 @@ smart_move({to:"town"}, () => {
 	parent.socket.emit("interaction",{type:"newyear_tree"});
 });
 
-//############# Save CPU Power ############# 
-
-In Chat: /pause
-In Code: pause()
-
-Stops Rendering
-
 //############# Move Somewhere ############# 
 
 //BEST!!! XMOVE moves normally, but if it can't move normally,
@@ -66,6 +59,7 @@ use_skill("curse");
 //############# Check Cooldown of Skill ############# 
 
 //Check if the cooldown of a class skill has passed 
+is_on_cooldown(skill)
 can_use(name)
 
 //############# Party List Array ############# 
@@ -267,6 +261,13 @@ if(is_monster(m)) {
 In Chat window:
 
 /codes
+
+//############# Save CPU Power ############# 
+
+In Chat: /pause
+In Code: pause()
+
+Stops Rendering
 
 //############# Multiple Steam Windows ############# 
 

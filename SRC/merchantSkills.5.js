@@ -1,32 +1,15 @@
 let reserveMoney = 1000000;
 let minCompoundScrolls = 100;
-let trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
-				"wshoes", "ink", "spores", "beewings", "wcap", "bfur", 
-				"firestaff", "strearring", "stramulet", 
-				"wattire", "poison", "rattail", "wbreeches", "gslime", "cscale", 
-				"seashell", "ascale", "shoes", "lotusf", "pants", "spear", 
-				"spidersilk", "sstinger", "snakefang", "smush", "spores", "frogt", 
-				"gloves1", "stinger", "wgloves", "snakeoil", "dstones", "helmet1", 
-				"bwing", "tshirt0", "tshirt1", "tshirt2", "cshell", "", "", "",
-				 "", "", "", "", "", "", "", "", "", "", "", "",
-				 "", "", "", "", "", "", "", "", "", "", "", "",
-				//Seasonal Trash
-				"egg0", "egg1", "egg2", "egg3", "egg4", "egg5", 
-				"egg6", "egg7", "egg8", "", "", "", 
-				"redenvelopev1", "redenvelopev2", "redenvelopev3", "", "", "", 
-				"ornament", "mistletoe", "candycane", "merry", "", "",
-				 "", "", "", "", "", "", "", "", "", "", "", "",
-				 "", "", "", "", "", "", "", "", "", "", "", "",
-				"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"];
+
 //Potion Thresholds
-let hPotSmall = 50;
-let hPotBig = 20;
-let mPotSmall = 600;
-let mPotBig = 45;
+let hPotSmall = 30;
+let hPotBig = 15;
+let mPotSmall = 150;
+let mPotBig = 15;
 
 //Selling parameters
 let sellItemLevel = 3;
-let profitMargin = 10;
+let profitMargin = 15;
 
 function merchantSkills(){
 	
@@ -35,7 +18,6 @@ function merchantSkills(){
 	  && Math.abs(character.x) < 500
 	  && Math.abs(character.y) < 500){
 
-		//if(new Date().getSeconds() === 30){
 		if(findTriple(0)) compoundItems(0);
 		if(findTriple(1)) compoundItems(1);
 		if(findTriple(2)) compoundItems(2);
@@ -52,14 +34,14 @@ function merchantSkills(){
 	restoreParty();
 	//Buff players with merchant's luck
 	merchantsLuck();
+	//Exchange seashells for potions
+	exchangeShells();
 	
 	if(new Date().getMinutes() % 10 === 0){
 		
 		updateFarmingSpot();
 
-		//Close merchant Stand
-		//parent.socket.emit("merchant", {close:1})
-		parent.close_merchant(41);
+		closeMerchantStand();
 		
 		//Make the big round
 		smart_move({to:"main"}, () => {
@@ -91,34 +73,53 @@ function merchantSkills(){
 	}
 }
 
-function buyPotions(){
-	let	hPotions0 = quantity("hpot0");
-	let	hPotions1 = quantity("hpot1");
-	let mPotions0 = quantity("mpot0");
-	let mPotions1 = quantity("mpot1");
-	if(hPotions0 < hPotSmall )buy_with_gold("hpot0", hPotSmall - hPotions0);
-	if(hPotions1 < hPotBig )buy_with_gold("hpot1", hPotBig - hPotions1);
-	if(mPotions0 < mPotSmall) buy_with_gold("mpot0", mPotSmall - mPotions0);
-	if(mPotions1 < mPotBig) buy_with_gold("mpot1", mPotBig - mPotions1);
+function  buyPotions(){
+	if(quantity("hpot0") < hPotSmall ) buy_with_gold("hpot0", hPotSmall - quantity("hpot0"));
+	if(quantity("hpot1") < hPotBig ) buy_with_gold("hpot1", hPotBig - quantity("hpot1"));
+	if(quantity("mpot0") < mPotSmall)  buy_with_gold("mpot0", mPotSmall - quantity("mpot0"));
+	if(quantity("mpot1") < mPotBig)  buy_with_gold("mpot1", mPotBig - quantity("mpot1"));
 	log("Bought Potions!");
 }
 
 function tranferPotions(){
 
-	let potions = ["hpot0", "mpot0", "hpot1", "mpot1"];
-
-	//parent.party_list is an array with the names of PartyMembers
-	//We iterate over it
-	parent.party_list.forEach((otherPlayerName) => { 
-		// !!! IMPORTANT !!! parent.entities only holds OTHER players, not
-		//the current player running this code!! Therefor....
-		let partyMember = parent.entities[otherPlayerName];
-		//...we have to check if party member holds something or is undefined!!!
-		if (partyMember) {
-			for(let i = 0; i < potions.length; i++){
-				if(locate_item(potions[i]) !== -1) send_item(partyMember,locate_item(potions[i]),Math.floor(quantity(potions[i]) / 3));
+	//All potions not listed here get sold (Check "trashName"-Array)
+	let essentialPotions = ["hpot0", "mpot0", "hpot1", "mpot1"];
+	let dexPotions = ["elixirdex0", "elixirdex1", "elixirdex2"];
+	let intPotions = ["elixirint0", "elixirint1", "elixirint2"];
+	let luckPotions = ["elixirluck"];
+						
+	parent.party_list.forEach((playerName) => { 
+		let partyMember = get_player(playerName);
+		if (partyMember){
+			
+			//Deliver essential potions (Health & Mana)
+			essentialPotions.forEach(potion => {
+				if(locate_item(potion) !== -1) send_item(partyMember, locate_item(potion), Math.floor(quantity(potion) / 3));
+				log("Delivered Potions!");
+			});
+			//Deliver dexterity potions to ranger
+			if(partyMember.ctype === "ranger"){
+				dexPotions.forEach(potion => {
+					if(locate_item(potion) !== -1) send_item(partyMember, locate_item(potion), quantity(potion));
+					log("Delivered DexPotions!");
+				});
 			}
-			log("Delivered Potions!");
+			//Deliver intelligence potions to Priest & Mage
+			if(partyMember.ctype === "priest" || partyMember.ctype === "mage"){
+				intPotions.forEach(potion => {
+					if(locate_item(potion) !== -1 && quantity(potion) % 2 === 0) send_item(partyMember, locate_item(potion), quantity(potion) / 2);
+					if(quantity(potion) % 2 !== 0 && Math.round(Math.random()) === 1) send_item(partyMember, locate_item(potion), 1);
+					log("Delivered intPotions!");
+				});
+			}
+			//Consume luck potions
+			if(partyMember.ctype === "merchant"){
+				luckPotions.forEach(potion => {
+					if(locate_item(potion) !== -1) consume(locate_item(potion));
+					log("Consumed LuckPotion!");
+				});
+			}
 		}
 	});
 }
@@ -135,29 +136,56 @@ function buyScrolls(){
 
 //Sell trash, keep if it's high grade. (Grades: 0 Normal / 1 High /  2 Rare
 function selLTrash(){
-	for(let i = 0; i <= 41; i++){
-		if(character.items[i]
-		   && trashName.indexOf(character.items[i].name) !== -1
-		   && item_grade(character.items[i]) !== 2) {
-			log("Merchant is unloading trash: " + character.items[i].name);
-			if(character.items[i].q){
-				sell(i, character.items[i].q);
+	let trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
+				"wshoes", "ink", "spores", "beewings", "wcap", "bfur", 
+				"firestaff", "strearring", "stramulet", 
+				"wattire", "poison", "rattail", "wbreeches", "gslime", "cscale", 
+				"ascale", "shoes", "lotusf", "pants", "spear", 
+				"spidersilk", "sstinger", "snakefang", "smush", "spores", "frogt", 
+				"gloves1", "stinger", "wgloves", "snakeoil", "dstones", "helmet1", 
+				"bwing", "tshirt0", "tshirt1", "tshirt2", "cshell", "whiteegg", "", "",
+				"", "", "", "", "", "", "", "", "", "", "", "",
+				"", "", "", "", "", "", "", "", "", "", "", "",
+				//Unneeded elixirs
+				"elixirstr0", "elixirstr1", "elixirstr2",
+				"elixirvit0", "elixirvit1", "elixirvit2",
+				//Seasonal Trash
+				"egg0", "egg1", "egg2", "egg3", "egg4", "egg5", 
+				"egg6", "egg7", "egg8", "", "", "", 
+				"redenvelopev1", "redenvelopev2", "redenvelopev3", "", "", "", 
+				"ornament", "mistletoe", "candycane", "merry", "", "",
+				 "", "", "", "", "", "", "", "", "", "", "", "",
+				 "", "", "", "", "", "", "", "", "", "", "", "",
+				"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"];
+	character.items.forEach((item, index) => {
+		if(item
+		  && trashName.indexOf(item.name) !== -1
+		  && item_grade(item) !== 2){
+			log("Merchant is unloading trash: " + item.name);
+			if(item.q){
+				sell(index, item.q);
 			}else{
-				sell(i, character.items[i]);
+				sell(index, item);
 			}
+			
 		}
-	}		
+	});	
 }
 
 function exchangeGems(){
-	for(let i = 0; i <= 41; i++){
-		let exchangeables = ["gem","box","5bucks","gift0","gift1","ornament","troll","mistletoe","basketofeggs","redenvelope","redenvelopev2","redenvelopev3","gem1","candycane","candy1","goldenegg","bugbountybox","armorbox","gem0","candy0","weaponbox","xbox","mysterybox","",""]
-		if(character.items[i]
-		  && exchangeables.indexOf(G.items[character.items[i].name].type) !== -1){
-			exchange(i);
+	let exchangeables =["gem","box","5bucks","gift0","gift1","ornament",
+						"troll","mistletoe","basketofeggs","redenvelope",
+						"redenvelopev2","redenvelopev3","gem1","candycane",
+						"candy1","goldenegg","bugbountybox","armorbox",
+						"gem0","candy0","weaponbox","xbox","mysterybox",
+						"","","","","","","",""]
+	character.items.forEach((item, index) => {	
+		if(item
+ 		  && exchangeables.indexOf(item.name) !== -1){
+			exchange(index);
 			log("Item Exchanged!");
 		}
-	}
+	});	
 }
 
 function depositMoney(){	
@@ -166,15 +194,15 @@ function depositMoney(){
 }
 
 function depositItems(){
-	for(let i = 0; i <= 34; i++){
-		if(character.items[i]
-		  && (character.items[i].level
-		  && character.items[i].level > sellItemLevel)
-		  || item_grade(character.items[i]) > 1){
-		 	bank_store(i);
+	character.items.forEach((item, index) => {
+		if(item
+		  && (item.level
+		  && item.level > sellItemLevel)
+		  || item_grade(item) > 1){
+			bank_store(index);
 			log("Item Stored in bank!");
 		}
-	}
+	});	
 }
 
 function compoundItems(level){
@@ -197,8 +225,9 @@ function findTriple(level){
 	for(let i = 0; i <= 41; i++){
 		if(character.items[i]
 		   	&& character.items[i].level === level
-		   	//Weapons can't be compounded. If item has attack attr, no compound
-		 	&& !G.items[character.items[i].name].attack){
+		   	//First loop selects a compoundable item so the two 
+		    // nested loops only need to match item name & item level
+		 	&& G.items[character.items[i].name].compound){
 			for(let j = i + 1; j <= 41; j++){
 				if(character.items[j]
 				   && character.items[j].name === character.items[i].name
@@ -225,7 +254,7 @@ function searchItems2bSold(sellItemLevel = 2){
 	}
 }
 
-function sellItems(sellItemLevel = 2, profitMargin = 2){
+function sellItems(sellItemLevel = 2, profitMargin = 15){
 	trade(searchItems2bSold(sellItemLevel), findEmptyTradeSlots(),  item_value(character.items[searchItems2bSold(sellItemLevel)]) * profitMargin);
 }
 
@@ -246,7 +275,7 @@ function merchantsLuck(){
 		  && parent.entities[i].ctype
 		  && !parent.entities[i].rip
 		  && !parent.entities[i].npc
-		  //&& !parent.entities[i].s.mluck
+		  && (!parent.entities[i].s.mluck || !parent.entities[i].s.mluck.strong)
 		  && (!parent.entities[i].s.mluck
 			 || !parent.entities[i].s.mluck.f
 			 || parent.entities[i].s.mluck.f != character.name)
@@ -292,7 +321,7 @@ function restoreParty(){
 	if(parent.party_list.length < 4){
 		loadCharacters();
 		log("Merchant restoring party.");
-		parent.close_merchant(41);
+		closeMerchantStand();
 		updateFarmingSpot();
 		if(character.map !== farmMap){
 			smart_move({to:farmMap});
@@ -308,23 +337,45 @@ function restoreParty(){
 	}
 }
 
+function closeMerchantStand(){
+	//Close merchant Stand
+	//parent.socket.emit("merchant", {close:1})
+	parent.close_merchant(41);
+}
+
 function openMerchantStand(){
 //Go to the market and sell things
 	if(character.map != "main"){
 		smart_move({to:"main"}, () => {
 			smart_move({to:"town"}, () => {
 				smart_move({x: character.x - 100, y: character.y - 40}, () => {
-					//parent.socket.emit("merchant",{num:41});
-					parent.open_merchant(41);
+					//Turn around, face front
+					smart_move({x: character.x, y: character.y + 1}, () => {
+						//parent.socket.emit("merchant",{num:41});
+						parent.open_merchant(41);
+					});
 				});
 			});
 		});
 	}else{
 		smart_move({to:"town"}, () => {
 			smart_move({x: character.x - 100, y: character.y - 40}, () => {
-				//parent.socket.emit("merchant",{num:41});
-				parent.open_merchant(41);
+				//Turn around, face front
+				smart_move({x: character.x, y: character.y + 1}, () => {
+					//parent.socket.emit("merchant",{num:41});
+					parent.open_merchant(41);
+				});
 			});
 		});
 	}
+}
+
+function exchangeShells(){
+	if(locate_item("seashell") !== -1 && quantity("seashell") >= 20){
+		closeMerchantStand();
+		smart_move({to:"fisherman"}, () => {
+			exchange(locate_item("seashell"));
+			setTimeout (() => {if(quantity("seashell") < 20) openMerchantStand();}, 8000);
+		})
+	}	
 }

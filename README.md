@@ -54,11 +54,15 @@ Here's a list of what the code is capable of so far:
 ## General
 
 - Hotkeys: To load characters / create a party / stop characters
+- Custom Buttons for quick access to frequently used functions
 - Auto-move to the designated farming spot, over several maps / continents.
 - Auto-Farm designated MOB's
-- Auto-use potions (heal & mana)
+- Auto-use potions (health & mana)
 - Auto-Kite enemies. (All characters I use (Mage, Priest, Ranger) are ranged characters.)
 - Two Kiting-Modes (Walk backwards / circle around the target)
+- Seashells get exchanged for buff-potions
+- Buff-Potions get delivered to characters which consume them automatically
+- Various optimizations
 - Fetch Hunting-Quests
 - Go hunting
 - Turn in fulfilled Hunting-Quests

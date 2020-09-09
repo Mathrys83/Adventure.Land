@@ -1,15 +1,45 @@
-let reserveMoney = 1000000;
-let minCompoundScrolls = 100;
+/*
+Two loops are used to go through character.items:
+  - character.items.forEach();
+  - for-Loop that goes through character.items
+
+REASON: If a function needs to RETURN something, it CAN'T be done with a forEach-loop! It must be a regular for-loop!
+*/
+
+const reserveMoney = 500000;
+const minCompoundScrolls = 100;
 
 //Potion Thresholds
-let hPotSmall = 30;
-let hPotBig = 15;
-let mPotSmall = 150;
-let mPotBig = 15;
+const hPotSmall = 30;
+const hPotBig = 15;
+const mPotSmall = 60;
+const mPotBig = 15;
 
 //Selling parameters
-let sellItemLevel = 3;
-let profitMargin = 15;
+const sellItemLevel = 3;
+const profitMargin = 15;
+
+const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
+				 "wshoes", "ink", "spores", "beewings", "wcap", "bfur", 
+				 "firestaff", "strearring", "stramulet", 
+				 "wattire", "poison", "rattail", "wbreeches", "gslime", "cscale", 
+				 "ascale", "shoes", "lotusf", "pants", "spear", 
+				 "spidersilk", "sstinger", "snakefang", "smush", "spores", "frogt", 
+				 "gloves1", "stinger", "wgloves", "snakeoil", "dstones", "helmet1", 
+				 "bwing", "tshirt0", "tshirt1", "tshirt2", "cshell", "whiteegg",
+				 "quiver", "shield", "", "", "", "", "", "", "", "", "", "", "", "",
+				 "", "", "", "", "", "", "", "", "", "", "", "",
+				 //Unneeded elixirs
+				 "elixirstr0", "elixirstr1", "elixirstr2",
+				 "elixirvit0", "elixirvit1", "elixirvit2",
+				 //Seasonal Trash
+				 "egg0", "egg1", "egg2", "egg3", "egg4", "egg5", 
+				 "egg6", "egg7", "egg8", "", "", "", 
+				 "redenvelopev1", "redenvelopev2", "redenvelopev3", "", "", "", 
+				 "ornament", "mistletoe", "candycane", "merry", "", "",
+				 "", "", "", "", "", "", "", "", "", "", "", "",
+				 "", "", "", "", "", "", "", "", "", "", "", "",
+				 "x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"];
 
 function merchantSkills(){
 	
@@ -82,7 +112,6 @@ function  buyPotions(){
 }
 
 function tranferPotions(){
-
 	//All potions not listed here get sold (Check "trashName"-Array)
 	let essentialPotions = ["hpot0", "mpot0", "hpot1", "mpot1"];
 	let dexPotions = ["elixirdex0", "elixirdex1", "elixirdex2"];
@@ -136,38 +165,12 @@ function buyScrolls(){
 
 //Sell trash, keep if it's high grade. (Grades: 0 Normal / 1 High /  2 Rare
 function selLTrash(){
-	let trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
-				"wshoes", "ink", "spores", "beewings", "wcap", "bfur", 
-				"firestaff", "strearring", "stramulet", 
-				"wattire", "poison", "rattail", "wbreeches", "gslime", "cscale", 
-				"ascale", "shoes", "lotusf", "pants", "spear", 
-				"spidersilk", "sstinger", "snakefang", "smush", "spores", "frogt", 
-				"gloves1", "stinger", "wgloves", "snakeoil", "dstones", "helmet1", 
-				"bwing", "tshirt0", "tshirt1", "tshirt2", "cshell", "whiteegg", "", "",
-				"", "", "", "", "", "", "", "", "", "", "", "",
-				"", "", "", "", "", "", "", "", "", "", "", "",
-				//Unneeded elixirs
-				"elixirstr0", "elixirstr1", "elixirstr2",
-				"elixirvit0", "elixirvit1", "elixirvit2",
-				//Seasonal Trash
-				"egg0", "egg1", "egg2", "egg3", "egg4", "egg5", 
-				"egg6", "egg7", "egg8", "", "", "", 
-				"redenvelopev1", "redenvelopev2", "redenvelopev3", "", "", "", 
-				"ornament", "mistletoe", "candycane", "merry", "", "",
-				 "", "", "", "", "", "", "", "", "", "", "", "",
-				 "", "", "", "", "", "", "", "", "", "", "", "",
-				"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"];
 	character.items.forEach((item, index) => {
 		if(item
 		  && trashName.indexOf(item.name) !== -1
 		  && item_grade(item) !== 2){
 			log("Merchant is unloading trash: " + item.name);
-			if(item.q){
-				sell(index, item.q);
-			}else{
-				sell(index, item);
-			}
-			
+			item.q ? sell(index, item.q) : sell(index, item);
 		}
 	});	
 }
@@ -248,7 +251,7 @@ function findTriple(level){
 }
 
 function searchItems2bSold(sellItemLevel = 2){
-	for (let i = 0; i <= 34; i++){
+	for (let i = 0; i <= 41; i++){
 		if(character.items[i]
 		   && character.items[i].level === sellItemLevel) return i;
 	}
@@ -265,34 +268,6 @@ function findEmptyTradeSlots(){
 	//but Trate-Slots start with 1 NOT ZERO
 	for (let i = 0; i < tradeSlots.length; i++){
 		if(!character.slots[tradeSlots[i]]) return i + 1;
-	}
-}
-
-function merchantsLuck(){
-	let otherPlayers = [];
-	for (i in parent.entities){
-		if(parent.entities[i].player
-		  && parent.entities[i].ctype
-		  && !parent.entities[i].rip
-		  && !parent.entities[i].npc
-		  && (!parent.entities[i].s.mluck || !parent.entities[i].s.mluck.strong)
-		  && (!parent.entities[i].s.mluck
-			 || !parent.entities[i].s.mluck.f
-			 || parent.entities[i].s.mluck.f != character.name)
-		  && character.mp > (character.max_mp / 10)
-		  && character.mp > G.skills.mluck.mp
-		  && distance(character, parent.entities[i]) < G.skills.mluck.range
-		  && is_in_range(parent.entities[i], "mluck")
-		  && !is_on_cooldown("mluck")){
-			//All eligible players get pushed to the array...
-			otherPlayers.push(parent.entities[i]);
-		}
-	}
-	//...and then one random player is picked!
-	if(otherPlayers.length > 0){
-		let luckyPlayer = Math.floor(Math.random() * otherPlayers.length)
-		use_skill("mluck", otherPlayers[luckyPlayer].name);
-		log("Giving luck to: " + otherPlayers[luckyPlayer].name);
 	}
 }
 
@@ -314,6 +289,37 @@ function buyCheapStuff(){
 				}				
 			});				  
 		}
+	}
+}
+
+function merchantsLuck(){
+	let otherPlayers = [];
+	for (i in parent.entities){
+		if(parent.entities[i].player
+		  && parent.entities[i].ctype
+		  && !parent.entities[i].rip
+		  && !parent.entities[i].npc
+		  && (!parent.entities[i].s.mluck 
+			 || parent.entities[i].s.mluck.strong === false)
+		  /*
+		  && (!parent.entities[i].s.mluck
+			 || !parent.entities[i].s.mluck.f
+			 || parent.entities[i].s.mluck.f != character.name)
+		  */
+		  && character.mp > (character.max_mp / 10)
+		  && character.mp > G.skills.mluck.mp
+		  && distance(character, parent.entities[i]) < G.skills.mluck.range
+		  && is_in_range(parent.entities[i], "mluck")
+		  && !is_on_cooldown("mluck")){
+			//All eligible players get pushed to the array...
+			otherPlayers.push(parent.entities[i]);
+		}
+	}
+	//...and then one random player is picked!
+	if(otherPlayers.length > 0){
+		let luckyPlayer = Math.floor(Math.random() * otherPlayers.length)
+		use_skill("mluck", otherPlayers[luckyPlayer].name);
+		log("Giving luck to: " + otherPlayers[luckyPlayer].name);
 	}
 }
 
@@ -340,30 +346,26 @@ function restoreParty(){
 function closeMerchantStand(){
 	//Close merchant Stand
 	//parent.socket.emit("merchant", {close:1})
-	parent.close_merchant(41);
+	parent.close_merchant(locate_item("stand0"));
 }
 
-function openMerchantStand(){
 //Go to the market and sell things
-	if(character.map != "main"){
+function openMerchantStand(){
+	if(character.map !== "main"){
 		smart_move({to:"main"}, () => {
-			smart_move({to:"town"}, () => {
-				smart_move({x: character.x - 100, y: character.y - 40}, () => {
-					//Turn around, face front
-					smart_move({x: character.x, y: character.y + 1}, () => {
-						//parent.socket.emit("merchant",{num:41});
-						parent.open_merchant(41);
-					});
-				});
-			});
+			goTownOpenStand();
 		});
 	}else{
+		goTownOpenStand();
+	}
+	//Separate function, to shorten above code
+	function goTownOpenStand(){
 		smart_move({to:"town"}, () => {
 			smart_move({x: character.x - 100, y: character.y - 40}, () => {
 				//Turn around, face front
 				smart_move({x: character.x, y: character.y + 1}, () => {
 					//parent.socket.emit("merchant",{num:41});
-					parent.open_merchant(41);
+					parent.open_merchant(locate_item("stand0"));
 				});
 			});
 		});
@@ -375,7 +377,9 @@ function exchangeShells(){
 		closeMerchantStand();
 		smart_move({to:"fisherman"}, () => {
 			exchange(locate_item("seashell"));
-			setTimeout (() => {if(quantity("seashell") < 20) openMerchantStand();}, 8000);
+			setTimeout (() => {
+				if(quantity("seashell") < 20) openMerchantStand();
+			}, 8000);
 		})
 	}	
 }

@@ -1,7 +1,7 @@
 function rangerSkills(target){
 
 	//How much Mana should be kept in reserve
-	let manaReserve = 0.8;
+	const manaReserve = 0.8;
 
 	//Use Ranger Skills
 	if(character.mp > (character.max_mp * manaReserve)){
@@ -14,7 +14,7 @@ function rangerSkills(target){
 			game_log("Ranger used 3-Shot");
 		}
 		//Supershot
-		if(master
+		if(validateOffensiveSkill(target, manaReserve)
 		   &&character.mp > G.skills.supershot.mp
 		   && is_in_range(target, "supershot")
 		   && !is_on_cooldown("supershot")){
@@ -22,7 +22,7 @@ function rangerSkills(target){
 			game_log("Ranger used Supershot");
 		}
 		//Hunters Mark
-		if(master
+		if(validateOffensiveSkill(target, manaReserve)
 		   && character.mp > G.skills.huntersmark.mp
 		   && is_in_range(target, "huntersmark")
 		   && !is_on_cooldown("huntersmark")){

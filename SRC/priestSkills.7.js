@@ -1,21 +1,22 @@
 function priestSkills(target){
 
 	//How much Mana should be kept in reserve
-	let manaReserve = 0.7;
+	const manaReserve = 0.7;
+	const healingThreshold = 0.8;
 	let hurtPartyMembers = 0;
-	let healingThreshold = 0.8;
-
+	
 	//Priest heals himself
 	if(character.hp < (character.max_hp * healingThreshold)
-	   	//&& can_heal(character)
-	  	&& !is_on_cooldown("heal")){
+	   && character.mp >= character.mp_cost
+	   //&& can_heal(character)
+	   && !is_on_cooldown("heal")){
 		heal(character);
 		game_log("Priest is healing himself");
 	}
 
 	//parent.party_list is an array with the names of PartyMembers
 	//We iterate over it
-	parent.party_list.forEach(function(otherPlayerName){ 
+	parent.party_list.forEach((otherPlayerName) => { 
 		// !!! IMPORTANT !!! parent.entities only holds OTHER players, not
 		//the current player running this code!! Therefor....
 		let partyMember = parent.entities[otherPlayerName];
@@ -35,6 +36,7 @@ function priestSkills(target){
 			}
 			//Heal ONE Partymember
 			if(partyMember.hp < (partyMember.max_hp * healingThreshold)
+			    && character.mp >= character.mp_cost
             	&& !partyMember.rip
                	//&& can_heal(partyMember)
 			  	&& is_in_range(partyMember, "heal")
@@ -48,8 +50,7 @@ function priestSkills(target){
             }
 		}
 	});
-	if(target
-	   && master
+	if(validateOffensiveSkill(target, manaReserve)
 	   && character.mp > (character.max_mp * manaReserve)
 	   && character.mp > G.skills.curse.mp
 	   && is_in_range(target, "curse")

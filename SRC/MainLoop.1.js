@@ -22,12 +22,12 @@ const characterNames = ["Hierophant", "Magos", "Patroclus"];
 let master = "";
 const hunterMaster = characterNames[0];
 const hunterToggle = true;
-let farmMonsterType = "bat";
-const farmMonsterFallback = "bat";
+let farmMonsterType = "crabx";
+const farmMonsterFallback = "crabx";
 let farmMap = getFarmingSpot(farmMonsterType, "map");
 let farmCoord = getFarmingSpot(farmMonsterType, "coord");
-const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "crabx", "", "", ""];
-const requiresMaster = ["poisio", "crabx", "minimush", "scorpion", "gscorpion", "tortoise", "bat", "croc", "spider", "armadillo", "", "", "", ""];
+const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "crabx", "iceroamer", "", ""];
+const requiresMaster = ["poisio", "crabx", "minimush", "scorpion", "gscorpion", "tortoise", "bat", "croc", "spider", "armadillo", "iceroamer", "", "", ""];
 
 setInterval(main, 1000 / 4); // Loops every 1/4 seconds.
 setInterval(tier2Actions, 5000); // Loops every 5 seconds.

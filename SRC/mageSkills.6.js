@@ -1,8 +1,8 @@
 function mageSkills(target){
 
 	//How much Mana should be kept in reserve
-	let manaReserve = 0.8;
-	let hpReserve = 0.8;
+	const manaReserve = 0.8;
+	const hpReserve = 0.8;
 	
 	//Shield Character
 	if(character.hp < (character.max_hp * hpReserve)
@@ -43,8 +43,7 @@ function mageSkills(target){
 	});
 
 	//Burst
-	if(target
-	   && master
+	if(validateOffensiveSkill(target, manaReserve)
 	   && character.mp > (character.max_mp * manaReserve)
 	   && target.hp >= (character.mp * 0.5)
 	   && is_in_range(target, "burst")

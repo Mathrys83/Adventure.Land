@@ -28,7 +28,8 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 				 "gloves1", "stinger", "wgloves", "snakeoil", "dstones", "helmet1", 
 				 "bwing", "tshirt0", "tshirt1", "tshirt2", "cshell", "whiteegg",
 				 "quiver", "shield", "", "", "", "", "", "", "", "", "", "", "", "",
-				 "", "", "", "", "", "", "", "", "", "", "", "",
+				 "strring", "stramulet", "strbelt", "strearring",
+				 "", "", "", "", "", "", "", "",
 				 //Unneeded elixirs
 				 "elixirstr0", "elixirstr1", "elixirstr2",
 				 "elixirvit0", "elixirvit1", "elixirvit2",
@@ -118,8 +119,8 @@ function tranferPotions(){
 	let intPotions = ["elixirint0", "elixirint1", "elixirint2"];
 	let luckPotions = ["elixirluck"];
 						
-	parent.party_list.forEach((playerName) => { 
-		let partyMember = get_player(playerName);
+	for (const name of parent.party_list){ 
+		const partyMember = get_player(name);
 		if (partyMember){
 			
 			//Deliver essential potions (Health & Mana)
@@ -150,7 +151,7 @@ function tranferPotions(){
 				});
 			}
 		}
-	});
+	}
 }
 
 function buyScrolls(){
@@ -282,6 +283,7 @@ function buyCheapStuff(){
 			let tradeSlots = Object.keys(otherPlayer.slots).filter(tradeSlot => tradeSlot.includes("trade"));
 			tradeSlots.forEach(tradeSlot => {
 				if(otherPlayer.slots[tradeSlot]
+				   && !otherPlayer.slots[tradeSlot].b
 				   && otherPlayer.slots[tradeSlot].price < item_value(otherPlayer.slots[tradeSlot])
 				   && character.gold > otherPlayer.slots[tradeSlot].price){
 					trade_buy(otherPlayer, tradeSlot);
@@ -326,6 +328,14 @@ function merchantsLuck(){
 function restoreParty(){
 	if(parent.party_list.length < 4){
 		loadCharacters();
+		initParty();
+	}
+}
+
+/*
+function restoreParty(){
+	if(parent.party_list.length < 4){
+		loadCharacters();
 		log("Merchant restoring party.");
 		closeMerchantStand();
 		updateFarmingSpot();
@@ -342,6 +352,7 @@ function restoreParty(){
 
 	}
 }
+*/
 
 function closeMerchantStand(){
 	//Close merchant Stand

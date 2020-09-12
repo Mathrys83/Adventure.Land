@@ -31,9 +31,8 @@ function getTarget(){
 	//If there is no master, or character is master, choose target freely
 	if((!master && !target) || character.name == master){		
 		//Returns any monster that targets any party-member
-		//MUST be for-loop! parent.party_list.forEach() cannot use "return"!
-		for(let i = 0; i < parent.party_list.length; i++){
-			target = get_nearest_monster({target:parent.party_list[i]});
+		for(const partyMember of Object.keys(get_party())){
+			target = get_nearest_monster({target:partyMember});
 			if(validateTarget(target)){
 				//log(character.name + " Target monster that targets party-member");
 				change_target(target);

@@ -5,29 +5,13 @@ function priestSkills(target){
 	const healingThreshold = 0.8;
 	let hurtPartyMembers = 0;
 	
-	//Priest heals himself
-	if(character.hp < (character.max_hp * healingThreshold)
-	   && character.mp >= character.mp_cost
-	   //&& can_heal(character)
-	   && !is_on_cooldown("heal")){
-		heal(character);
-		game_log("Priest is healing himself");
-	}
-
-	//parent.party_list is an array with the names of PartyMembers
-	//We iterate over it
-	parent.party_list.forEach((otherPlayerName) => { 
-		// !!! IMPORTANT !!! parent.entities only holds OTHER players, not
-		//the current player running this code!! Therefor....
-		let partyMember = parent.entities[otherPlayerName];
-		//...we have to check if party member holds something or is undefined!!!
-		if (partyMember) {
-
+	//Healing (Party-Heal and healing individual characters)
+	for (const name of parent.party_list){ 
+		const partyMember = get_player(name);
+		if(partyMember) {
 			//Heal COMPLETE Party
-			if(character.hp < (character.max_hp * healingThreshold))	hurtPartyMembers++;
 			if(partyMember.hp < (partyMember.max_hp * healingThreshold)
 			   && partyMember.rip === false) hurtPartyMembers++;
-
 			if(hurtPartyMembers >= 2
 			   && character.mp >= G.skills.partyheal.mp
 			   && !is_on_cooldown("partyheal")){
@@ -36,20 +20,21 @@ function priestSkills(target){
 			}
 			//Heal ONE Partymember
 			if(partyMember.hp < (partyMember.max_hp * healingThreshold)
-			    && character.mp >= character.mp_cost
-            	&& !partyMember.rip
-               	//&& can_heal(partyMember)
-			  	&& is_in_range(partyMember, "heal")
-			   	&& !is_on_cooldown("heal")){
-                heal(partyMember).then((message) => {
+				&& character.mp >= character.mp_cost
+				&& !partyMember.rip
+				//&& can_heal(partyMember)
+				&& is_in_range(partyMember, "heal")
+				&& !is_on_cooldown("heal")){
+				heal(partyMember).then((message) => {
 					reduce_cooldown("heal", character.ping);
 					game_log("Priest is healing " + partyMember.name);
 				}).catch((message) => {
 					log(character.name + " Heal failed: " + message.reason);
 				});
-            }
+			}
 		}
-	});
+	}
+	
 	if(validateOffensiveSkill(target, manaReserve)
 	   && character.mp > (character.max_mp * manaReserve)
 	   && character.mp > G.skills.curse.mp

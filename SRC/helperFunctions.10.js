@@ -1,24 +1,32 @@
 function loadCharacters(){
-	setTimeout(() => {if(Object.keys(get_active_characters()).indexOf(characterNames[0]) === -1) start_character(characterNames[0], "MainLoop")}, 10);
-	setTimeout(() => {if(Object.keys(get_active_characters()).indexOf(characterNames[1]) === -1) start_character(characterNames[1], "MainLoop")}, 8000);
-	setTimeout(() => {if(Object.keys(get_active_characters()).indexOf(characterNames[2]) === -1) start_character(characterNames[2], "MainLoop")}, 16000);
-	//setTimeout(() => start_character(characterNames[2], "MainLoop"), 12000);
-	log("Loading Characters...");
+	characterNames.forEach((name, index) => {
+		setTimeout(() => {if(Object.keys(get_active_characters()).indexOf(name) === -1) start_character(name, "MainLoop")}, index * 10000);
+	});
 }
 
 function initParty(){
-	send_party_invite(characterNames[0]);
-	send_party_invite(characterNames[1]);
-	send_party_invite(characterNames[2]);
-	log("Party Invites sent!");
+	for(name of characterNames){
+		if(Object.keys(get_party()).indexOf(name) === -1) send_party_invite(name);
+	}
 }
 
+function stopCharacters(){
+	for(characterName in get_active_characters()){
+		if(characterName !== character.name){
+			stop_character(characterName);
+			log("Stopped character " + characterName);
+		}
+	}
+}
+
+/*
 function stopCharacters(){
 	stop_character(characterNames[0]);
 	stop_character(characterNames[1]);
 	stop_character(characterNames[2]);
 	log("Characters stopped!");
 }
+*/
 
 function addButons(){
 	add_bottom_button("move2Farm", "Move Farm", () => {
@@ -128,10 +136,11 @@ function transferLoot(merchantName){
     let merchant = get_player(merchantName);
 	let keepItems = ["hpot0", "mpot0", "hpot1", "mpot1",
 						"elixirdex0", "elixirdex1", "elixirdex2",
-				   		"elixirint0", "elixirint1", "elixirint2",
-				   		"elixirvit0", "elixirvit1", "elixirvit2",
-				   		"elixirstr0", "elixirstr1", "elixirstr2",
-				   		"elixirluck"];
+						"elixirint0", "elixirint1", "elixirint2",
+						//"elixirvit0", "elixirvit1", "elixirvit2",
+						//"elixirstr0", "elixirstr1", "elixirstr2",
+						//"elixirluck"
+						];
     if(character.ctype !== "merchant"
        && merchant
        && merchant.owner === character.owner
@@ -165,20 +174,12 @@ function relocateItems(){
        && locate_item("hpot0") !== 37) swap(locate_item("hpot0"), 37);
     if(locate_item("mpot0") !== -1 
        && locate_item("mpot0") !== 38)swap(locate_item("mpot0"), 38);
-	/*
-    //Compound Scroll
-    if(locate_item("cscroll0") !== -1 
-       && locate_item("cscroll0") !== 39)swap(locate_item("cscroll0"), 39);
-    //Upgrade Scroll
-    if(locate_item("scroll0") !== -1 
-       && locate_item("scroll0") !== 40)swap(locate_item("scroll0"), 40);
-	*/
 }
 
 //on_party_invite gets called _automatically_ by the game on an invite 
 function on_party_invite(name) {
     if (get_player(name) &&
-		get_player(name).owner != character.owner) return;
+		get_player(name).owner !== character.owner) return;
     accept_party_invite(name);
 }
 
@@ -221,9 +222,14 @@ function drinkPotions(){
 				   //"elixirstr0", "elixirstr1", "elixirstr2",
 				   //"elixirluck"
 				  ];
-	potions.forEach(potion => {
-		if(locate_item(potion) !== -1) consume(locate_item(potion));
-	});
+	if(!character.slots.elixir){
+		for(const potion of potions){
+			if(locate_item(potion) !== -1){
+				consume(locate_item(potion));
+				return;
+			}
+		}
+	}
 }
 
 //Follow master character

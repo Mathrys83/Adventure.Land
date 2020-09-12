@@ -1,9 +1,9 @@
 function kiteTarget(target){
 
 	if(target){
-		let minTargetDist = target.range * 2; 
-		let kiteFlip = target.range * 1.1;
-		let targetDistance = distance(character, target);
+		const minTargetDist = target.range * 2; 
+		const kiteFlip = target.range * 1.1;
+		const targetDistance = distance(character, target);
 		
 		if(targetDistance < minTargetDist && targetDistance > kiteFlip){
 			move(
@@ -24,17 +24,17 @@ function circleTarget(target){
 
     if(target){
         
-        let minTargetDist = target.range * 5; 
-        let targetDistance = distance(character, target);
-        let offset = 0;     
+        const minTargetDist = target.range * 5; 
+        const targetDistance = distance(character, target);
+        let offset = 1;     
         
-        if(!localStorage.getItem(character.name + "Offset")){
-            localStorage.setItem(character.name + "Offset", 0);
+        if(!get(character.name + "Offset")){
+            set(character.name + "Offset", 1);
         }else{
-            offset = Number(localStorage.getItem(character.name + "Offset"));
+            offset = Number(get(character.name + "Offset"));
             offset += 0.7;
-            if(offset >= 999999) offset = 0;
-            localStorage.setItem(character.name + "Offset", offset);
+            if(offset >= 999999) offset = 1;
+            set(character.name + "Offset", offset);
         }
         if(targetDistance < minTargetDist){
             move(

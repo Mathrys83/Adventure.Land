@@ -11,7 +11,7 @@ The basic idea of the game itself is super appealing: The most forbidden thing i
 
 This code is simple, but *it works*, I made sure of that.
 
-I only publish a new version of my Adventure.Land scripts if they ran flawlessly over several days.
+I only publish a new version of my Adventure.Land scripts after they ran flawlessly over several days.
 
 I try to make sure that if you use (some or all of) my code, *it works, and it's stable and reliable*.
 

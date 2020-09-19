@@ -22,8 +22,8 @@ const characterNames = ["Hierophant", "Magos", "Patroclus"];
 let master = "";
 const hunterMaster = characterNames[0];
 const hunterToggle = true;
-let farmMonsterType = "crabx";
-const farmMonsterFallback = "crabx";
+let farmMonsterType = "bat";
+const farmMonsterFallback = "bat";
 let farmMap = getFarmingSpot(farmMonsterType, "map");
 let farmCoord = getFarmingSpot(farmMonsterType, "coord");
 const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "crabx", "iceroamer", "", ""];
@@ -41,12 +41,13 @@ function main() {
 		setTimeout(respawn, 15000);
 		return;
 	}
+	
+	//Replenish Health and Mana
+	usePotions();
 
 	//If character is moving, do nothing
 	if (is_moving(character) || smart.moving) return;
 	
-	//Replenish Health and Mana
-	usePotions();
 	//Loot everything
 	loot();
 

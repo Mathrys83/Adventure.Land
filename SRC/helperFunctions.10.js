@@ -246,8 +246,8 @@ function followMaster(){
 		//If the master is too far away,
 		//followers read masters location from localStorage
 		else if(!get_player(master)
-				&& localStorage.getItem("MasterPos")){
-			let masterPos = JSON.parse(localStorage.getItem("MasterPos"));
+				&& get("MasterPos")){
+			let masterPos = get("MasterPos");
 			if(character.map !== masterPos.map){
 				log("Following Master Map from Local Storage");
 				smart_move(masterPos.map);
@@ -263,7 +263,7 @@ function followMaster(){
 function masterBreadcrumbs(){
 	//Master writes location to localStorage
 	if(master && character.name === master){
-		localStorage.setItem("MasterPos", JSON.stringify({map: character.map, x: Math.floor(character.x), y: Math.floor(character.y)}));
+		set("MasterPos", {map: character.map, x: Math.floor(character.x), y: Math.floor(character.y)});
 	}
 }
 

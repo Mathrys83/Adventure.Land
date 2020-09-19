@@ -7,20 +7,20 @@ The basic idea of the game itself is super appealing: The most forbidden thing i
 
 (This is not my first coding game, I also played [Screeps](https://screeps.com/), and you can [check out my source here](https://github.com/johnnyawesome/Screeps)).
 
-## Getting started
-
-These are two great guides that will give you an overview over the game:
-
-- [Sin's Guide to life in Adventure Land](https://steamcommunity.com/sharedfiles/filedetails/?id=1636142608)
-- [FAQ's by Trexnamedtom](https://steamcommunity.com/sharedfiles/filedetails/?id=1640326394)
-
 ## Battletested
 
 This code is simple, but *it works*, I made sure of that.
 
 I only publish a new version of my Adventure.Land scripts if they ran flawlessly over several days.
 
-So you can be sure, if you use (some or all of) my code, *it works, and it's stable and reliable*.
+I try to make sure that if you use (some or all of) my code, *it works, and it's stable and reliable*.
+
+## Getting started
+
+These are two great guides that will give you an overview over the game:
+
+- [Sin's Guide to life in Adventure Land](https://steamcommunity.com/sharedfiles/filedetails/?id=1636142608)
+- [FAQ's by Trexnamedtom](https://steamcommunity.com/sharedfiles/filedetails/?id=1640326394)
 
 ## Code overview
 

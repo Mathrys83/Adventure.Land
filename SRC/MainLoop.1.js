@@ -22,18 +22,19 @@ const characterNames = ["Hierophant", "Magos", "Patroclus"];
 let master = "";
 const hunterMaster = characterNames[0];
 const hunterToggle = true;
-let farmMonsterType = "bat";
-const farmMonsterFallback = "bat";
+let farmMonsterType = "armadillo";
+const farmMonsterFallback = "armadillo";
 let farmMap = getFarmingSpot(farmMonsterType, "map");
 let farmCoord = getFarmingSpot(farmMonsterType, "coord");
-const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "crabx", "iceroamer", "", ""];
+const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "snowman", "porcupine", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "iceroamer", "crabx", ""];
 const requiresMaster = ["poisio", "crabx", "minimush", "scorpion", "gscorpion", "tortoise", "bat", "croc", "spider", "armadillo", "iceroamer", "", "", ""];
+const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "fierygloves", "wingedboots"];
 
 setInterval(main, 1000 / 4); // Loops every 1/4 seconds.
 setInterval(tier2Actions, 5000); // Loops every 5 seconds.
 
 function main() {
-	
+
 	//If Character is dead, respawn
 	//is_moving(character) and smart.moving is TRUE even for DEAD characters
 	//So the respawn code MUST be on top!
@@ -41,13 +42,13 @@ function main() {
 		setTimeout(respawn, 15000);
 		return;
 	}
-	
+
 	//Replenish Health and Mana
 	usePotions();
 
 	//If character is moving, do nothing
 	if (is_moving(character) || smart.moving) return;
-	
+
 	//Loot everything
 	loot();
 
@@ -86,7 +87,7 @@ function main() {
 }
 
 function tier2Actions() {
-	
+
 	//If the master is moving, lay breadcrumbs
 	if (master && character.name === master) masterBreadcrumbs();
 
@@ -104,7 +105,7 @@ function tier2Actions() {
 	//Arranges Inventory without gaps
 	tidyInventory();
 	//Transfer loot to merchant
-	if (character.ctype !== "merchant"){
+	if (character.ctype !== "merchant") {
 		drinkPotions();
 		transferLoot(merchantName);
 	}

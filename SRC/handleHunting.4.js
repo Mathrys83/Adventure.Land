@@ -10,10 +10,10 @@ function updateFarmingSpot() {
 		farmMonsterType = huntedMonsters[huntedMonsters.length - 1].monsterType;
 		farmMap = getFarmingSpot(farmMonsterType, "map");
 		farmCoord = getFarmingSpot(farmMonsterType, "coord");
-		requiresMaster.indexOf(farmMonsterType) !== -1 ? master = hunterMaster : master = "";
+		requiresMaster.includes(farmMonsterType) ? master = hunterMaster : master = "";
 	} else {
 		farmMonsterType = farmMonsterFallback;
-		requiresMaster.indexOf(farmMonsterType) !== -1 ? master = hunterMaster : master = "";
+		requiresMaster.includes(farmMonsterType) ? master = hunterMaster : master = "";
 	}
 }
 
@@ -37,7 +37,7 @@ function handleHuntQuest() {
 			if (character.s.monsterhunt.c > 0) {
 				let alreadyAdded;
 				huntedMonsters.forEach(element => { if (element.questGiver === character.name) alreadyAdded = true });
-				if (allowedMonsters.indexOf(monsterType) !== -1 && !alreadyAdded) {
+				if (allowedMonsters.includes(monsterType) && !alreadyAdded) {
 					huntedMonsters.unshift({ monsterType: monsterType, questGiver: character.name, timeStamp: Date.now() + character.s.monsterhunt.ms });
 					set("huntedMonsters", huntedMonsters);
 					log(character.name + " setting HunterQuest in locStor");

@@ -111,9 +111,11 @@ Once the stand is open, he continues his work:
 
 Other functions
 
-- Auto-exchange: Onye your merchant has 20 seashells in his iventory, he'll go and exchange it for a buff-potion. He then delivers the potion to the appropriate character (e.g. dexterity-potion for ranger) on the next round he does.
+- Auto-exchange : If your merchant has an exchangeable in his inventory, he'll exchange it at Xyn automatically. 
 
-- Autocraft: Designate items you want to craft. Farm several, different ingredients with the new multi-monster farming function! As soon as the merchant has all necessary items in his inventory, he'll craft the item for you automatically!
+- Auto-exchange seashells: Onye your merchant has 20 seashells in his iventory, he'll go and exchange it for a buff-potion. He then delivers the potion to the appropriate character (e.g. dexterity-potion for ranger) on the next round he does.
+
+- Autocraft: Designate items you want to craft. Farm several, different ingredients with the new multi-monster farming function! As soon as the merchant has all necessary ingredients in his inventory, he'll auto-craft the item for you automatically!
 
 ## General functions
 

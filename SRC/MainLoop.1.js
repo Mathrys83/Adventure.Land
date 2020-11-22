@@ -1,6 +1,7 @@
 load_code("helperFunctions");
 load_code("handleFighting");
 load_code("handleHunting");
+load_code("handleFarming");
 load_code("evadeTarget");
 load_code("merchantSkills");
 load_code("mageSkills");
@@ -15,23 +16,48 @@ map_key("7", "snippet", "stopCharacters()");
 //Custom buttons!
 addButons();
 
-//Custom Settings
-//Farming spots are found in G.maps.main
-const merchantName = "Plutus";
-const characterNames = ["Hierophant", "Magos", "Patroclus"];
-let master = "";
-const hunterMaster = characterNames[0];
-const hunterToggle = true;
-let farmMonsterType = "armadillo";
-const farmMonsterFallback = "armadillo";
-let farmMap = getFarmingSpot(farmMonsterType, "map");
-let farmCoord = getFarmingSpot(farmMonsterType, "coord");
-const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "snowman", "porcupine", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "iceroamer", "crabx", ""];
-const requiresMaster = ["poisio", "crabx", "minimush", "scorpion", "gscorpion", "tortoise", "bat", "croc", "spider", "armadillo", "iceroamer", "", "", ""];
-const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "fierygloves", "wingedboots"];
+/*
+###################################################################
 
-setInterval(main, 1000 / 4); // Loops every 1/4 seconds.
-setInterval(tier2Actions, 5000); // Loops every 5 seconds.
+######################### Custom Settings ##########################
+
+Adjust below values to your needs
+
+###################################################################
+*/
+
+//Name of your merchant
+const merchantName = "Plutus";
+//Name of your characters
+const characterNames = ["Hierophant", "Magos", "Patroclus"];
+//Designate a Master for hunting tough monsters
+const hunterMaster = characterNames[0];
+//Master for hunting tough monsters- Handled by updateFarmingSpot()
+let master = "";
+//Toggle the pursuit of Hunter Quests
+const hunterToggle = true;
+//Your characters will cycle through this array of monsters, farming a new monster every few hours!
+//Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
+const allMonstersToFarm = ["arcticbee", "porcupine", "croc", "armadillo", "crabx", "iceroamer"];
+//Monster you are currently farming - Handled by updateFarmingSpot()
+let farmMonsterType = scheduleFarming();
+//Monsters your characters are allowed to farm. Only enter monsters you are strong enough to defeat!
+const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "snowman", "porcupine", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "iceroamer", "crabx", ""];
+//Monsters that are too strong for a single character are listed here.
+//Your Master-Character will choose a monster, which the whole party will then attack.
+//Also: Characters will start using their offensive skills if a monster is on this list (They don't use skills against weak monsters, conserve MP)
+const requiresMaster = ["poisio", "crabx", "minimush", "scorpion", "gscorpion", "tortoise", "bat", "spider", "iceroamer", "", "", ""];
+//Merchant auto-crafts below items if he has the ingredients in his inventory
+//Also: If an item is an ingredient for a recipe you list here, it won't get compounded
+const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "fierygloves", "wingedboots"];
+//The map you farm on
+//Farming spots are found in G.maps.main
+let farmMap = getFarmingSpot(farmMonsterType, "map");
+//The coordinates of your farming spot on the map
+let farmCoord = getFarmingSpot(farmMonsterType, "coord");
+
+setInterval(main, 1000 / 4); // Main Loop: Repeats every 1/4 seconds.
+setInterval(tier2Actions, 5000); // Tier 2 Loop: Repeats every 5 seconds.
 
 function main() {
 
@@ -67,7 +93,7 @@ function main() {
 		//Circles Target
 		//circleTarget(target);
 		//Uses available skills
-		//HINT: Offensive skills are only used if "master" is defined [To save mana]
+		//HINT: Offensive skills are only used if "master" is defined [To save Mana]
 		if (character.ctype === "mage") mageSkills(target);
 		if (character.ctype === "priest") priestSkills(target);
 		if (character.ctype === "ranger") rangerSkills(target, farmMonsterType);
@@ -88,7 +114,7 @@ function main() {
 
 function tier2Actions() {
 
-	//If the master is moving, lay breadcrumbs
+	//If the master is moving, he lays breadcrumbs
 	if (master && character.name === master) masterBreadcrumbs();
 
 	//If character is moving, do nothing

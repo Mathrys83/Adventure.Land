@@ -15,8 +15,7 @@ function validateTarget(target) {
 function validateOffensiveSkill(target, manaReserve) {
 	if (target
 		&& target.level > 1
-		&& (master
-			|| requiresMaster.includes(target.mtype))
+		//  || (master || requiresMaster.includes(target.mtype))
 		&& character.mp > (character.max_mp * manaReserve)) return true;
 }
 

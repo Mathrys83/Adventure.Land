@@ -5,7 +5,7 @@ const minCompoundScrolls = 100;
 const potions = {
 	hpot0: 30,
 	hpot1: 15,
-	mpot0: 60,
+	mpot0: 120,
 	mpot1: 15
 };
 //Cost 4800
@@ -25,10 +25,10 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"smush", "spores", "frogt", "gloves1", "stinger", "wgloves",
 	"snakeoil", "dstones", "helmet1", "bwing",
 	"tshirt0", "tshirt1", "tshirt2", "cshell", "whiteegg",
-	"quiver", "shield", "", "", "", "", "", "", //quiver
+	"quiver", "hbow", "shield", "mushroomstaff", "", "", "", "", //quiver
 	"stramulet", "strbelt", "strearring", "", "", //"strring"
 	"hpbelt", "ringsj", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
-	"", "", "", "", "", "", "", "",
+	"throwingstars", "smoke", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
@@ -48,7 +48,7 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"", "", "", "", "", "", "", "", "", "", "", "",
 	"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"
 	*/
-	"", "", "", "", "", "", "", "",
+	"phelmet", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", ""];
@@ -118,7 +118,7 @@ function merchantSkills() {
 
 function buyPotions() {
 	//If farmMonsterType requires a master, buy more potions!	
-	const potionModifier = requiresMaster.includes(farmMonsterType) ? 3 : 1;
+	const potionModifier = requiresMaster.includes(farmMonsterType) ? 5 : 1;
 	for (const potion in potions) {
 		if (quantity(potion) < potions[potion]) buy_with_gold(potion, (potions[potion] - quantity(potion)) * potionModifier);
 	}
@@ -165,13 +165,6 @@ function tranferPotions() {
 					log("Delivered intPotions!");
 				});
 			}
-			//Consume luck potions
-			if (partyMember.ctype === "merchant") {
-				luckPotions.forEach(potion => {
-					if (locate_item(potion) !== -1) consume(locate_item(potion));
-					log("Consumed LuckPotion!");
-				});
-			}
 		}
 	}
 }
@@ -181,7 +174,7 @@ function buyScrolls() {
 	compScrolls.forEach(scroll => {
 		if (quantity(scroll) < minCompoundScrolls) {
 			buy(scroll, minCompoundScrolls - quantity(scroll));
-			log("Bought Scrolls!");
+			log("Bought Compound Scrolls!");
 		}
 	})
 }
@@ -292,6 +285,7 @@ function findTriple(level) {
 			}
 		}
 	}
+
 	//Validate Compound: If  item is needed for crafting,
 	//it must NOT be compounded (Craft only takes lvl 0 items!)
 	function validateCompound(compoundItem) {

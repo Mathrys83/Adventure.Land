@@ -1,22 +1,3 @@
-//Update farming spot.
-//If a hunt is going on, go there
-function updateFarmingSpot() {
-	let huntedMonsters = get("huntedMonsters");
-	//Hunted Monsters can be not set, or an empty array
-	//of length 0, that's why both must be checked
-	if (hunterToggle
-		&& huntedMonsters
-		&& huntedMonsters.length > 0) {
-		farmMonsterType = huntedMonsters[huntedMonsters.length - 1].monsterType;
-		farmMap = getFarmingSpot(farmMonsterType, "map");
-		farmCoord = getFarmingSpot(farmMonsterType, "coord");
-		requiresMaster.includes(farmMonsterType) ? master = hunterMaster : master = "";
-	} else {
-		farmMonsterType = farmMonsterFallback;
-		requiresMaster.includes(farmMonsterType) ? master = hunterMaster : master = "";
-	}
-}
-
 //Handle Hunter Quest
 function handleHuntQuest() {
 	let monsterType;

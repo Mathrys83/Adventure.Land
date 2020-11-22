@@ -20,12 +20,18 @@ function stopCharacters() {
 }
 
 function addButons() {
-	add_bottom_button("move2Farm", "Move Farm", () => {
-		getFarmingSpot(farmMonsterType, "move");
-	});
-	add_bottom_button("move2Main", "Move Main", () => {
+	add_bottom_button("move2Main", "🏠", () => {
 		smart_move({ to: "main" });
 	});
+	add_bottom_button("move2Farm", "🚜", () => {
+		getFarmingSpot(farmMonsterType, "move");
+	});
+	add_bottom_button("showStatus", "📈", showStatus);
+	add_bottom_button("toggleMerchantStand", "🛒", () => {
+		character.stand ? parent.close_merchant(locate_item("stand0")) : parent.open_merchant(locate_item("stand0"));
+	});
+	add_bottom_button("Pause", "⏸️", pause);
+
 	/*
 	add_bottom_button("loadChar", "Load Char", () => {
 		loadCharacters();
@@ -37,90 +43,6 @@ function addButons() {
 		stopCharacters();
 	});
 	*/
-}
-
-
-
-function getFarmingSpot(farmMonsterType = "crab", action = "move") {
-	const availableMaps = [
-		"main",
-		"woffice",
-		"tunnel",
-		"bank",
-		"cave",
-		"arena",
-		"tavern",
-		"mansion",
-		"level1",
-		"hut",
-		"halloween",
-		"mtunnel",
-		"test",
-		"cyberland",
-		"winterland",
-		"desertland",
-		"resort_e",
-		"level2",
-		"spookytown",
-		"winter_inn",
-		"winter_cave",
-		"level2n",
-		"level2s",
-		"level3",
-		"level2e",
-		"level2w",
-		"winter_inn_rooms",
-		"level4"
-	];
-	//Find all spawns of the monster
-	let farmingSpots = [];
-	for (map in G.maps) {
-		if (!availableMaps.includes(map)) continue;
-		for (monsters in G.maps[map].monsters) {
-			let monster = G.maps[map].monsters[monsters];
-			if (monster.type === farmMonsterType) {
-				farmingSpots.push({
-					map: map,
-					monster: monster
-				});
-			}
-		}
-	}
-	//Find the spawn with most monsters
-	let mostMonsters = 0;
-	let indexMostMonsters = 0;
-	farmingSpots.forEach((farmingSpot, index) => {
-		if (farmingSpot.monster.count > mostMonsters) {
-			mostMonsters = farmingSpot.monster.count;
-			indexMostMonsters = index;
-		}
-	})
-	//Move to farmong spot
-	if (action === "move") {
-		//Switch Map if needed
-		if (character.map != farmingSpots[indexMostMonsters].map) {
-			log("Moving to farming spot, on another map, switching map");
-			smart_move({ to: farmingSpots[indexMostMonsters].map });
-			//If Map correct, go to Monster
-		} else {
-			log("Moving to farming spot, on same map, using coordinates");
-			smart_move({ x: Math.floor(farmingSpots[indexMostMonsters].monster.boundary[0] + ((farmingSpots[indexMostMonsters].monster.boundary[2] - farmingSpots[indexMostMonsters].monster.boundary[0]) / 2)), y: Math.floor(farmingSpots[indexMostMonsters].monster.boundary[1] + ((farmingSpots[indexMostMonsters].monster.boundary[3] - farmingSpots[indexMostMonsters].monster.boundary[1]) / 2)) }).then(function (data) {
-				// on success
-			}).catch(function (data) {
-				if (data.reason === "failed") {
-					// Path not found
-					log(character.name + "Path to farming spot using coordinates not found, moving to Main!");
-					smart_move("main");
-				}
-			});
-		}
-		//Return the map
-	} else if (action === "map") {
-		return farmingSpots[indexMostMonsters].map;
-		//Return coordinates
-	} else if (action === "coord") {
-		return { x: Math.floor(farmingSpots[indexMostMonsters].monster.boundary[0] + ((farmingSpots[indexMostMonsters].monster.boundary[2] - farmingSpots[indexMostMonsters].monster.boundary[0]) / 2)), y: Math.floor(farmingSpots[indexMostMonsters].monster.boundary[1] + ((farmingSpots[indexMostMonsters].monster.boundary[3] - farmingSpots[indexMostMonsters].monster.boundary[1]) / 2)) }
-	}
 }
 
 function transferLoot(merchantName) {
@@ -260,3 +182,11 @@ function masterBreadcrumbs() {
 	}
 }
 
+function showStatus() {
+	show_json({
+		hunterToggle: hunterToggle ? "✅ Hunter Toggle is active! Happy hunting!" : "❌ Hunter Toggle is deactivated...",
+		huntedMonster: !!get("huntedMonsters").length ? `🏹 You're hunting ${G.monsters[get("huntedMonsters")[get("huntedMonsters").length - 1].monsterType].name}s at ${farmMap}.` : "🤷 No hunter quest active.",
+		farmedMonster: !!get("huntedMonsters").length ? `🤷 No farming while a hunter quest is active.` : `🚜 You're farming ${G.monsters[farmMonsterType].name}s at ${farmMap}`,
+		master: !!master ? `👑 ${master} is the master for ${!!get("huntedMonsters").length ? "hunting" : "farming"} ${G.monsters[farmMonsterType].name}s.` : `👨‍🌾 No master needed to ${!!get("huntedMonsters").length ? "hunt" : "farm"} ${G.monsters[farmMonsterType].name}s.`
+	});
+}

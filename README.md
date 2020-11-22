@@ -56,19 +56,19 @@ Here's a list of what the code is capable of so far:
 - Hotkeys: To load characters / create a party / stop characters
 - Custom Buttons for quick access to frequently used functions
 - Auto-move to the designated farming spot, over several maps / continents.
-- Auto-Farm designated MOB's
+- Auto-Farm designated monsters
+- New: Multi-monster farming! Designate multiple monsters to be farmed. Your characters will then farm several different monsters per day (in addition to their hunting quests).
 - Auto-use potions (health & mana)
 - Auto-Kite enemies. (All characters I use (Mage, Priest, Ranger) are ranged characters.)
 - Two Kiting-Modes (Walk backwards / circle around the target)
 - Seashells get exchanged for buff-potions
 - Buff-Potions get delivered to characters which consume them automatically
-- Various optimizations
 - Fetch Hunting-Quests
 - Go hunting
 - Turn in fulfilled Hunting-Quests
 - (Farming / Hunting) Small enemies get attacked by individual characters
 - (Farming / Hunting) Big enemies get attacked by all characters (All characters target one single enemy)
-- Master-Mode (Define a master the other characters follow)
+- Master-Mode (Define a master the other characters follow. Also: Only the master chooses targets. All characters then attack the chosen target. this lets you take on bigger enemies!)
 
 ## Individual characters
 
@@ -102,22 +102,31 @@ Every 10 minutes, he does a round:
 
 Once the stand is open, he continues his work:
 
-- Auto-craft (compound) multiple items into a higher level item
+- Auto-compound multiple items into a higher level item
 - Put these higher level items in the stand for sale
 - Sell "trash", so your inventory doesn't fill up. You can designate what is considered "trash" depending on what your current enemies drop.
 - Tidy the inventory so there are no gaps (from crafting / selling things)
 - Give other players the "merchant's luck"-buff, with a chance to duplicate an item from them
-- Auto-buy cheap items from other merchants. If they sell an item under it's value, he'll buy it automatically. 
+- Auto-buy cheap items from other merchants. If they sell an item under it's value, your merchant will buy it automatically.
+
+Other functions
+
+- Auto-exchange: Onye your merchant has 20 seashells in his iventory, he'll go and exchange it for a buff-potion. He then delivers the potion to the appropriate character (e.g. dexterity-potion for ranger) on the next round he does.
+
+- Autocraft: Designate items you want to craft. Farm several, different ingredients with the new multi-monster farming function! As soon as the merchant has all necessary items in his inventory, he'll craft the item for you automatically!
 
 ## General functions
 
 There's a  module called "helperFunctions": It holds all functions in one place which are useful to every character (not to waste module-slots). They are quite helpful and take care of a lot of things:
 
+- Hotkeys
 - Starting / stopping characters and creating a party
-- Finding a target to attack
-- Auto-Transfer loot (to the merchant)
-- Relocate potions to slots that are not tansferred to the merchant
 - Handle party-invitations
+- Auto-Transfer loot (to the merchant)
+- Drink / Relocate potions
+- Tidying the inventory (arranging all items, gap-free)
+- Following Master, cross-map
+- Show status: Nice button with an abundance of information (Activa hunting quests / Farming mode / Master / Map where yor characters are / what monster they're farming / hunting / etc.)
 
 ## Adjust the code
 
@@ -147,9 +156,7 @@ let farmMonsterFallback = "Monster-To-Farm";
 ## To do's
 
 - At the moment, I do not have all skills unlocked. Therefor, I have not written code for them yet.
-- Also, I farm weak enemies. There is no party-coordination going on atm. I chose to farm weak mob's to be able to 1-shot them  (which ideally gives me 3 mob kills per tick). Coordinating the party would interfere with maximum farming efficiency. (If the characters would follow a leader for example, he could miss out on farming a few ticks, because he's walking). Even kiting is turned off by default atm (but it's working, uncomment it if needed). Once I start farming harder npc's, the good (and complex) part of the game starts. Character coordination, placing each character in a certain fashion for maximum efficiency, better kiting etc.
-- The npc's I farm don't drop weapons or armor. So upgrading is not implemented yet
-- The merchant should bring the really good loot to the bank on it's own. But these drops are so rare, I haven't implemented that yet
+- The npc's I farm mostly don't drop weapons or armor. So upgrading is not implemented yet.
 - A ton of other things I don't even know about yet is also not done yet. :)
 
 ## Recap

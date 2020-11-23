@@ -141,9 +141,9 @@ Adjust these four variables, and you're good to go:
 
 ```javascript
 //Name of your merchant
-const merchantName = "Plutus";
+const merchantName = "Hank";
 //Name of your characters
-const characterNames = ["Hierophant", "Magos", "Patroclus"];
+const characterNames = ["Samuel", "Freddy", "Omega"];
 //Designate a Master for hunting tough monsters
 const hunterMaster = characterNames[0];
 //Master for hunting tough monsters- Handled by updateFarmingSpot()

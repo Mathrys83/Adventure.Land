@@ -7,6 +7,7 @@ function rangerSkills(target) {
 	if (character.mp > (character.max_mp * manaReserve)) {
 		//3-Shot: Only if there is no master
 		if (!master
+			&& target.level <= 1
 			&& character.mp > G.skills["3shot"].mp
 			&& !is_on_cooldown("attack")) {
 			let targets = Object.values(parent.entities).filter(entity => entity.mtype === farmMonsterType && is_in_range(entity, "3shot"));

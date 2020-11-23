@@ -49,7 +49,7 @@ const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "fr
 const requiresMaster = ["poisio", "crabx", "minimush", "scorpion", "gscorpion", "tortoise", "bat", "spider", "iceroamer", "", "", ""];
 //Merchant auto-crafts below items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "fierygloves", "wingedboots"];
+const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "fierygloves", "wingedboots"];
 //The map you farm on
 //Farming spots are found in G.maps.main
 let farmMap = getFarmingSpot(farmMonsterType, "map");

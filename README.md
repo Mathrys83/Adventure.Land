@@ -1,7 +1,12 @@
 # Adventure.Land
 
-This is my code for Adventure.Land, an epic indie MMO RPG, where you have to write JavaScript code to fully automate everything that happens. You can check out [Adventure.Land here.](https://adventure.land/) This is the [Youtube Trailer of the game](
-https://www.youtube.com/watch?v=HJAj9u2TEZc).
+This is my code for Adventure.Land, an epic indie MMO RPG, where you have to write JavaScript code to fully automate everything that happens.
+
+You can see the game live with [this realtime live-view](https://adventure.land/comm?scale=2)! :)
+The officlal website of the game can be found [here](https://adventure.land/).
+This is the [Youtube Trailer of the game](https://www.youtube.com/watch?v=HJAj9u2TEZc).
+
+## What the game is about
 
 The basic idea of the game itself is super appealing: The most forbidden thing in *any* game, is to write a bot for it. *Here, BOTTING IS THE GAME!* :)
 

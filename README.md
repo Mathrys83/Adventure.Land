@@ -32,7 +32,7 @@ Also, many players hardcode their character's names everywhere in the game. I tr
 
 **Update: Now, the only place where you have to adjust character-names, is in the "Main" module.**
 
-Most code I've seen has one single"main" loop that runs ~250ms, so 4 times per second. This is suggested for optimal farming performance. My code does have two "main" loops. Running everything every 250 milliseconds might give you great farming-performance, but it's horrible for performance overall. Therefor, I made a "tierTwo" loop that only runs every 3 seconds. All non-essential routines get called from there.
+Most code I've seen has one single "main" loop that runs ~250ms, so 4 times per second. This is suggested for optimal farming performance. My code does have two "main" loops. Running everything every 250 milliseconds might give you great farming-performance, but it's horrible for performance overall. Therefor, I made a "tierTwo" loop that only runs every 3 seconds. All non-essential routines get called from there.
 
 ## The Characters
 
@@ -42,6 +42,8 @@ You can use four characters at the same time, I opted for:
 - Priest
 - Ranger
 - Merchant
+
+![Adventure.Land Farming Party](https://github.com/johnnyawesome/Adventure.Land/blob/master/DemoImg/AdventureLandFarming.gif)
 
 The merchant is the most capable character so far. Most people only use him to sell things on the marketplace.
 My code takes a different approach: Because the merchant cannot generate gold on his own, he acts as support-character for the party, so they don't get interrupted and can keep farming 100% of the time.

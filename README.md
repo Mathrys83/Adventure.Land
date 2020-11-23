@@ -5,7 +5,7 @@
 This is my code for Adventure.Land, an epic indie MMO RPG, where you have to write JavaScript code to fully automate everything that happens. You can check out [Adventure.Land here.](https://adventure.land/) This is the [Youtube Trailer of the game](
 https://www.youtube.com/watch?v=HJAj9u2TEZc).
 
-The basic idea of the game itself is super appealing: The most forbidden thing in *any* game is to write a bot for it. *Here, BOTTING IS THE GAME!* :)
+The basic idea of the game itself is super appealing: The most forbidden thing in *any* game, is to write a bot for it. *Here, BOTTING IS THE GAME!* :)
 
 (This is not my first coding game, I also played [Screeps](https://screeps.com/), and you can [check out my source here](https://github.com/johnnyawesome/Screeps)).
 
@@ -28,11 +28,10 @@ These are two great guides that will give you an overview over the game:
 
 The game lets you create multiple modules, which I did, to keep things organized.
 
-Also, many players hardcode their character's names everywhere in the game. I tried to avoid that as much as possible, so I don't have to touch many places in the code when starting a new character.
-
 **Update: Now, the only place where you have to adjust character-names, is in the "Main" module.**
 
-Most code I've seen has one single "main" loop that runs ~250ms, so 4 times per second. This is suggested for optimal farming performance. My code does have two "main" loops. Running everything every 250 milliseconds might give you great farming-performance, but it's horrible for performance overall. Therefor, I made a "tierTwo" loop that only runs every 3 seconds. All non-essential routines get called from there.
+Most code I've seen has one single "main" loop that runs ~250ms, so 4 times per second. This is suggested for optimal farming performance.
+My code does have two "main" loops. Running everything every 250 milliseconds might give you great farming-performance, but it's horrible for performance overall. Therefor, I made a "tierTwo" loop that only runs every 3 seconds. All non-essential routines get called from there.
 
 ## The Characters
 
@@ -141,22 +140,36 @@ I tried to make the code as open as possible. However, you have to change four t
 Adjust these four variables, and you're good to go:
 
 ```javascript
-const merchantName = "Your-Merchants-Name";
-const characterNames = ["Character-Name1", "Character-Name2", "Character-Name3"];
-let master = characterNames[0];
-let hunterMaster = characterNames[0];
+//Name of your merchant
+const merchantName = "Plutus";
+//Name of your characters
+const characterNames = ["Hierophant", "Magos", "Patroclus"];
+//Designate a Master for hunting tough monsters
+const hunterMaster = characterNames[0];
+//Master for hunting tough monsters- Handled by updateFarmingSpot()
+let master = "";
+//Toggle the pursuit of Hunter Quests
 const hunterToggle = true;
-let farmMonsterType = "Monster-To-Farm";
-let farmMonsterFallback = "Monster-To-Farm";
+//Your characters will cycle through this array of monsters, farming a new monster every few hours!
+//Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
+const allMonstersToFarm = ["arcticbee", "porcupine", "croc", "armadillo", "crabx", "iceroamer"];
+//Monster you are currently farming - Handled by updateFarmingSpot()
+let farmMonsterType = scheduleFarming();
+//Monsters your characters are allowed to farm. Only enter monsters you are strong enough to defeat!
+const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "snowman", "porcupine", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "iceroamer", "crabx", ""];
+//Monsters that are too strong for a single character are listed here.
+//Your Master-Character will choose a monster, which the whole party will then attack.
+//Also: Characters will start using their offensive skills if a monster is on this list (They don't use skills against weak monsters, conserve MP)
+const requiresMaster = ["poisio", "crabx", "minimush", "scorpion", "gscorpion", "tortoise", "bat", "spider", "iceroamer", "", "", ""];
+//Merchant auto-crafts below items if he has the ingredients in his inventory
+//Also: If an item is an ingredient for a recipe you list here, it won't get compounded
+const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "fierygloves", "wingedboots"];
+//The map you farm on
+//Farming spots are found in G.maps.main
+let farmMap = getFarmingSpot(farmMonsterType, "map");
+//The coordinates of your farming spot on the map
+let farmCoord = getFarmingSpot(farmMonsterType, "coord");
 ```
-
-- "merchantName" - The name of your merchant, as a string. It's used to transfer the farming-party's loot / gold to the merchant etc.
-- "characterNames" - Fill in the names of your three remaining characters
-- "master" - One characte rmust act as a master when hunting big enemies. Put your tank-character's name here (or reference the characterNames-array) 
-- "hunterMaster" - One characte rmust act as a master when hunting big enemies. Put your tank-character's name here (or reference the characterNames-array) 
-- "hunterToggle" - Toggle hunting quests on or off. If you set this to false, normal farming will happen, indefinitely
-- "farmMonsterType" - The monster you want to farm
-- farmMonsterFallback - Fallback monster type, in case all hunting quests are too hard.
 
 
 ## To do's

@@ -38,7 +38,7 @@ let master = "";
 const hunterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
 //Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-const allMonstersToFarm = ["arcticbee", "porcupine", "croc", "armadillo", "crabx", "iceroamer"];
+const allMonstersToFarm = ["croc", "porcupine", "croc", "armadillo", "crabx", "iceroamer"];
 //Monster you are currently farming - Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
 //Monsters your characters are allowed to farm. Only enter monsters you are strong enough to defeat!
@@ -46,7 +46,7 @@ const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "fr
 //Monsters that are too strong for a single character are listed here.
 //Your Master-Character will choose a monster, which the whole party will then attack.
 //Also: Characters will start using their offensive skills if a monster is on this list (They don't use skills against weak monsters, conserve MP)
-const requiresMaster = ["poisio", "crabx", "minimush", "scorpion", "gscorpion", "tortoise", "bat", "spider", "iceroamer", "", "", ""];
+const requiresMaster = ["poisio", "crabx", "scorpion", "gscorpion", "tortoise", "bat", "spider", "iceroamer", "", "", ""];
 //Merchant auto-crafts below items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
 const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "fierygloves", "wingedboots"];

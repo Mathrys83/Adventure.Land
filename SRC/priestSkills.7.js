@@ -35,6 +35,7 @@ function priestSkills(target) {
 		}
 	}
 
+	//Curse the enemy
 	if (validateOffensiveSkill(target, manaReserve)
 		&& character.mp > (character.max_mp * manaReserve)
 		&& character.mp > G.skills.curse.mp

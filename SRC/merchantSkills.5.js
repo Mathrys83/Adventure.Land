@@ -490,7 +490,11 @@ function craftItems() {
 		const { items: ingredients } = G.craft[item];
 		if (G.craft[item].cost <= character.gold) {
 			for (const ingredient of ingredients) {
-				if (locate_item(ingredient[1]) !== -1) {
+				if (locate_item(ingredient[1]) !== -1
+					//Check that item has no level...
+					&& (!character.items[locate_item(ingredient[1])].level
+						//... if it has a level, level must be 0 for the item to be crafted
+						|| character.items[locate_item(ingredient[1])].level === 0)) {
 					//Check if exactly 1 of this ingredient is needed
 					if (ingredient[0] === 1) {
 						ingredientsComplete.push(true);

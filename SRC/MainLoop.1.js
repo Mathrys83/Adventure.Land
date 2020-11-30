@@ -7,6 +7,7 @@ load_code("merchantSkills");
 load_code("mageSkills");
 load_code("priestSkills");
 load_code("rangerSkills");
+load_code("getHolidayBuff");
 
 //Hotkeys!
 map_key("5", "snippet", "loadCharacters()");
@@ -38,7 +39,7 @@ let master = "";
 const hunterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
 //Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-const allMonstersToFarm = ["croc", "porcupine", "croc", "armadillo", "crabx", "iceroamer"];
+const allMonstersToFarm = ["iceroamer", "porcupine", "croc", "armadillo", "crabx", "iceroamer"];
 //Monster you are currently farming - Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
 //Monsters your characters are allowed to farm. Only enter monsters you are strong enough to defeat!
@@ -49,7 +50,7 @@ const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "fr
 const requiresMaster = ["poisio", "crabx", "scorpion", "gscorpion", "tortoise", "bat", "spider", "iceroamer", "", "", ""];
 //Merchant auto-crafts below items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "fierygloves", "wingedboots"];
+const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "fierygloves", "wingedboots", "xbox"];
 //The map you farm on
 //Farming spots are found in G.maps.main
 let farmMap = getFarmingSpot(farmMonsterType, "map");
@@ -119,6 +120,9 @@ function tier2Actions() {
 
 	//If character is moving, do nothing
 	if (is_moving(character) || smart.moving) return;
+
+	//Get Holiday Buffs
+	getHolidayBuff();
 
 	//Hunting
 	if (hunterToggle && character.ctype !== "merchant") handleHuntQuest();

@@ -53,7 +53,7 @@ function transferLoot(merchantName) {
 		"elixirint0", "elixirint1", "elixirint2",
 		//"elixirvit0", "elixirvit1", "elixirvit2",
 		//"elixirstr0", "elixirstr1", "elixirstr2",
-		//"elixirluck"
+		"elixirluck"
 	];
 	if (character.ctype !== "merchant"
 		&& merchant
@@ -134,7 +134,7 @@ function drinkPotions() {
 		"elixirint0", "elixirint1", "elixirint2",
 		//"elixirvit0", "elixirvit1", "elixirvit2",
 		//"elixirstr0", "elixirstr1", "elixirstr2",
-		//"elixirluck"
+		"elixirluck"
 	];
 	if (!character.slots.elixir) {
 		for (const potion of potions) {
@@ -189,4 +189,13 @@ function showStatus() {
 		farmedMonster: !!get("huntedMonsters").length ? `🤷 No farming while a hunter quest is active.` : `🚜 You're farming ${G.monsters[farmMonsterType].name}s at ${farmMap}`,
 		master: !!master ? `👑 ${master} is the master for ${!!get("huntedMonsters").length ? "hunting" : "farming"} ${G.monsters[farmMonsterType].name}s.` : `👨‍🌾 No master needed to ${!!get("huntedMonsters").length ? "hunt" : "farm"} ${G.monsters[farmMonsterType].name}s.`
 	});
+}
+
+//Get Holiday Buff
+function getHolidayBuff() {
+	if (!character.s.holidayspirit) {
+		smart_move({ to: "town" }, () => {
+			parent.socket.emit("interaction", { type: "newyear_tree" });
+		});
+	}
 }

@@ -12,7 +12,7 @@ const potions = {
 
 //Selling parameters
 const sellItemLevel = 3;
-const profitMargin = 15;
+const profitMargin = 20;
 
 //Item levels to be compounded
 const compoundLevels = [0, 1];
@@ -28,13 +28,12 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"quiver", "hbow", "shield", "mushroomstaff", "", "", "", "", //quiver
 	"stramulet", "strbelt", "strearring", "", "", //"strring"
 	"hpbelt", "ringsj", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
-	"throwingstars", "smoke", "", "", "", "", "", "",
+	"throwingstars", "smoke", "phelmet", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	//Unneeded elixirs
 	"elixirstr0", "elixirstr1", "elixirstr2",
-	//"elixirvit0", "elixirvit1", "elixirvit2",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
@@ -48,7 +47,7 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"", "", "", "", "", "", "", "", "", "", "", "",
 	"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"
 	*/
-	"phelmet", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", ""];
@@ -60,6 +59,14 @@ function merchantSkills() {
 		&& Math.abs(character.x) < 500
 		&& Math.abs(character.y) < 500) {
 
+		//Sell unwanted items
+		sellTrash();
+		//Buy Scrolls
+		buyScrolls();
+		//Buy cheap items from other merchants
+		buyCheapStuff();
+		//Craft (not compound!) items
+		craftItems();
 		//Compound items
 		for (const level of compoundLevels) if (findTriple(level)) compoundItems(level);
 
@@ -67,48 +74,32 @@ function merchantSkills() {
 		//So we have to specifically look for UNDEFINED
 		if (searchItems2bSold(sellItemLevel) !== undefined
 			&& findEmptyTradeSlots() !== undefined) sellItems(sellItemLevel, profitMargin);
-		//Sell unwanted items
-		sellTrash();
-		//Buy cheap items from other merchants
-		buyCheapStuff();
 	}
 
 	//Check if party is incomplete
 	restoreParty();
 	//Buff players with merchant's luck
 	merchantsLuck();
-	//Exchange seashells for potions
-	exchangeShells();
-	//Exchange gems
-	exchangeGems();
-	//Craft (not compound!) items
-	craftItems();
+	//Exchange Gems and Quests
+	exchangeGemsQuests();
 
 	if (new Date().getMinutes() % 10 === 0) {
 
 		updateFarmingSpot();
-
 		closeMerchantStand();
 
 		//Make the big round
 		smart_move({ to: "main" }, () => {
-			//Buy Potions
 			buyPotions();
 			relocateItems();
 			smart_move({ to: farmMap }, () => {
 				smart_move({ x: farmCoord.x, y: farmCoord.y }, () => {
 					tranferPotions();
 					merchantsLuck();
-					//Buy Scrolls
-					smart_move({ to: "scrolls" }, () => {
-						buyScrolls();
-						//Deposit Money
-						smart_move({ to: "bank" }, () => {
-							depositMoney();
-							depositItems();
-							//Go to the market and sell things
-							openMerchantStand();
-						});
+					smart_move({ to: "bank" }, () => {
+						depositMoney();
+						depositItems();
+						openMerchantStand();
 					});
 				});
 			});
@@ -123,16 +114,6 @@ function buyPotions() {
 		if (quantity(potion) < potions[potion]) buy_with_gold(potion, (potions[potion] - quantity(potion)) * potionModifier);
 	}
 }
-
-/*
-function buyPotions() {
-	if (quantity("hpot0") < hPotSmall) buy_with_gold("hpot0", hPotSmall - quantity("hpot0"));
-	if (quantity("hpot1") < hPotBig) buy_with_gold("hpot1", hPotBig - quantity("hpot1"));
-	if (quantity("mpot0") < mPotSmall) buy_with_gold("mpot0", mPotSmall - quantity("mpot0"));
-	if (quantity("mpot1") < mPotBig) buy_with_gold("mpot1", mPotBig - quantity("mpot1"));
-	log("Bought Potions!");
-}
-*/
 
 function tranferPotions() {
 	//All potions not listed here get sold (Check "trashName"-Array)
@@ -149,6 +130,11 @@ function tranferPotions() {
 			essentialPotions.forEach(potion => {
 				if (locate_item(potion) !== -1) send_item(partyMember, locate_item(potion), Math.floor(quantity(potion) / 3));
 				log("Delivered Potions!");
+			});
+			//Deliver luck potions
+			luckPotions.forEach(potion => {
+				if (locate_item(potion) !== -1) send_item(partyMember, locate_item(potion), Math.floor(quantity(potion) / 3));
+				log("Delivered Luck Potions!");
 			});
 			//Deliver dexterity potions to ranger
 			if (partyMember.ctype === "ranger") {
@@ -171,40 +157,29 @@ function tranferPotions() {
 
 function buyScrolls() {
 	let compScrolls = ["cscroll0", "cscroll1"];
-	compScrolls.forEach(scroll => {
-		if (quantity(scroll) < minCompoundScrolls) {
-			buy(scroll, minCompoundScrolls - quantity(scroll));
-			log("Bought Compound Scrolls!");
-		}
-	})
-}
-
-/*
-// UNTESTED!!!
-function buyScrolls() {
-	let compScrolls = ["cscroll0", "cscroll1"];
 	for (const scroll of compScrolls) {
-		if (checkScrollNum()) {
-			getScrolls(scroll);
+		let missingScrolls = minCompoundScrolls - quantity(scroll);
+		let affordableScrolls = Math.floor(character.gold / G.items[scroll].g);
+		let scrollNum = (missingScrolls <= affordableScrolls) ? missingScrolls : affordableScrolls;
+		if (scrollNum) {
+			getScrolls(scroll, scrollNum);
 			return;
 		}
 	}
-	function checkScrollNum() {
-		return (quantity(scroll) < minCompoundScrolls) ? true : false;
-	}
-	function getScrolls(scroll) {
+
+	function getScrolls(scroll, scrollNum) {
 		closeMerchantStand();
 		smart_move({ to: "scrolls" }, () => {
-			buy(scroll, minCompoundScrolls - quantity(scroll));
-			log("Bought Scrolls!");
+			buy(scroll, scrollNum);
+			log(`Bought ${scrollNum} ${G.items[scroll].name}`);
 			setTimeout(() => {
-				if (!checkScrollNum()) openMerchantStand();
+				openMerchantStand();
 			}, 8000);
 		});
 		return;
 	}
 }
-*/
+
 
 
 //Sell trash, keep if it's high grade. (Grades: 0 Normal / 1 High /  2 Rare
@@ -212,7 +187,7 @@ function sellTrash() {
 	character.items.forEach((item, index) => {
 		if (item
 			&& trashName.includes(item.name)
-			&& item_grade(item) !== 2) {
+			&& item_grade(item) < 2) {
 			log("Merchant is unloading trash: " + item.name);
 			item.q ? sell(index, item.q) : sell(index, item);
 		}
@@ -399,7 +374,7 @@ function openMerchantStand() {
 	//Separate function, to shorten above code
 	function goTownOpenStand() {
 		smart_move({ to: "town" }, () => {
-			smart_move({ x: - Math.round(Math.random() * 150), y: character.y - 85 }, () => {
+			smart_move({ x: -20 - Math.round(Math.random() * 180), y: character.y - 85 }, () => {
 				//Turn around, face front
 				smart_move({ x: character.x, y: character.y + 1 }, () => {
 					//parent.socket.emit("merchant",{num:41});
@@ -410,30 +385,49 @@ function openMerchantStand() {
 	}
 }
 
-function exchangeGems() {
+function exchangeGemsQuests() {
 	if (locateGems("findGems")) {
 		closeMerchantStand();
-		smart_move({ to: "exchange" }, () => {
+		//smart_move({ to: "exchange" }, () => {
+		smart_move(find_npc(locateGems("findNpc")), () => {
 			exchange(locateGems("getSlotNum"));
-			log("Gem Exchanged!");
+			log("Item Exchanged!");
 			setTimeout(() => {
 				if (!locateGems("findGems")) openMerchantStand();
 			}, 8000);
 		});
 	}
+	//Finds Gems & Quests in Inventory
 	function locateGems(arg) {
 		for (const slotNum in character.items) {
 			if (character.items[slotNum]) {
 				const item = G.items[character.items[slotNum].name];
+				//If the item is a gem, exchange it
 				if ((item.type === "gem"
 					|| item.type === "box"
-					|| item.type === "misc")
-					//Exchangeable
-					&& item.e) {
+					|| item.type === "misc"
+					|| item.type === "quest")
+					//"e"-key means the item is exchangeable
+					&& item.e
+					//Some quests (seashells, ornaments) need more than 1 item to be exchangeable
+					&& item.e <= character.items[slotNum].q) {
+					//Gem found
 					if (arg === "findGems") {
 						return true;
+						//Return slot
 					} else if (arg === "getSlotNum") {
 						return slotNum;
+						//Go to the correct NPC
+					} else if (arg === "findNpc") {
+						//If the item is a gem (not a quest), go to Xyn
+						if (!item.quest) {
+							return "exchange";
+							//If the item is  a quest, go to the corresponding NPC
+						} else if (item.quest) {
+							for (const npc in G.npcs) {
+								if (G.npcs[npc].quest === item.quest) return npc;
+							}
+						}
 					}
 				}
 			}
@@ -441,36 +435,7 @@ function exchangeGems() {
 	}
 }
 
-/*
-function exchangeGems() {
-	const exchangeables = ["gem", "box", "5bucks", "gift0", "gift1", "ornament",
-		"troll", "mistletoe", "basketofeggs", "redenvelope",
-		"redenvelopev2", "redenvelopev3", "gem1", "candycane",
-		"candy1", "goldenegg", "bugbountybox", "armorbox",
-		"gem0", "candy0", "weaponbox", "xbox", "mysterybox",
-		"", "", "", "", "", "", "", ""]
-	character.items.forEach((item, index) => {
-		if (item
-			&& exchangeables.includes(item.name)) {
-			exchange(index);
-			log("Item Exchanged!");
-		}
-	});
-}
-*/
-
-function exchangeShells() {
-	if (locate_item("seashell") !== -1 && quantity("seashell") >= G.items.seashell.e) {
-		closeMerchantStand();
-		smart_move({ to: "fisherman" }, () => {
-			exchange(locate_item("seashell"));
-			setTimeout(() => {
-				if (quantity("seashell") < G.items.seashell.e) openMerchantStand();
-			}, 8000);
-		});
-	}
-}
-
+//Craft Items
 function craftItems() {
 	for (const item of itemsToCraft) {
 		if (checkCraftIngredients(item)) {

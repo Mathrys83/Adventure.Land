@@ -7,7 +7,6 @@ load_code("merchantSkills");
 load_code("mageSkills");
 load_code("priestSkills");
 load_code("rangerSkills");
-load_code("getHolidayBuff");
 
 //Hotkeys!
 map_key("5", "snippet", "loadCharacters()");
@@ -43,11 +42,11 @@ const allMonstersToFarm = ["iceroamer", "porcupine", "croc", "armadillo", "crabx
 //Monster you are currently farming - Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
 //Monsters your characters are allowed to farm. Only enter monsters you are strong enough to defeat!
-const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "snowman", "porcupine", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "iceroamer", "crabx", ""];
+const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "snowman", "porcupine", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "iceroamer", "crabx", "jr", "greenjr", "", "", "", "", ""];
 //Monsters that are too strong for a single character are listed here.
 //Your Master-Character will choose a monster, which the whole party will then attack.
 //Also: Characters will start using their offensive skills if a monster is on this list (They don't use skills against weak monsters, conserve MP)
-const requiresMaster = ["poisio", "crabx", "scorpion", "gscorpion", "tortoise", "bat", "spider", "iceroamer", "", "", ""];
+const requiresMaster = ["poisio", "scorpion", "gscorpion", "tortoise", "bat", "spider", "iceroamer", "crabx", "jr", "greenjr", "", "", "", "", "", "", ""];
 //Merchant auto-crafts below items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
 const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "fierygloves", "wingedboots", "xbox"];

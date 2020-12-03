@@ -61,12 +61,9 @@ function merchantSkills() {
 
 		//Sell unwanted items
 		sellTrash();
-		//Buy Scrolls
-		buyScrolls();
 		//Buy cheap items from other merchants
 		buyCheapStuff();
-		//Craft (not compound!) items
-		craftItems();
+
 		//Compound items
 		for (const level of compoundLevels) if (findTriple(level)) compoundItems(level);
 
@@ -76,13 +73,20 @@ function merchantSkills() {
 			&& findEmptyTradeSlots() !== undefined) sellItems(sellItemLevel, profitMargin);
 	}
 
-	//Check if party is incomplete
+	//Check if party is incomplete, restore of not
 	restoreParty();
 	//Buff players with merchant's luck
 	merchantsLuck();
 	//Exchange Gems and Quests
 	exchangeGemsQuests();
+	//Buy Scrolls
+	buyScrolls();
+	//Craft items
+	craftItems();
 
+	//Visit farm-party every 10 minutes.
+	//Bring potions, take their gold and items
+	//Store gold and good items in bank
 	if (new Date().getMinutes() % 10 === 0) {
 
 		updateFarmingSpot();
@@ -97,7 +101,7 @@ function merchantSkills() {
 					tranferPotions();
 					merchantsLuck();
 					smart_move({ to: "bank" }, () => {
-						depositMoney();
+						depositGold();
 						depositItems();
 						openMerchantStand();
 					});
@@ -107,6 +111,7 @@ function merchantSkills() {
 	}
 }
 
+//Buy potions
 function buyPotions() {
 	//If farmMonsterType requires a master, buy more potions!	
 	const potionModifier = requiresMaster.includes(farmMonsterType) ? 5 : 1;
@@ -115,6 +120,7 @@ function buyPotions() {
 	}
 }
 
+//Transfer potions to characters
 function tranferPotions() {
 	//All potions not listed here get sold (Check "trashName"-Array)
 	const essentialPotions = ["hpot0", "mpot0", "hpot1", "mpot1"];
@@ -155,6 +161,7 @@ function tranferPotions() {
 	}
 }
 
+//Buy Compound Scrolls
 function buyScrolls() {
 	let compScrolls = ["cscroll0", "cscroll1"];
 	for (const scroll of compScrolls) {
@@ -169,7 +176,7 @@ function buyScrolls() {
 
 	function getScrolls(scroll, scrollNum) {
 		closeMerchantStand();
-		smart_move({ to: "scrolls" }, () => {
+		smart_move(find_npc("scrolls"), () => {
 			buy(scroll, scrollNum);
 			log(`Bought ${scrollNum} ${G.items[scroll].name}`);
 			setTimeout(() => {
@@ -194,11 +201,13 @@ function sellTrash() {
 	});
 }
 
-function depositMoney() {
+//Deposit Gold in bank
+function depositGold() {
 	bank_deposit(character.gold - reserveMoney);
 	log("Money deposited! Money in Pocket: " + character.gold);
 }
 
+//Deposit items in bank
 function depositItems() {
 	character.items.forEach((item, index) => {
 		if (item
@@ -211,6 +220,7 @@ function depositItems() {
 	});
 }
 
+//Compound items
 function compoundItems(level) {
 	let triple = findTriple(level);
 	if (triple
@@ -231,6 +241,7 @@ function compoundItems(level) {
 	}
 }
 
+//Find a triple of items (same item, same level) 
 function findTriple(level) {
 	let compoundTriple = [];
 	//Look for triples
@@ -274,6 +285,7 @@ function findTriple(level) {
 	}
 }
 
+//Find items to be sold  in the merchant stand
 function searchItems2bSold(sellItemLevel = 3) {
 	for (const slot in character.items) {
 		if (character.items[slot]
@@ -282,10 +294,12 @@ function searchItems2bSold(sellItemLevel = 3) {
 	}
 }
 
+//Sell items that match a certain level, with a profit
 function sellItems(sellItemLevel = 2, profitMargin = 15) {
 	trade(searchItems2bSold(sellItemLevel), findEmptyTradeSlots(), item_value(character.items[searchItems2bSold(sellItemLevel)]) * profitMargin);
 }
 
+//Find empty trade-slots to put goods in
 function findEmptyTradeSlots() {
 	let tradeSlots = Object.keys(character.slots).filter(tradeSlot => tradeSlot.includes("trade"));
 	//Returns slot + 1 because character.slots is 0-indexed,
@@ -295,6 +309,7 @@ function findEmptyTradeSlots() {
 	}
 }
 
+//Auto-buy items from other merchants if they are sold below their value
 function buyCheapStuff() {
 	for (const i in parent.entities) {
 		let otherPlayer = parent.entities[i];
@@ -318,6 +333,7 @@ function buyCheapStuff() {
 	}
 }
 
+//Buff other characters with Merchants Luck!
 function merchantsLuck() {
 	let otherPlayers = [];
 	for (i in parent.entities) {
@@ -349,6 +365,7 @@ function merchantsLuck() {
 	}
 }
 
+//If a character is not in the party, reatore it
 function restoreParty() {
 	if (parent.party_list.length < 4) {
 		loadCharacters();
@@ -356,6 +373,7 @@ function restoreParty() {
 	}
 }
 
+//Close the merchant stand
 function closeMerchantStand() {
 	//Close merchant Stand
 	//parent.socket.emit("merchant", {close:1})
@@ -385,6 +403,7 @@ function openMerchantStand() {
 	}
 }
 
+//Exchange Gems & Quests at the corresponding NPC
 function exchangeGemsQuests() {
 	if (locateGems("findGems")) {
 		closeMerchantStand();
@@ -440,7 +459,7 @@ function craftItems() {
 	for (const item of itemsToCraft) {
 		if (checkCraftIngredients(item)) {
 			closeMerchantStand();
-			smart_move({ to: "craftsman" }, () => {
+			smart_move(find_npc("craftsman"), () => {
 				auto_craft(item);
 				setTimeout(() => {
 					if (!checkCraftIngredients(item)) openMerchantStand();

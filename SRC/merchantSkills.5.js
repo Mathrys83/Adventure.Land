@@ -29,8 +29,9 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"stramulet", "strbelt", "strearring", "", "", //"strring"
 	"hpbelt", "ringsj", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
 	"throwingstars", "smoke", "phelmet", "", "", "", "", "",
-	"", "", "", "", "", "", "", "",
-	"", "", "", "", "", "", "", "",
+	//XMas Set
+	"xmashat", "xmasgloves", "xmaspants", "xmasshoes", "", "", "", "ornamentstaff",
+	"slimestaff", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	//Unneeded elixirs
 	"elixirstr0", "elixirstr1", "elixirstr2",
@@ -79,8 +80,6 @@ function merchantSkills() {
 	merchantsLuck();
 	//Exchange Gems and Quests
 	exchangeGemsQuests();
-	//Buy Scrolls
-	buyScrolls();
 	//Craft items
 	craftItems();
 
@@ -103,7 +102,14 @@ function merchantSkills() {
 					smart_move({ to: "bank" }, () => {
 						depositGold();
 						depositItems();
-						openMerchantStand();
+						if (buyScrolls("check")) {
+							smart_move({ to: "scrolls" }, () => {
+								buyScrolls("buy");
+								openMerchantStand();
+							});
+						} else {
+							openMerchantStand();
+						}
 					});
 				});
 			});
@@ -162,6 +168,27 @@ function tranferPotions() {
 }
 
 //Buy Compound Scrolls
+function buyScrolls(action) {
+	let compScrolls = ["cscroll0", "cscroll1"];
+	for (const scroll of compScrolls) {
+		let missingScrolls = minCompoundScrolls - quantity(scroll);
+		let affordableScrolls = Math.floor(character.gold / G.items[scroll].g);
+		let scrollNum = (missingScrolls <= affordableScrolls) ? missingScrolls : affordableScrolls;
+		if (action === "check") {
+			return scrollNum ? true : false;
+		}
+		else if (action === "buy"
+			&& scrollNum) {
+			buy(scroll, scrollNum);
+			log(`Bought ${scrollNum} ${G.items[scroll].name}`);
+		}
+	}
+}
+
+/*
+// ### Works indepentend of the "Big round" ###
+
+//Buy Compound Scrolls
 function buyScrolls() {
 	let compScrolls = ["cscroll0", "cscroll1"];
 	for (const scroll of compScrolls) {
@@ -186,8 +213,7 @@ function buyScrolls() {
 		return;
 	}
 }
-
-
+*/
 
 //Sell trash, keep if it's high grade. (Grades: 0 Normal / 1 High /  2 Rare
 function sellTrash() {

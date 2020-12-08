@@ -146,9 +146,20 @@ function drinkPotions() {
 	}
 }
 
+//Master character lays breadcrumbs
+function masterBreadcrumbs() {
+	//Master writes location to localStorage
+	if (master && character.name === master) set("MasterPos", {
+		x: Math.floor(character.x),
+		y: Math.floor(character.y),
+		map: character.map,
+		in: character.in
+	});
+}
+
 //Follow master character
 function followMaster() {
-	const masterMaxDist = 10;
+	const masterMaxDist = 50;
 	if (master && character.name !== master) {
 		//If master is on screen, follow him
 		if (get_player(master)) {
@@ -162,6 +173,14 @@ function followMaster() {
 		//followers read masters location from localStorage
 		else if (!get_player(master)
 			&& get("MasterPos")) {
+			log("Following Master from Local Storage");
+			smart_move(get("MasterPos"));
+		}
+		/*
+		//If the master is too far away,
+		//followers read masters location from localStorage
+		else if (!get_player(master)
+			&& get("MasterPos")) {
 			let masterPos = get("MasterPos");
 			if (character.map !== masterPos.map) {
 				log("Following Master Map from Local Storage");
@@ -171,22 +190,15 @@ function followMaster() {
 				xmove(masterPos.x, masterPos.y);
 			}
 		}
-	}
-}
-
-//Master character lays breadcrumbs
-function masterBreadcrumbs() {
-	//Master writes location to localStorage
-	if (master && character.name === master) {
-		set("MasterPos", { map: character.map, x: Math.floor(character.x), y: Math.floor(character.y) });
+		*/
 	}
 }
 
 function showStatus() {
 	show_json({
 		hunterToggle: hunterToggle ? "✅ Hunter Toggle is active! Happy hunting!" : "❌ Hunter Toggle is deactivated...",
-		huntedMonster: !!get("huntedMonsters").length ? `🏹 You're hunting ${G.monsters[get("huntedMonsters")[get("huntedMonsters").length - 1].monsterType].name}s at ${farmMap}.` : "🤷 No hunter quest active.",
-		farmedMonster: !!get("huntedMonsters").length ? `🤷 No farming while a hunter quest is active.` : `🚜 You're farming ${G.monsters[farmMonsterType].name}s at ${farmMap}`,
+		huntedMonster: !!get("huntedMonsters").length ? `🏹 You're hunting ${G.monsters[get("huntedMonsters")[get("huntedMonsters").length - 1].monsterType].name}s at ${farmingSpotData.map}.` : "🤷 No hunter quest active.",
+		farmedMonster: !!get("huntedMonsters").length ? `🤷 No farming while a hunter quest is active.` : `🚜 You're farming ${G.monsters[farmMonsterType].name}s at ${farmingSpotData.map}`,
 		master: !!master ? `👑 ${master} is the master for ${!!get("huntedMonsters").length ? "hunting" : "farming"} ${G.monsters[farmMonsterType].name}s.` : `👨‍🌾 No master needed to ${!!get("huntedMonsters").length ? "hunt" : "farm"} ${G.monsters[farmMonsterType].name}s.`
 	});
 }

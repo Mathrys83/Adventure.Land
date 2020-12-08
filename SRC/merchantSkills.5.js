@@ -30,7 +30,7 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"hpbelt", "ringsj", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
 	"throwingstars", "smoke", "phelmet", "", "", "", "", "",
 	//XMas Set
-	"xmashat", "xmasgloves", "xmaspants", "xmasshoes", "", "", "", "ornamentstaff",
+	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "", "ornamentstaff",
 	"slimestaff", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	//Unneeded elixirs
@@ -95,22 +95,20 @@ function merchantSkills() {
 		smart_move({ to: "main" }, () => {
 			buyPotions();
 			relocateItems();
-			smart_move({ to: farmMap }, () => {
-				smart_move({ x: farmCoord.x, y: farmCoord.y }, () => {
-					tranferPotions();
-					merchantsLuck();
-					smart_move({ to: "bank" }, () => {
-						depositGold();
-						depositItems();
-						if (buyScrolls("check")) {
-							smart_move({ to: "scrolls" }, () => {
-								buyScrolls("buy");
-								openMerchantStand();
-							});
-						} else {
+			smart_move(farmingSpotData, () => {
+				tranferPotions();
+				merchantsLuck();
+				smart_move({ to: "bank" }, () => {
+					depositGold();
+					depositItems();
+					if (buyScrolls("check")) {
+						smart_move({ to: "scrolls" }, () => {
+							buyScrolls("buy");
 							openMerchantStand();
-						}
-					});
+						});
+					} else {
+						openMerchantStand();
+					}
 				});
 			});
 		});
@@ -351,8 +349,23 @@ function buyCheapStuff() {
 					&& !otherPlayerTradeSlot.b //Excludes "whishlisted" items! Trade slots can "sell" or "wishlist"!
 					&& otherPlayerTradeSlot.price < item_value(otherPlayerTradeSlot)
 					&& character.gold > otherPlayerTradeSlot.price) {
-					trade_buy(otherPlayer, tradeSlot);
-					log("Bought " + otherPlayerTradeSlot.name + " from player: " + otherPlayer.name)
+					//If it's a single item, buy it.
+					if (!otherPlayerTradeSlot.q) {
+						trade_buy(otherPlayer, tradeSlot);
+						log("Bought " + otherPlayerTradeSlot.name + " from player: " + otherPlayer.name);
+						//If there the item has a quantity, buy as many as possible
+					} else if (otherPlayerTradeSlot.q) {
+						let maxBuy = Math.floor(character.gold / otherPlayerTradeSlot.price);
+						parent.trade_buy(tradeSlot, otherPlayer.name, get_player(otherPlayer.name).slots[tradeSlot].rid, maxBuy);
+						/*
+						// ### DEPRECATED ###
+						maxBuy = (maxBuy > 30) ? 30 : maxBuy;
+						for (let i = 0; i < maxBuy; i++) {
+							trade_buy(otherPlayer, tradeSlot);
+							log("Bought " + otherPlayerTradeSlot.name + " from player: " + otherPlayer.name);
+						}
+						*/
+					}
 				}
 			});
 		}

@@ -50,11 +50,9 @@ const requiresMaster = ["poisio", "scorpion", "gscorpion", "tortoise", "bat", "s
 //Merchant auto-crafts below items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
 const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "fierygloves", "wingedboots", "xbox"];
-//The map you farm on
+//Smart-Moveable Object of your farm-location, handled by updateFarmingSpot()
 //Farming spots are found in G.maps.main
-let farmMap = getFarmingSpot(farmMonsterType, "map");
-//The coordinates of your farming spot on the map
-let farmCoord = getFarmingSpot(farmMonsterType, "coord");
+let farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
 
 setInterval(main, 1000 / 4); // Main Loop: Repeats every 1/4 seconds.
 setInterval(tier2Actions, 5000); // Tier 2 Loop: Repeats every 5 seconds.
@@ -101,12 +99,11 @@ function main() {
 		autoFight(target);
 	} else {
 		//Go to farming Area
-		let coords = getFarmingSpot(farmMonsterType, "coord");
 		if ((!master
 			|| character.name === master)
-			&& (Math.abs(character.x - coords.x) > 150
-				|| Math.abs(character.y - coords.y) > 150)) {
-			log(character.name + " moving to farming spot");
+			&& (character.map !== farmingSpotData.map
+				|| (Math.abs(character.x - farmingSpotData.x) > 150
+					|| Math.abs(character.y - farmingSpotData.y) > 150))) {
 			getFarmingSpot(farmMonsterType, "move");
 		}
 	}
@@ -117,6 +114,9 @@ function tier2Actions() {
 	//If the master is moving, he lays breadcrumbs
 	if (master && character.name === master) masterBreadcrumbs();
 
+	//Update farming spot [Needs to be updated, even when moving]
+	updateFarmingSpot();
+
 	//If character is moving, do nothing
 	if (is_moving(character) || smart.moving) return;
 
@@ -125,9 +125,6 @@ function tier2Actions() {
 
 	//Hunting
 	if (hunterToggle && character.ctype !== "merchant") handleHuntQuest();
-
-	//Update farming spot
-	updateFarmingSpot();
 
 	//Puts potions in specific slots
 	relocateItems();

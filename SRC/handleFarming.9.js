@@ -8,11 +8,12 @@ function updateFarmingSpot() {
     && huntedMonsters
     && huntedMonsters.length > 0) {
     farmMonsterType = huntedMonsters[huntedMonsters.length - 1].monsterType;
-    farmMap = getFarmingSpot(farmMonsterType, "map");
-    farmCoord = getFarmingSpot(farmMonsterType, "coord");
   } else {
     farmMonsterType = scheduleFarming();
   }
+  //No matter if a hunt is going on or not, update farmingSpotData
+  farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
+  //Adjust master according to monster difficulty
   requiresMaster.includes(farmMonsterType) ? master = hunterMaster : master = "";
 }
 
@@ -88,39 +89,43 @@ function getFarmingSpot(farmMonsterType = "crab", action = "move") {
       mostMonsters = farmingSpot.monster.count;
       indexMostMonsters = index;
     }
-  })
+  });
+
   //Move to farming spot
   //monsterBoundary holds the boundaries of the monster-spawn (for better readability)
   let monsterBoundary = farmingSpots[indexMostMonsters].monster.boundary;
+  let farmSpotCenterX = Math.floor(monsterBoundary[0] + ((monsterBoundary[2] - monsterBoundary[0]) / 2));
+  let farmSpotCenterY = Math.floor(monsterBoundary[1] + ((monsterBoundary[3] - monsterBoundary[1]) / 2));
   if (action === "move") {
     //Switch Map if needed
-    if (character.map != farmingSpots[indexMostMonsters].map) {
-      log("Moving to farming spot, on another map, switching map");
-      smart_move({ to: farmingSpots[indexMostMonsters].map });
-      //If Map correct, go to Monster
-    } else {
-      log("Moving to farming spot, on same map, using coordinates");
-      smart_move({ x: Math.floor(monsterBoundary[0] + ((monsterBoundary[2] - monsterBoundary[0]) / 2)), y: Math.floor(monsterBoundary[1] + ((monsterBoundary[3] - monsterBoundary[1]) / 2)) }).then((data) => {
-        // On success
-        //If there is no master, spread the characters around inside the farming spot, for more efficiency
-        //if (!master) xmove(Math.floor(Math.random() * (-100 - 100) + 100), Math.floor(Math.random() * (-100 - 100) + 100));
-      }).catch((data) => {
-        if (data.reason === "failed") {
-          //On fail 
-          // Path not found
-          log("Path to farming spot using coordinates not found, moving to Main!");
-          smart_move("main");
-        }
-      });
-    }
+    log("Moving to farming spot");
+    smart_move({
+      x: farmSpotCenterX,
+      y: farmSpotCenterY,
+      map: farmingSpots[indexMostMonsters].map
+    }).then((data) => {
+      // On success
+      //If there is no master, spread the characters around inside the farming spot, for more efficiency
+      if (!master) {
+        if (character.name === characterNames[0]) xmove(farmSpotCenterX, farmSpotCenterY + 30);
+        if (character.name === characterNames[1]) xmove(farmSpotCenterX + 45, farmSpotCenterY - 30);
+        if (character.name === characterNames[2]) xmove(farmSpotCenterX - 45, farmSpotCenterY - 30);
+      }
+    }).catch((data) => {
+      if (data.reason === "failed") {
+        //On fail 
+        // Path not found
+        log("Path to farming spot using coordinates not found, moving to Main!");
+        smart_move("main");
+      }
+    });
+
     //Return the map to farm on
-  } else if (action === "map") {
-    return farmingSpots[indexMostMonsters].map;
-    //Return coordinates where the monsters are
-  } else if (action === "coord") {
+  } else if (action === "farmingSpotData") {
     return {
-      x: Math.floor(monsterBoundary[0] + ((monsterBoundary[2] - monsterBoundary[0]) / 2)),
-      y: Math.floor(monsterBoundary[1] + ((monsterBoundary[3] - monsterBoundary[1]) / 2))
+      map: farmingSpots[indexMostMonsters].map,
+      x: farmSpotCenterX,
+      y: farmSpotCenterY
     }
   }
 }

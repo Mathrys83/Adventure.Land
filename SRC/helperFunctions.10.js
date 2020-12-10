@@ -150,47 +150,40 @@ function drinkPotions() {
 function masterBreadcrumbs() {
 	//Master writes location to localStorage
 	if (master && character.name === master) set("MasterPos", {
-		x: Math.floor(character.x),
-		y: Math.floor(character.y),
 		map: character.map,
-		in: character.in
+		in: character.in,
+		x: Math.floor(character.x),
+		y: Math.floor(character.y)
 	});
 }
 
 //Follow master character
 function followMaster() {
+	let theMaster = get_player(master);
 	const masterMaxDist = 50;
+	let masterMinDist = masterMaxDist * 0.8;
 	if (master && character.name !== master) {
 		//If master is on screen, follow him
-		if (get_player(master)) {
-			let theMaster = get_player(master);
-			if (Math.abs(character.x - theMaster.x) > masterMaxDist || Math.abs(character.y - theMaster.y) > masterMaxDist) {
-				log("Following Master with Get_Player");
-				xmove(theMaster.x, theMaster.y);
-			}
+		if (theMaster
+			&& Math.ceil(distance(character, theMaster)) > masterMaxDist) {
+			log("Following Master with Get_Player");
+			xmove(theMaster.x, theMaster.y);
 		}
 		//If the master is too far away,
 		//followers read masters location from localStorage
-		else if (!get_player(master)
+		else if (!theMaster
 			&& get("MasterPos")) {
 			log("Following Master from Local Storage");
 			smart_move(get("MasterPos"));
 		}
-		/*
-		//If the master is too far away,
-		//followers read masters location from localStorage
-		else if (!get_player(master)
-			&& get("MasterPos")) {
-			let masterPos = get("MasterPos");
-			if (character.map !== masterPos.map) {
-				log("Following Master Map from Local Storage");
-				smart_move(masterPos.map);
-			} else if (Math.abs(character.x - masterPos.x) > masterMaxDist || Math.abs(character.y - masterPos.y) > masterMaxDist) {
-				log("Following Master Coordinates from Local Storage");
-				xmove(masterPos.x, masterPos.y);
-			}
+		//Keep a little distance to the master when farming
+		else if (theMaster
+			&& character.map === farmingSpotData.map
+			&& distance(character, theMaster) < masterMaxDist * 0.5
+			&& distance(character, farmingSpotData) < masterMaxDist * 0.5) {
+			if (character.name === characterNames[1]) xmove(farmingSpotData.x + masterMinDist, farmingSpotData.y - masterMinDist);
+			if (character.name === characterNames[2]) xmove(farmingSpotData.x - masterMinDist, farmingSpotData.y - masterMinDist);
 		}
-		*/
 	}
 }
 

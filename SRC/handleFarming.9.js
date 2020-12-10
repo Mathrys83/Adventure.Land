@@ -100,9 +100,9 @@ function getFarmingSpot(farmMonsterType = "crab", action = "move") {
     //Switch Map if needed
     log("Moving to farming spot");
     smart_move({
+      map: farmingSpots[indexMostMonsters].map,
       x: farmSpotCenterX,
-      y: farmSpotCenterY,
-      map: farmingSpots[indexMostMonsters].map
+      y: farmSpotCenterY
     }).then((data) => {
       // On success
       //If there is no master, spread the characters around inside the farming spot, for more efficiency

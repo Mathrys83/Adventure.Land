@@ -5,7 +5,7 @@ function handleHuntQuest() {
 	if (hunterToggle) {
 		//Get the quest
 		if (!character.s.monsterhunt) {
-			log(character.name + " has no hunterQuest" + character.name + " moving to monsterHunter");
+			log("Has no hunterQuest, moving to monsterHunter");
 			smart_move({ to: "monsterhunter" }, () => {
 				parent.socket.emit("monsterhunt");
 				updateFarmingSpot();
@@ -21,14 +21,14 @@ function handleHuntQuest() {
 				if (allowedMonsters.includes(monsterType) && !alreadyAdded) {
 					huntedMonsters.unshift({ monsterType: monsterType, questGiver: character.name, timeStamp: Date.now() + character.s.monsterhunt.ms });
 					set("huntedMonsters", huntedMonsters);
-					log(character.name + " setting HunterQuest in locStor");
+					log("Setting HunterQuest in locStor");
 				}
 			}
 			//Turn in fulfilled quest
 			if (character.s.monsterhunt.c === 0) {
-				log(character.name + " Fulfilled Hunter Quest");
+				log("Fulfilled Hunter Quest");
 				smart_move({ to: "monsterhunter" }, () => {
-					log(character.name + " moves to questGiver with FULFILLED quest");
+					log("Moving to questGiver with FULFILLED quest");
 					//Remove fulfilled quest from localStorage
 					huntedMonsters.forEach((element, index) => {
 						if (element.questGiver === character.name) {
@@ -49,7 +49,7 @@ function handleHuntQuest() {
 				if (element.timeStamp && Date.now() > element.timeStamp) {
 					huntedMonsters.splice(index, 1);
 					set("huntedMonsters", huntedMonsters);
-					log(character.name + " Deleted old quest from locStor");
+					log(" Deleted old quest from LocStor");
 				}
 			});
 		}

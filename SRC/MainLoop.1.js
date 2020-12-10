@@ -71,7 +71,7 @@ function main() {
 	usePotions();
 
 	//If character is moving, do nothing
-	if (is_moving(character) || smart.moving) return;
+	if (is_moving(character)) return;
 
 	//Loot everything
 	loot();
@@ -118,7 +118,7 @@ function tier2Actions() {
 	updateFarmingSpot();
 
 	//If character is moving, do nothing
-	if (is_moving(character) || smart.moving) return;
+	if (is_moving(character)) return;
 
 	//Get Holiday Buffs
 	getHolidayBuff();

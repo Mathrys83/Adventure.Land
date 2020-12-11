@@ -12,7 +12,7 @@ function rangerSkills(target) {
 			&& !is_on_cooldown("attack")) {
 			let targets = Object.values(parent.entities).filter(entity => entity.mtype === farmMonsterType && is_in_range(entity, "3shot"));
 			if (targets.length >= 3) use_skill("3shot", targets);
-			game_log("Ranger used 3-Shot");
+			game_log("Used 3-Shot");
 		}
 		//Supershot
 		if (validateOffensiveSkill(target, manaReserve)
@@ -20,7 +20,7 @@ function rangerSkills(target) {
 			&& is_in_range(target, "supershot")
 			&& !is_on_cooldown("supershot")) {
 			use_skill("supershot");
-			game_log("Ranger used Supershot");
+			game_log("Used Supershot");
 		}
 		//Hunters Mark
 		if (validateOffensiveSkill(target, manaReserve)
@@ -28,7 +28,7 @@ function rangerSkills(target) {
 			&& is_in_range(target, "huntersmark")
 			&& !is_on_cooldown("huntersmark")) {
 			use_skill("huntersmark");
-			game_log("Ranger used Hunters Mark");
+			game_log("Used Hunters Mark");
 		}
 	}
 }

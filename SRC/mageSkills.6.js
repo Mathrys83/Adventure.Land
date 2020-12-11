@@ -16,7 +16,7 @@ function mageSkills(target) {
 				&& is_in_range(partyMember, "reflection")
 				&& !is_on_cooldown("reflection")) {
 				use_skill("reflection", partyMember);
-				game_log("Mage shielded " + partyMember.name);
+				game_log(`Shielded ${partyMember.name}`);
 			}
 			//Energize Partymenber
 			if (partyMember.name !== character.name //No self-energize!
@@ -26,7 +26,7 @@ function mageSkills(target) {
 				&& is_in_range(partyMember, "energize")
 				&& !is_on_cooldown("energize")) {
 				use_skill("energize", partyMember);
-				game_log("Mage energized " + partyMember.name);
+				game_log(`Energized ${partyMember.name}`);
 			}
 		}
 	}
@@ -38,6 +38,6 @@ function mageSkills(target) {
 		&& is_in_range(target, "burst")
 		&& !is_on_cooldown("burst")) {
 		use_skill("burst");
-		game_log("Mage bursting enemy");
+		game_log("Bursting enemy");
 	}
 }

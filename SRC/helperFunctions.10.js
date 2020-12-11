@@ -14,7 +14,7 @@ function stopCharacters() {
 	for (const characterName in get_active_characters()) {
 		if (characterName !== character.name) {
 			stop_character(characterName);
-			log("Stopped character " + characterName);
+			log(`Stopped character ${characterName}`);
 		}
 	}
 }
@@ -65,7 +65,7 @@ function transferLoot(merchantName) {
 		character.items.forEach((item, index) => {
 			if (item && !keepItems.includes(item.name)) send_item(merchant, index, 9999);
 		});
-		log(character.name + " sent items to merchant.");
+		log("Sent items to merchant.");
 	}
 }
 
@@ -73,7 +73,7 @@ function tidyInventory() {
 	for (let i = 34; i > 0; i--) {
 		if (character.items[i] && !character.items[i - 1]) {
 			swap(i, i - 1)
-			log("Tidying Inventory... Slot: " + i);
+			log(`Tidying Inventory Slot ${i}`);
 		}
 	}
 }

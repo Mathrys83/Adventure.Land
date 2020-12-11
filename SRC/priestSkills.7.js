@@ -16,7 +16,7 @@ function priestSkills(target) {
 				&& character.mp >= G.skills.partyheal.mp
 				&& !is_on_cooldown("partyheal")) {
 				use_skill("partyheal");
-				game_log("Priest is healing Party");
+				game_log("Healing Party");
 			}
 			//Heal ONE Partymember
 			if (partyMember.hp < (partyMember.max_hp * healingThreshold)
@@ -27,9 +27,9 @@ function priestSkills(target) {
 				&& !is_on_cooldown("heal")) {
 				heal(partyMember).then((message) => {
 					reduce_cooldown("heal", character.ping);
-					game_log("Priest is healing " + partyMember.name);
+					game_log(`Healing ${partyMember.name}`);
 				}).catch((message) => {
-					log(character.name + " Heal failed: " + message.reason);
+					log(`Heal failed: ${message.reason}`);
 				});
 			}
 		}
@@ -42,6 +42,6 @@ function priestSkills(target) {
 		&& is_in_range(target, "curse")
 		&& !is_on_cooldown("curse")) {
 		use_skill("curse");
-		game_log("Priest cursed the enemy");
+		game_log("Cursed the enemy");
 	}
 }

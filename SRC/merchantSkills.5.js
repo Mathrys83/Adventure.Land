@@ -173,10 +173,11 @@ function buyScrolls(action) {
 		let affordableScrolls = Math.floor(character.gold / G.items[scroll].g);
 		let scrollNum = (missingScrolls <= affordableScrolls) ? missingScrolls : affordableScrolls;
 		if (action === "check") {
-			return scrollNum ? true : false;
+			return scrollNum > 0 ? true : false;
 		}
 		else if (action === "buy"
-			&& scrollNum) {
+			&& scrollNum
+			&& scrollNum > 0) {
 			buy(scroll, scrollNum);
 			log(`Bought ${scrollNum} ${G.items[scroll].name}`);
 		}
@@ -219,7 +220,7 @@ function sellTrash() {
 		if (item
 			&& trashName.includes(item.name)
 			&& item_grade(item) < 2) {
-			log("Merchant is unloading trash: " + item.name);
+			log(`Merchant is unloading trash ${item.name}`);
 			item.q ? sell(index, item.q) : sell(index, item);
 		}
 	});
@@ -228,7 +229,7 @@ function sellTrash() {
 //Deposit Gold in bank
 function depositGold() {
 	bank_deposit(character.gold - reserveMoney);
-	log("Money deposited! Money in Pocket: " + character.gold);
+	log(`Money deposited! Money in Pocket: ${character.gold}`);
 }
 
 //Deposit items in bank
@@ -252,9 +253,9 @@ function compoundItems(level) {
 		&& !character.q.compound) {
 
 		compound(triple[0], triple[1], triple[2], locate_item(chooseScroll(triple))).then((data) => {
-			(data.success) ? game_log("Compounded level " + data.level + " accessory!") : game_log("Compound Failed - Item lost!");
+			(data.success) ? game_log(`Compounded level ${data.level} accessory!`) : game_log("Compound Failed - Item lost!");
 		}).catch((data) => {
-			game_log("Compound Failed: " + data.reason);
+			game_log(`Compound Failed: ${data.reason}`);
 		});
 	}
 	//Grade the item and choose a scroll accordingly
@@ -286,7 +287,7 @@ function findTriple(level) {
 						if (character.items[k]
 							&& character.items[k].name === character.items[j].name
 							&& character.items[k].level === level) {
-							log(" Slot i: " + i + " item: " + character.items[i].name + " Slot j: " + j + " item: " + character.items[j].name + " Slot k: " + k + " item: " + character.items[k].name)
+							log(`Slot i: ${i} item: ${character.items[i].name} Slot j: ${j} item: ${character.items[j].name} Slot k: ${k} item: ${character.items[k].name}`)
 							compoundTriple.push(i, j, k);
 							return compoundTriple
 						}
@@ -347,12 +348,13 @@ function buyCheapStuff() {
 				let otherPlayerTradeSlot = otherPlayer.slots[tradeSlot];
 				if (otherPlayerTradeSlot
 					&& !otherPlayerTradeSlot.b //Excludes "whishlisted" items! Trade slots can "sell" or "wishlist"!
+					&& !otherPlayerTradeSlot.giveaway
 					&& otherPlayerTradeSlot.price < item_value(otherPlayerTradeSlot)
 					&& character.gold > otherPlayerTradeSlot.price) {
 					//If it's a single item, buy it.
 					if (!otherPlayerTradeSlot.q) {
+						log(`Buying 1 from ${otherPlayer} Slot ${tradeSlot}`)
 						trade_buy(otherPlayer, tradeSlot);
-						log("Bought " + otherPlayerTradeSlot.name + " from player: " + otherPlayer.name);
 						//If there the item has a quantity, buy as many as possible
 					} else if (otherPlayerTradeSlot.q) {
 						let maxBuy = Math.floor(character.gold / otherPlayerTradeSlot.price);
@@ -400,7 +402,7 @@ function merchantsLuck() {
 	if (otherPlayers.length > 0) {
 		let luckyPlayer = Math.floor(Math.random() * otherPlayers.length)
 		use_skill("mluck", otherPlayers[luckyPlayer].name);
-		log("Giving luck to: " + otherPlayers[luckyPlayer].name);
+		log(`Giving luck to: ${otherPlayers[luckyPlayer].name}`);
 	}
 }
 

@@ -49,7 +49,7 @@ function handleHuntQuest() {
 				if (element.timeStamp && Date.now() > element.timeStamp) {
 					huntedMonsters.splice(index, 1);
 					set("huntedMonsters", huntedMonsters);
-					log(" Deleted old quest from LocStor");
+					log("Deleted old quest from LocStor");
 				}
 			});
 		}

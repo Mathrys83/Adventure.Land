@@ -33,7 +33,7 @@ function getTarget() {
 		for (const partyMember of Object.keys(get_party())) {
 			target = get_nearest_monster({ target: partyMember });
 			if (validateTarget(target)) {
-				//log(character.name + " Target monster that targets party-member");
+				//log("Target monster that targets party-member");
 				change_target(target);
 				return target;
 			}
@@ -44,7 +44,7 @@ function getTarget() {
 			no_target: true
 		});
 		if (validateTarget(target)) {
-			//log(character.name + " Target monster that targets nobody");
+			//log("Target monster that targets nobody");
 			change_target(target);
 			return target;
 		}
@@ -63,7 +63,7 @@ function getTarget() {
 		*/
 		target = parent.entities[get_player(master).target];
 		if (validateTarget(target)) {
-			//log(character.name + " Target master's target");
+			//log("Target master's target");
 			change_target(target);
 			return target;
 		}
@@ -76,7 +76,7 @@ function getTarget() {
 function autoFight(target) {
 	if (validateTarget(target)) {
 		if (!is_in_range(target, "attack")) {
-			//log(character.name + "Target not in range, moving to it");
+			//log("Target not in range, moving to it");
 			xmove(
 				character.x + Math.floor((target.x - character.x) * 0.3),
 				character.y + Math.floor((target.y - character.y) * 0.3)
@@ -87,7 +87,7 @@ function autoFight(target) {
 			attack(target).then((message) => {
 				reduce_cooldown("attack", character.ping);
 			}).catch((message) => {
-				log(character.name + " attack failed: " + message.reason);
+				//log(`Attack failed: ${message.reason}`);
 			});
 		}
 	}

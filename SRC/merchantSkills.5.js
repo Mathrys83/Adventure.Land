@@ -30,7 +30,7 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"hpbelt", "ringsj", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
 	"throwingstars", "smoke", "phelmet", "", "", "", "", "",
 	//XMas Set
-	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "", "ornamentstaff",
+	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",
 	"slimestaff", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	//Unneeded elixirs
@@ -335,6 +335,7 @@ function findEmptyTradeSlots() {
 }
 
 //Auto-buy items from other merchants if they are sold below their value
+//Also, auto-join Giveaways
 function buyCheapStuff() {
 	for (const i in parent.entities) {
 		let otherPlayer = parent.entities[i];
@@ -348,25 +349,28 @@ function buyCheapStuff() {
 				let otherPlayerTradeSlot = otherPlayer.slots[tradeSlot];
 				if (otherPlayerTradeSlot
 					&& !otherPlayerTradeSlot.b //Excludes "whishlisted" items! Trade slots can "sell" or "wishlist"!
-					&& !otherPlayerTradeSlot.giveaway
 					&& otherPlayerTradeSlot.price < item_value(otherPlayerTradeSlot)
 					&& character.gold > otherPlayerTradeSlot.price) {
-					//If it's a single item, buy it.
-					if (!otherPlayerTradeSlot.q) {
-						log(`Buying 1 from ${otherPlayer} Slot ${tradeSlot}`)
-						trade_buy(otherPlayer, tradeSlot);
-						//If there the item has a quantity, buy as many as possible
-					} else if (otherPlayerTradeSlot.q) {
-						let maxBuy = Math.floor(character.gold / otherPlayerTradeSlot.price);
-						parent.trade_buy(tradeSlot, otherPlayer.name, get_player(otherPlayer.name).slots[tradeSlot].rid, maxBuy);
-						/*
-						// ### DEPRECATED ###
-						maxBuy = (maxBuy > 30) ? 30 : maxBuy;
-						for (let i = 0; i < maxBuy; i++) {
-							trade_buy(otherPlayer, tradeSlot);
-							log("Bought " + otherPlayerTradeSlot.name + " from player: " + otherPlayer.name);
+					//Don't try to buy Giveaways
+					if (!otherPlayerTradeSlot.giveaway) {
+						//If it's a single item, buy it.
+						if (!otherPlayerTradeSlot.q) {
+							log(`Buying 1 from ${otherPlayer} Slot ${tradeSlot}`)
+							trade_buy(otherPlayer, otherPlayerTradeSlot);
+							//If there the item has a quantity, buy as many as possible
+						} else if (otherPlayerTradeSlot.q) {
+							let maxBuy = Math.floor(character.gold / otherPlayerTradeSlot.price);
+							parent.trade_buy(tradeSlot, otherPlayer.name, otherPlayerTradeSlot.rid, maxBuy);
 						}
-						*/
+						//Auto-Join Giveaways
+					} else if (otherPlayerTradeSlot.giveaway
+						&& !otherPlayerTradeSlot.list.includes(character.name)) {
+						parent.socket.emit('join_giveaway', {
+							slot: tradeSlot,
+							id: otherPlayer.id,
+							rid: otherPlayerTradeSlot.rid,
+						});
+						log("Joined giveaway!");
 					}
 				}
 			});

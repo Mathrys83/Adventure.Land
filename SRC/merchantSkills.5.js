@@ -356,11 +356,12 @@ function buyCheapStuff() {
 						//If it's a single item, buy it.
 						if (!otherPlayerTradeSlot.q) {
 							log(`Buying 1 from ${otherPlayer} Slot ${tradeSlot}`)
-							trade_buy(otherPlayer, otherPlayerTradeSlot);
-							//If there the item has a quantity, buy as many as possible
+							trade_buy(otherPlayer, tradeSlot, 1);
+							//If the item has a quantity, buy as many as possible
 						} else if (otherPlayerTradeSlot.q) {
 							let maxBuy = Math.floor(character.gold / otherPlayerTradeSlot.price);
-							parent.trade_buy(tradeSlot, otherPlayer.name, otherPlayerTradeSlot.rid, maxBuy);
+							trade_buy(otherPlayer, tradeSlot, maxBuy);
+							//parent.trade_buy(tradeSlot, otherPlayer.name, otherPlayerTradeSlot.rid, maxBuy);
 						}
 						//Auto-Join Giveaways
 					} else if (otherPlayerTradeSlot.giveaway

@@ -19,7 +19,7 @@ function stopCharacters() {
 	}
 }
 
-function addButons() {
+function addButtons() {
 	add_bottom_button("move2Main", "🏠", () => {
 		smart_move({ to: "main" });
 	});

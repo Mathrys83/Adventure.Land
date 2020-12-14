@@ -14,7 +14,7 @@ map_key("6", "snippet", "initParty()");
 map_key("7", "snippet", "stopCharacters()");
 
 //Custom buttons!
-addButons();
+addButtons();
 
 /*
 ###################################################################
@@ -38,7 +38,7 @@ let master = "";
 const hunterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
 //Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-const allMonstersToFarm = ["iceroamer", "porcupine", "croc", "armadillo", "crabx", "iceroamer"];
+const allMonstersToFarm = ["iceroamer", "porcupine", "croc", "armadillo", "arcticbee", "crabx"];
 //Monster you are currently farming - Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
 //Monsters your characters are allowed to farm. Only enter monsters you are strong enough to defeat!

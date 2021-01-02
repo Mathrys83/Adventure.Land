@@ -3,10 +3,10 @@ const minCompoundScrolls = 100;
 
 //Potion Thresholds
 const potions = {
-	hpot0: 30,
-	hpot1: 15,
-	mpot0: 120,
-	mpot1: 15
+	hpot0: 15,
+	hpot1: 3,
+	mpot0: 90,
+	mpot1: 45
 };
 //Cost 4800
 
@@ -15,7 +15,7 @@ const sellItemLevel = 3;
 const profitMargin = 20;
 
 //Item levels to be compounded
-const compoundLevels = [0, 1];
+const compoundLevels = [0, 1, 2];
 
 const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"wshoes", "", "spores", "beewings", "wcap", "", //bfur ink
@@ -118,7 +118,7 @@ function merchantSkills() {
 //Buy potions
 function buyPotions() {
 	//If farmMonsterType requires a master, buy more potions!	
-	const potionModifier = requiresMaster.includes(farmMonsterType) ? 5 : 1;
+	const potionModifier = requiresMaster.includes(farmMonsterType) ? 3 : 1;
 	for (const potion in potions) {
 		if (quantity(potion) < potions[potion]) buy_with_gold(potion, (potions[potion] - quantity(potion)) * potionModifier);
 	}

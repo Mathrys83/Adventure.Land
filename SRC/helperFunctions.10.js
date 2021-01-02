@@ -20,6 +20,9 @@ function stopCharacters() {
 }
 
 function addButtons() {
+	add_bottom_button("TeleportTown", "🌀", () => {
+		parent.socket.emit('town');
+	});
 	add_bottom_button("move2Main", "🏠", () => {
 		smart_move({ to: "main" });
 	});

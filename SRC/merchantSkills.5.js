@@ -1,12 +1,12 @@
-const reserveMoney = 500000;
-const minCompoundScrolls = 100;
+const reserveMoney = 1000000;
+const minScrolls = 100;
 
 //Potion Thresholds
 const potions = {
-	hpot0: 15,
+	hpot0: 3,
 	hpot1: 3,
-	mpot0: 90,
-	mpot1: 45
+	mpot0: 24,
+	mpot1: 24
 };
 //Cost 4800
 
@@ -14,8 +14,10 @@ const potions = {
 const sellItemLevel = 3;
 const profitMargin = 20;
 
-//Item levels to be compounded
-const compoundLevels = [0, 1, 2];
+//Max level to be compounded
+const maxCompoundLevel = 3;
+//Max level to be upgraded
+const maxUpgradeLevel = 5;
 
 const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"wshoes", "", "spores", "beewings", "wcap", "", //bfur ink
@@ -27,11 +29,11 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"tshirt0", "tshirt1", "tshirt2", "cshell", "whiteegg",
 	"quiver", "hbow", "shield", "mushroomstaff", "", "", "", "", //quiver
 	"stramulet", "strbelt", "strearring", "", "", //"strring"
-	"hpbelt", "ringsj", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
-	"throwingstars", "smoke", "phelmet", "", "", "", "", "",
+	"hpbelt", "", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
+	"throwingstars", "smoke", "phelmet", "lspores", "", "", "", "",
 	//XMas Set
 	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",
-	"slimestaff", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	//Unneeded elixirs
 	"elixirstr0", "elixirstr1", "elixirstr2",
@@ -65,8 +67,10 @@ function merchantSkills() {
 		//Buy cheap items from other merchants
 		buyCheapStuff();
 
+		//Upgrade items
+		upgradeItems();
 		//Compound items
-		for (const level of compoundLevels) if (findTriple(level)) compoundItems(level);
+		for (let i = 0; i < maxCompoundLevel; i++) if (findTriple(i)) compoundItems(i);
 
 		//searchItems2bSold Returns Array SLOTS. Therefor it can return ZEROES
 		//So we have to specifically look for UNDEFINED
@@ -165,15 +169,15 @@ function tranferPotions() {
 	}
 }
 
-//Buy Compound Scrolls
+//Buy Scrolls
 function buyScrolls(action) {
-	let compScrolls = ["cscroll0", "cscroll1"];
-	for (const scroll of compScrolls) {
-		let missingScrolls = minCompoundScrolls - quantity(scroll);
+	let scrolls = ["scroll0", "scroll1", "cscroll0", "cscroll1"];
+	for (const scroll of scrolls) {
+		let missingScrolls = minScrolls - quantity(scroll);
 		let affordableScrolls = Math.floor(character.gold / G.items[scroll].g);
 		let scrollNum = (missingScrolls <= affordableScrolls) ? missingScrolls : affordableScrolls;
 		if (action === "check") {
-			return scrollNum > 0 ? true : false;
+			if (scrollNum > 0) return true;
 		}
 		else if (action === "buy"
 			&& scrollNum
@@ -191,7 +195,7 @@ function buyScrolls(action) {
 function buyScrolls() {
 	let compScrolls = ["cscroll0", "cscroll1"];
 	for (const scroll of compScrolls) {
-		let missingScrolls = minCompoundScrolls - quantity(scroll);
+		let missingScrolls = minScrolls - quantity(scroll);
 		let affordableScrolls = Math.floor(character.gold / G.items[scroll].g);
 		let scrollNum = (missingScrolls <= affordableScrolls) ? missingScrolls : affordableScrolls;
 		if (scrollNum) {
@@ -245,6 +249,45 @@ function depositItems() {
 	});
 }
 
+//Upgrade Items
+function upgradeItems() {
+	const scrolls = ["scroll0", "scroll1", "scroll2"];
+	for (slot in character.items) {
+		if (!character.q.upgrade
+			&& character.items[slot]
+			&& (character.items[slot].name
+				&& itemsToUpgrade.indexOf(character.items[slot].name) !== -1
+				&& G.items[character.items[slot].name].upgrade)
+			&& character.items[slot].level <= maxUpgradeLevel) {
+			upgrade(slot, locate_item(scrolls[item_grade(character.items[slot])])).then(
+				(data) => {
+					game_log(`Upgraded ${character.items[slot].name}`);
+				},
+				(data) => {
+					game_log(`Upgrade failed: ${character.items[slot].name} : ${data.reason}`);
+				},
+			);
+			return;
+		}
+	}
+}
+
+//Compound items
+function compoundItems(level) {
+	const scrolls = ["cscroll0", "cscroll1", "cscroll2"];
+	let triple = findTriple(level);
+	if (triple
+		&& triple.length === 3
+		&& !character.q.compound) {
+		compound(triple[0], triple[1], triple[2], locate_item(scrolls[item_grade(character.items[triple[0]])])).then((data) => {
+			(data.success) ? game_log(`Compounded level ${data.level} accessory!`) : game_log("Compound Failed - Item lost!");
+		}).catch((data) => {
+			game_log(`Compound Failed: ${data.reason}`);
+		});
+	}
+}
+
+/*
 //Compound items
 function compoundItems(level) {
 	let triple = findTriple(level);
@@ -258,13 +301,12 @@ function compoundItems(level) {
 			game_log(`Compound Failed: ${data.reason}`);
 		});
 	}
-	//Grade the item and choose a scroll accordingly
 	function chooseScroll(triple) {
-		if (item_grade(character.items[triple[0]]) === 0) return "cscroll0";
-		if (item_grade(character.items[triple[0]]) === 1) return "cscroll1";
-		if (item_grade(character.items[triple[0]]) === 2) return "cscroll2";
+		const scrolls = ["cscroll0", "cscroll1", "cscroll2"];
+		return scrolls[item_grade(character.items[triple[0]])];
 	}
 }
+*/
 
 //Find a triple of items (same item, same level) 
 function findTriple(level) {

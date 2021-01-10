@@ -38,18 +38,46 @@ let master = "";
 const hunterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
 //Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-const allMonstersToFarm = ["arcticbee", "porcupine", "croc", "armadillo", "arcticbee", "crabx"];
+const allMonstersToFarm = ["crabx", "bbpompom", "ghost"]; //"porcupine", "porcupine", "croc", "armadillo", "arcticbee", "crabx"
 //Monster you are currently farming - Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
-//Monsters your characters are allowed to farm. Only enter monsters you are strong enough to defeat!
-const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "snowman", "porcupine", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "iceroamer", "crabx", "jr", "greenjr", "", "", "", "", ""];
-//Monsters that are too strong for a single character are listed here.
-//Your Master-Character will choose a monster, which the whole party will then attack.
-//Also: Characters will start using their offensive skills if a monster is on this list (They don't use skills against weak monsters, conserve MP)
-const requiresMaster = ["poisio", "scorpion", "gscorpion", "tortoise", "bat", "spider", "iceroamer", "crabx", "jr", "greenjr", "", "", "", "", "", "", ""];
+//Monsters your characters are allowed to hunt. Only enter monsters you are strong enough to defeat!
+const allowedMonsters = [
+	"hen", "rooster", "goo", "crab", "bee", "minimush", "frog",
+	"squigtoad", "osnake", "snake", "rat", "armadillo", "croc",
+	"squig", "poisio", "snowman", "porcupine", "arcticbee",
+	"spider", "tortoise", "stoneworm", "bat", "scorpion", "gscorpion",
+	"iceroamer", "crabx", "jr", "greenjr", "bbpompom", "",
+	"ghost", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", ""];
+/*
+Monsters that are too strong for a single character are listed below.
+Your Master-Character will choose a monster, which the whole party will then attack.
+Also: Characters will start using their offensive skills if a monster is on this list
+(They don't use offensive skills against weak monsters, conserve MP)
+*/
+const requiresMaster = [
+	"poisio", "scorpion", "gscorpion", "tortoise", "stoneworm",
+	"bat", "spider", "iceroamer", "crabx", "jr", "greenjr",
+	"bbpompom", "booboo", "prat", "boar", "ghost", "mummy",
+	"mole", "wolfie", "wolf", "xscorpion", "bigbird",
+	"", "", "", "", "", "", "", ""];
+//Items to upgrade
+const itemsToUpgrade = [
+	"sshield", "staff", "slimestaff", "staffofthedead", "pmace",
+	"firebow", "frostbow", "firestaff",
+	//Hunter Sets
+	"mchat", "mcgloves", "mcpants", "mcarmor", "mcboots",
+	"mmhat", "mmgloves", "mmpants", "mmarmor", "mmshoes",
+	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
+	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
+	"mrnhat", "mrngloves", "mrnpants", "mrnarmor", "mrnboots",
+	"", "", "", "", "",
+	"", "", "", "", "",
+	"merry"];
 //Merchant auto-crafts below items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "fierygloves", "wingedboots", "xbox"];
+const itemsToCraft = ["ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox"];
 //Smart-Moveable Object of your farm-location, handled by updateFarmingSpot()
 //Farming spots are found in G.maps.main
 let farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
@@ -121,7 +149,7 @@ function tier2Actions() {
 	if (is_moving(character)) return;
 
 	//Get Holiday Buffs
-	getHolidayBuff();
+	//getHolidayBuff();
 
 	//Hunting
 	if (hunterToggle && character.ctype !== "merchant") handleHuntQuest();

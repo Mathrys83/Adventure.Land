@@ -5,7 +5,7 @@ function handleHuntQuest() {
 	if (hunterToggle) {
 		//Get the quest
 		if (!character.s.monsterhunt) {
-			log("Has no hunterQuest, moving to monsterHunter");
+			log("Getting new hunterQuest");
 			smart_move({ to: "monsterhunter" }, () => {
 				parent.socket.emit("monsterhunt");
 				updateFarmingSpot();

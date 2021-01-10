@@ -56,7 +56,8 @@ function transferLoot(merchantName) {
 		"elixirint0", "elixirint1", "elixirint2",
 		//"elixirvit0", "elixirvit1", "elixirvit2",
 		//"elixirstr0", "elixirstr1", "elixirstr2",
-		"elixirluck"
+		"elixirluck",
+		"tracker"
 	];
 	if (character.ctype !== "merchant"
 		&& merchant

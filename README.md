@@ -103,7 +103,7 @@ Every 10 minutes, he does a round:
 - Gets all their items...
 - ...and all their gold
 - Goes back to the market
-- Buys scrolls (if needed) to upgrade the items he got from the farming characters
+- Buys scrolls (if needed) to upgrade & compound the items he got from the farming characters
 - Exchanges any gems / chests he received
 - Deposits all gold above a certain limit in the bank. (Remember, to auto-buy things, he cannot deposit all gold, he needs to keep some)
 - Goes back to town and opens up his little stand
@@ -206,7 +206,6 @@ let farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
 ## To do's
 
 - At the moment, I do not have all skills unlocked. Therefor, I have not written code for them yet.
-- The npc's I farm mostly don't drop weapons or armor. So upgrading is not implemented yet.
 - A ton of other things I don't even know about yet is also not done yet. :)
 
 ## Recap

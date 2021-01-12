@@ -110,7 +110,8 @@ Every 10 minutes, he does a round:
 
 Once the stand is open, he continues his work:
 
-- Auto-compound multiple items into a higher level item
+- Auto-Upgrade designated items
+- Auto-Compound designated items into a higher level item
 - Put these higher level items in the stand for sale
 - Sell "trash", so your inventory doesn't fill up. You can designate what is considered "trash" depending on what your current enemies drop.
 - Tidy the inventory so there are no gaps (from crafting / selling things)
@@ -148,7 +149,7 @@ Adjust these four variables, and you're good to go:
 //Name of your merchant
 const merchantName = "Hank";
 //Name of your characters
-const characterNames = ["Samuel", "Freddy", "Omega"];
+const characterNames = ["Freddy", "Frank", "John"];
 //Designate a Master for hunting tough monsters
 const hunterMaster = characterNames[0];
 //Master for hunting tough monsters- Handled by updateFarmingSpot()
@@ -157,23 +158,48 @@ let master = "";
 const hunterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
 //Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-const allMonstersToFarm = ["arcticbee", "porcupine", "croc", "armadillo", "crabx", "iceroamer"];
+const allMonstersToFarm = ["crabx", "bbpompom", "ghost"]; //"porcupine", "porcupine", "croc", "armadillo", "arcticbee", "crabx"
 //Monster you are currently farming - Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
-//Monsters your characters are allowed to farm. Only enter monsters you are strong enough to defeat!
-const allowedMonsters = ["hen", "rooster", "goo", "crab", "bee", "minimush", "frog", "squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig", "poisio", "snowman", "porcupine", "arcticbee", "spider", "tortoise", "bat", "scorpion", "gscorpion", "iceroamer", "crabx", ""];
-//Monsters that are too strong for a single character are listed here.
-//Your Master-Character will choose a monster, which the whole party will then attack.
-//Also: Characters will start using their offensive skills if a monster is on this list (They don't use skills against weak monsters, conserve MP)
-const requiresMaster = ["poisio", "crabx", "minimush", "scorpion", "gscorpion", "tortoise", "bat", "spider", "iceroamer", "", "", ""];
+//Monsters your characters are allowed to hunt. Only enter monsters you are strong enough to defeat!
+const allowedMonsters = [
+	"hen", "rooster", "goo", "crab", "bee", "minimush", "frog",
+	"squigtoad", "osnake", "snake", "rat", "armadillo", "croc",
+	"squig", "poisio", "snowman", "porcupine", "arcticbee",
+	"spider", "tortoise", "stoneworm", "bat", "scorpion", "gscorpion",
+	"iceroamer", "crabx", "jr", "greenjr", "bbpompom", "",
+	"ghost", "", ""];
+/*
+Monsters that are too strong for a single character are listed below.
+Your Master-Character will choose a monster, which the whole party will then attack.
+Also: Characters will start using their offensive skills if a monster is on this list
+(They don't use offensive skills against weak monsters, conserve MP)
+*/
+const requiresMaster = [
+	"poisio", "scorpion", "gscorpion", "tortoise", "stoneworm",
+	"bat", "spider", "iceroamer", "crabx", "jr", "greenjr",
+	"bbpompom", "booboo", "prat", "boar", "ghost", "mummy",
+	"mole", "wolfie", "wolf", "xscorpion", "bigbird"];
+//Items to upgrade
+const itemsToUpgrade = [
+	"sshield", "staff", "slimestaff", "staffofthedead", "pmace",
+	"firebow", "frostbow", "firestaff",
+	//Hunter Sets
+	"mchat", "mcgloves", "mcpants", "mcarmor", "mcboots",
+	"mmhat", "mmgloves", "mmpants", "mmarmor", "mmshoes",
+	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
+	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
+	"mrnhat", "mrngloves", "mrnpants", "mrnarmor", "mrnboots",
+	"merry"];
 //Merchant auto-crafts below items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = ["ctristone", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "fierygloves", "wingedboots"];
-//The map you farm on
+const itemsToCraft = [
+  "ctristone", "firebow", "frostbow","fierygloves", "wingedboots",
+  "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1",
+  "elixirvit2", "xbox"];
+//Smart-Moveable Object of your farm-location, handled by updateFarmingSpot()
 //Farming spots are found in G.maps.main
-let farmMap = getFarmingSpot(farmMonsterType, "map");
-//The coordinates of your farming spot on the map
-let farmCoord = getFarmingSpot(farmMonsterType, "coord");
+let farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
 ```
 
 

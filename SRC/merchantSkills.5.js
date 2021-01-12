@@ -93,7 +93,7 @@ function merchantSkills() {
 	if (new Date().getMinutes() % 10 === 0) {
 
 		updateFarmingSpot();
-		closeMerchantStand();
+		close_stand();
 
 		//Make the big round
 		smart_move({ to: "main" }, () => {
@@ -205,7 +205,7 @@ function buyScrolls() {
 	}
 
 	function getScrolls(scroll, scrollNum) {
-		closeMerchantStand();
+		close_stand();
 		smart_move(find_npc("scrolls"), () => {
 			buy(scroll, scrollNum);
 			log(`Bought ${scrollNum} ${G.items[scroll].name}`);
@@ -461,13 +461,30 @@ function restoreParty() {
 	}
 }
 
+/*
 //Close the merchant stand
 function closeMerchantStand() {
 	//Close merchant Stand
 	//parent.socket.emit("merchant", {close:1})
-	parent.close_merchant(locate_item("stand0"));
+	//parent.close_merchant(locate_item("stand0"));
+	close_stand();
+}
+*/
+
+//Go to the market and sell things
+function openMerchantStand() {
+	smart_move({
+		map: "main",
+		x: - 20 - Math.round(Math.random() * 180),
+		y: - 70
+	}, () => {
+		//Face front
+		move(character.x, character.y + 1);
+		open_stand();
+	});
 }
 
+/*
 //Go to the market and sell things
 function openMerchantStand() {
 	if (character.map !== "main") {
@@ -480,21 +497,24 @@ function openMerchantStand() {
 	//Separate function, to shorten above code
 	function goTownOpenStand() {
 		smart_move({ to: "town" }, () => {
-			smart_move({ x: -20 - Math.round(Math.random() * 180), y: character.y - 85 }, () => {
+			smart_move({ x: -20 - Math.round(Math.random() * 180), y: - 85 }, () => {
 				//Turn around, face front
 				smart_move({ x: character.x, y: character.y + 1 }, () => {
 					//parent.socket.emit("merchant",{num:41});
-					parent.open_merchant(locate_item("stand0"));
+					//parent.open_merchant(locate_item("stand0"));
+					open_stand();
 				});
 			});
 		});
 	}
 }
+*/
+
 
 //Exchange Gems & Quests at the corresponding NPC
 function exchangeGemsQuests() {
 	if (locateGems("findGems")) {
-		closeMerchantStand();
+		close_stand();
 		//smart_move({ to: "exchange" }, () => {
 		smart_move(find_npc(locateGems("findNpc")), () => {
 			exchange(locateGems("getSlotNum"));
@@ -546,7 +566,7 @@ function exchangeGemsQuests() {
 function craftItems() {
 	for (const item of itemsToCraft) {
 		if (checkCraftIngredients(item)) {
-			closeMerchantStand();
+			close_stand();
 			smart_move(find_npc("craftsman"), () => {
 				auto_craft(item);
 				setTimeout(() => {

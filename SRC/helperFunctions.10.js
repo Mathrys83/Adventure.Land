@@ -31,7 +31,7 @@ function addButtons() {
 	});
 	add_bottom_button("showStatus", "📈", showStatus);
 	add_bottom_button("toggleMerchantStand", "🛒", () => {
-		character.stand ? parent.close_merchant(locate_item("stand0")) : parent.open_merchant(locate_item("stand0"));
+		character.stand ? close_stand() : open_stand();
 	});
 	add_bottom_button("Pause", "⏸️", pause);
 

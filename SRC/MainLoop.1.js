@@ -46,7 +46,7 @@ const allowedMonsters = [
 	"hen", "rooster", "goo", "crab", "bee", "minimush", "frog",
 	"squigtoad", "osnake", "snake", "rat", "armadillo", "croc",
 	"squig", "poisio", "snowman", "porcupine", "arcticbee",
-	"spider", "tortoise", "stoneworm", "bat", "scorpion", "gscorpion",
+	"spider", "tortoise", "bat", "scorpion", "gscorpion",
 	"iceroamer", "crabx", "jr", "greenjr", "bbpompom", "",
 	"ghost", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", ""];
@@ -101,11 +101,11 @@ function main() {
 	//If character is moving, do nothing
 	if (is_moving(character)) return;
 
-	//Loot everything
-	loot();
-
 	//Merchant Skills are Tier 2 actions
 	if (character.ctype === "merchant") return;
+
+	//Loot everything
+	loot();
 
 	//Party follows master
 	if (master && character.name !== master) followMaster();
@@ -144,6 +144,9 @@ function tier2Actions() {
 
 	//Update farming spot [Needs to be updated, even when moving]
 	updateFarmingSpot();
+
+	//If merchant moves with the stand open, close it
+	if (is_moving(character) && character.ctype === "merchant") if (character.stand) close_stand();
 
 	//If character is moving, do nothing
 	if (is_moving(character)) return;

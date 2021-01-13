@@ -35,21 +35,10 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", "",
 	//Unneeded elixirs
 	"elixirstr0", "elixirstr1", "elixirstr2",
-	"", "", "", "", "", "", "", "",
-	"", "", "", "", "", "", "", "",
-	"", "", "", "", "", "", "", "",
-	//Seasonal Trash
-	/*
-	"egg0", "egg1", "egg2", "egg3", "egg4", "egg5",
-	"egg6", "egg7", "egg8", "", "", "",
-	"redenvelopev1", "redenvelopev2", "redenvelopev3", "", "", "",
-	"ornament", "mistletoe", "candycane", "merry", "", "",
-	"", "", "", "", "", "", "", "", "", "", "", "",
-	"", "", "", "", "", "", "", "", "", "", "", "",
-	"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"
-	*/
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
@@ -104,7 +93,8 @@ function merchantSkills() {
 				merchantsLuck();
 				smart_move({ to: "bank" }, () => {
 					depositGold();
-					depositItems();
+					//depositValuableItems();
+					depositSelectedItems();
 					if (buyScrolls("check")) {
 						smart_move({ to: "scrolls" }, () => {
 							buyScrolls("buy");
@@ -189,7 +179,7 @@ function buyScrolls(action) {
 }
 
 /*
-// ### Works indepentend of the "Big round" ###
+// ### Works independent of the "Big round" ###
 
 //Buy Compound Scrolls
 function buyScrolls() {
@@ -211,7 +201,7 @@ function buyScrolls() {
 			log(`Bought ${scrollNum} ${G.items[scroll].name}`);
 			setTimeout(() => {
 				openMerchantStand();
-			}, 8000);
+			}, 6000);
 		});
 		return;
 	}
@@ -236,17 +226,47 @@ function depositGold() {
 	log(`Money deposited! Money in Pocket: ${character.gold}`);
 }
 
+/*
 //Deposit items in bank
-function depositItems() {
+function depositValuableItems() {
 	character.items.forEach((item, index) => {
 		if (item
 			&& (item.level
 				&& item.level > sellItemLevel)
 			|| item_grade(item) === 2) {
 			bank_store(index);
-			log("Item Stored in bank!");
+			log("Item stored in bank!");
 		}
 	});
+}
+*/
+
+//Collects similar items in the bank
+//First item has to be stored manually to initialize!
+//This is a precaution not to store unwanted items (Overflow bank)
+function depositSelectedItems() {
+	//Loops through bank-sections
+	for (const box in character.bank) {
+		if (box === "gold") continue;
+		//Loops through individual bank-slots
+		for (let slot of character.bank[box]) {
+			if (slot !== null) {
+				//Loops through character's inventory
+				character.items.forEach((item, index) => {
+					if (item !== null
+						&& (item_grade(item) === 2
+							|| (item.level
+								&& item.level > sellItemLevel)
+							|| (slot.name === item.name
+								&& (slot.q
+									|| slot.level <= item.level)))) {
+						bank_store(index);
+						log("Item stored in bank!");
+					}
+				});
+			}
+		}
+	}
 }
 
 //Upgrade Items
@@ -294,7 +314,7 @@ function compoundItems(level) {
 	if (triple
 		&& triple.length === 3
 		&& !character.q.compound) {
-
+	
 		compound(triple[0], triple[1], triple[2], locate_item(chooseScroll(triple))).then((data) => {
 			(data.success) ? game_log(`Compounded level ${data.level} accessory!`) : game_log("Compound Failed - Item lost!");
 		}).catch((data) => {
@@ -461,18 +481,16 @@ function restoreParty() {
 	}
 }
 
-/*
-//Close the merchant stand
-function closeMerchantStand() {
-	//Close merchant Stand
-	//parent.socket.emit("merchant", {close:1})
-	//parent.close_merchant(locate_item("stand0"));
-	close_stand();
-}
-*/
-
 //Go to the market and sell things
 function openMerchantStand() {
+	/*
+	IMPORTANT!!! Because this function gets called with a setTimeout(),
+	it can be called WHILE the character is moving,
+	causing too many calls to the server, resulting in a kick!
+	We therefor MUST check in the beginning if the character is already moving!
+	*/
+	if (is_moving(character)) return;
+
 	smart_move({
 		map: "main",
 		x: - 20 - Math.round(Math.random() * 180),
@@ -484,9 +502,11 @@ function openMerchantStand() {
 	});
 }
 
+
 /*
 //Go to the market and sell things
 function openMerchantStand() {
+	if (is_moving(character)) return;
 	if (character.map !== "main") {
 		smart_move({ to: "main" }, () => {
 			goTownOpenStand();
@@ -494,7 +514,6 @@ function openMerchantStand() {
 	} else {
 		goTownOpenStand();
 	}
-	//Separate function, to shorten above code
 	function goTownOpenStand() {
 		smart_move({ to: "town" }, () => {
 			smart_move({ x: -20 - Math.round(Math.random() * 180), y: - 85 }, () => {
@@ -511,6 +530,21 @@ function openMerchantStand() {
 */
 
 
+
+
+/*
+//Close the merchant stand
+function closeMerchantStand() {
+	//Close merchant Stand
+	//parent.socket.emit("merchant", {close:1})
+	//parent.close_merchant(locate_item("stand0"));
+	close_stand();
+}
+*/
+
+
+
+
 //Exchange Gems & Quests at the corresponding NPC
 function exchangeGemsQuests() {
 	if (locateGems("findGems")) {
@@ -521,7 +555,7 @@ function exchangeGemsQuests() {
 			log("Item Exchanged!");
 			setTimeout(() => {
 				if (!locateGems("findGems")) openMerchantStand();
-			}, 8000);
+			}, 6000);
 		});
 	}
 	//Finds Gems & Quests in Inventory
@@ -571,7 +605,7 @@ function craftItems() {
 				auto_craft(item);
 				setTimeout(() => {
 					if (!checkCraftIngredients(item)) openMerchantStand();
-				}, 8000);
+				}, 6000);
 			});
 			return;
 		}

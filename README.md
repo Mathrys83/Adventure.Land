@@ -36,7 +36,7 @@ The game lets you create multiple modules, which I did, to keep things organized
 **Update: Now, the only place where you have to adjust character-names, is in the "Main" module.**
 
 Most code I've seen has one single "main" loop that runs ~250ms, so 4 times per second. This is suggested for optimal farming performance.
-My code does have two "main" loops. Running everything every 250 milliseconds might give you great farming-performance, but it's horrible for performance overall. Therefor, I made a "tierTwo" loop that only runs every 3 seconds. All non-essential routines get called from there.
+My code does have two "main" loops. Running everything every 250 milliseconds might give you great farming-performance, but it's horrible for performance overall. Therefor, I made a "tierTwo" loop that only runs every 5 seconds. All non-essential routines get called from there.
 
 ## The Characters
 
@@ -62,7 +62,8 @@ Here's a list of what the code is capable of so far:
 ## General
 
 - Hotkeys: To load characters / create a party / stop characters
-- Custom Buttons for quick access to frequently used functions
+- Custom Buttons and friendly User Interface for quick access to frequently used functions
+![User Interface](https://github.com/johnnyawesome/Adventure.Land/blob/master/DemoImg/UI.jpg)
 - Auto-move to the designated farming spot, over several maps / continents.
 - Auto-Farm designated monsters
 - New: Multi-monster farming! Designate multiple monsters to be farmed. Your characters will then farm several different monsters per day (in addition to their hunting quests).

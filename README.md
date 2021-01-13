@@ -16,11 +16,13 @@ The basic idea of the game itself is super appealing: The most forbidden thing i
 
 ## Battletested
 
-This code is simple, but *it works*, I made sure of that.
+This code is simple, but *it works*, I try to make sure of that.
 
 I only publish a new version of my Adventure.Land scripts after they ran flawlessly over several days.
 
 I try to make sure that if you use (some or all of) my code, *it works, and it's stable and reliable*.
+
+There might be an occasional bug, of course, but generally I only publish code that ran stable for several days.
 
 ## Getting started
 

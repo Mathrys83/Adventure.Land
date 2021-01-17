@@ -78,6 +78,8 @@ const itemsToUpgrade = [
 //Merchant auto-crafts below items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
 const itemsToCraft = ["ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox"];
+//Items to be dismantled
+const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead", "", "", ""];
 //Smart-Moveable Object of your farm-location, handled by updateFarmingSpot()
 //Farming spots are found in G.maps.main
 let farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");

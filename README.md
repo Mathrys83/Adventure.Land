@@ -4,7 +4,6 @@ This is my code for Adventure.Land, an epic indie MMO RPG, where you have to wri
 
 You can see the game live with [this realtime live-view](https://adventure.land/comm?scale=2)! :)
 The officlal website of the game can be found [here](https://adventure.land/).
-This is the [Youtube Trailer of the game](https://www.youtube.com/watch?v=HJAj9u2TEZc).
 
 ## What the game is about
 
@@ -38,7 +37,7 @@ The game lets you create multiple modules, which I did, to keep things organized
 **Update: Now, the only place where you have to adjust character-names, is in the "Main" module.**
 
 Most code I've seen has one single "main" loop that runs ~250ms, so 4 times per second. This is suggested for optimal farming performance.
-My code does have two "main" loops. Running everything every 250 milliseconds might give you great farming-performance, but it's horrible for performance overall. Therefor, I made a "tierTwo" loop that only runs every 5 seconds. All non-essential routines get called from there.
+My code does have two "main" loops. Running everything every 250 milliseconds might give you great farming-performance, but it's horrible for performance overall. Therefor, I made a "tierTwo" loop that only runs every 5 seconds. All non-essential routines get called from there. This saves a tremendous amount of resources.
 
 ## The Characters
 
@@ -73,61 +72,65 @@ Here's a list of what the code is capable of so far:
 - Auto-Kite enemies. (All characters I use (Mage, Priest, Ranger) are ranged characters.)
 - Two Kiting-Modes (Walk backwards / circle around the target)
 - Seashells get exchanged for buff-potions
-- Buff-Potions get delivered to characters which consume them automatically
+- Buff-Potions get delivered to the correct characters, which consume them automatically
 - Fetch Hunting-Quests
 - Go hunting
 - Turn in fulfilled Hunting-Quests
-- (Farming / Hunting) Small enemies get attacked by individual characters
-- (Farming / Hunting) Big enemies get attacked by all characters (All characters target one single enemy)
-- Master-Mode (Define a master the other characters follow. Also: Only the master chooses targets. All characters then attack the chosen target. this lets you take on bigger enemies!)
+- Farming / Hunting small enemies get attacked by individual characters
+- Farming / Hunting big enemies get attacked by all characters (All characters target one single enemy)
+- Master-Mode (Define a master the other characters follow. Also: Only the master chooses targets. All characters then attack the chosen target. This lets you take on bigger enemies!)
 
 ## Individual characters
 
 - The mage can: auto-attack enemies (farming), energize partymembers, burst enemies and shield hurt allies from damage
-- The Ranger is also capable to auto-attack enemies (farming), he can use the "hunters mark" and he uses the supertshots (higher dps) skill on enemies. He also uses Multishot for optimal farming efficiency.
-- The priest also can farm on it's own, heal partymembers and heal the whole party at once if needed. He can also debuff (curse) enemies
+- The Ranger is also capable to auto-attack enemies (farming), he can use the "hunters mark" and he uses the super-shots (higher dps) skill on enemies. He also uses Multi-Shot for optimal farming efficiency.
+- The priest also can farm on it's own, heal party-members, and heal the whole party at once if needed. He can also debuff (curse) enemies
 
 The individual character modules are still very basic. Farming low-level mob's did not require writing complex code, or even character interaction (beyond healing), so far.
 
 ### The merchant
 
-The merchant can sell your loot on the marketplace. You can just drop your loot inside his store, set a price and he'll sell it.
+The merchant can sell your loot on the marketplace. You can just drop your loot inside his merchant-stand, set a price and he'll sell it.
 
 I decided that, because the merchant cannot farm / generate gold on his own, he should act as a support characters for the "productive" characters.
 
 So he takes care of a lot of things for you!
 
-Every 10 minutes, he does a round:
+Every 10 minutes, the merchant does his round and fulfills a lot of automated tasks:
 
 - Close the merchant stand
-- Buys potions for all characters
-- Walks to the current farming spot
-- Delivers the potions to all characters
-- Gets all their items...
+- Buy potions for all characters
+- Walk to the current farming spot
+- Deliver the potions to all characters
+- Get all the other character's items...
 - ...and all their gold
-- Goes back to the market
-- Buys scrolls (if needed) to upgrade & compound the items he got from the farming characters
-- Exchanges any gems / chests he received
-- Deposits all gold above a certain limit in the bank. (Remember, to auto-buy things, he cannot deposit all gold, he needs to keep some)
-- Goes back to town and opens up his little stand
+- Go back to the market
+- Buy scrolls (if needed) to upgrade & compound the items the merchant got from the farming characters
+- Exchange any gems / chests he received
+- Deposit all gold above a certain limit in the bank. (Remember, to auto-buy things, the merchant cannot deposit all gold, he needs to keep some)
+- Deposit designated items at the bank (Auto-Store high-level / rare items, and items of your choosing)
+- Go back to town and open up his little merchant-stand
 
-Once the stand is open, he continues his work:
+Once the stand is open, the merchant continues his work:
 
-- Auto-Upgrade designated items
-- Auto-Compound designated items into a higher level item
-- Put these higher level items in the stand for sale
-- Sell "trash", so your inventory doesn't fill up. You can designate what is considered "trash" depending on what your current enemies drop.
+- Auto-Upgrade designated items into a higher level item
+- Auto-Compound several designated items at once into a higher level item
+- Put these higher level items on the merchant-stand for sale (if needed)
+- NEW: Auto-Dismantle designated items to get crafting-materials
+- Sell "trash", so your inventory doesn't fill up. You can choose what items are considered "trash". This "trash" will be auto-sold to keep your inventory free
 - Tidy the inventory so there are no gaps (from crafting / selling things)
-- Give other players the "merchant's luck"-buff, with a chance to duplicate an item from them
-- Auto-buy cheap items from other merchants. If they sell an item under it's value, your merchant will buy it automatically.
+- Give other players the "merchant's luck"-buff, with a chance to duplicate a free item from them
+- Auto-buy cheap items from other merchants. If they sell an item under it's value, your merchant will buy it automatically. Sneaky!
 
 Other functions
 
-- Auto-exchange : If your merchant has an exchangeable in his inventory, he'll exchange it at Xyn automatically. 
+- Auto-exchange: If your merchant has an exchangeable in his inventory, he'll exchange it at Xyn automatically. 
 
-- Auto-exchange seashells: Onye your merchant has 20 seashells in his iventory, he'll go and exchange it for a buff-potion. He then delivers the potion to the appropriate character (e.g. dexterity-potion for ranger) on the next round he does.
+- Auto-exchange seashells: When your merchant has 20 seashells in his inventory, he'll go to the fisherman and exchange it for a buff-potion. He then delivers the potion to the appropriate character (e.g. dexterity-potion for ranger) on the next round he does.
 
 - Autocraft: Designate items you want to craft. Farm several, different ingredients with the new multi-monster farming function! As soon as the merchant has all necessary ingredients in his inventory, he'll auto-craft the item for you automatically!
+
+- Auto-Dismantle: Dismantle items of your choosing to get rare crafting-materials
 
 ## General functions
 
@@ -139,14 +142,14 @@ There's a  module called "helperFunctions": It holds all functions in one place 
 - Auto-Transfer loot (to the merchant)
 - Drink / Relocate potions
 - Tidying the inventory (arranging all items, gap-free)
-- Following Master, cross-map
-- Show status: Nice button with an abundance of information (Activa hunting quests / Farming mode / Master / Map where yor characters are / what monster they're farming / hunting / etc.)
+- Following the  Master, cross-map and cross-continent
+- Show status: Nice button with an abundance of information (Active hunting quests / Farming mode / Master / Map where yor characters are / What monster they're farming / hunting / etc.)
 
 ## Adjust the code
 
-I tried to make the code as open as possible. However, you have to change four things in the "Main"-Module, so the code knows *what you want to farm* and *who your characters are (names) *.
+I tried to make the code as open as possible. However, you have to change a few variables in the "Main"-Module, so the code knows *what you want to farm* and *who your characters are (names) * etc.
 
-Adjust these four variables, and you're good to go:
+Adjust these variables, and you're good to go:
 
 ```javascript
 //Name of your merchant
@@ -213,7 +216,7 @@ let farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
 
 ## Recap
 
-The code can run on it's own several days, if you tweak the values correctly. The merchant's inventory requires attention from time to time, because I don't want to auto-sell good items, so they keep piling up (intentionally). You can tweak that of course, the code is there.
+The code can run on it's own several days / weeks, if you tweak the values correctly. The merchant's inventory requires attention from time to time, because I don't want to auto-sell good items, so they keep piling up (intentionally). You can tweak that of course, all the code is there.
 
 Enjoy!
 

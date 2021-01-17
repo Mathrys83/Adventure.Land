@@ -20,17 +20,17 @@ const maxCompoundLevel = 3;
 const maxUpgradeLevel = 5;
 
 const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
-	"wshoes", "", "spores", "beewings", "wcap", "", //bfur ink
+	"wshoes", "", "", "beewings", "wcap", "", //bfur ink spores
 	"strearring", "stramulet", "wattire", "poison", "rattail",
 	"wbreeches", "gslime", "", "", "shoes", "", //ascale cscale lotusf
 	"pants", "spear", "spidersilk", "sstinger", "", //snakefang
-	"smush", "spores", "frogt", "gloves1", "stinger", "wgloves",
+	"smush", "frogt", "gloves1", "stinger", "wgloves",
 	"snakeoil", "dstones", "helmet1", "bwing",
 	"tshirt0", "tshirt1", "tshirt2", "cshell", "whiteegg",
 	"quiver", "hbow", "shield", "mushroomstaff", "", "", "", "", //quiver
 	"stramulet", "strbelt", "strearring", "", "", //"strring"
 	"hpbelt", "", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
-	"throwingstars", "smoke", "phelmet", "lspores", "", "", "", "",
+	"throwingstars", "smoke", "phelmet", "", "", "", "", "",
 	//XMas Set
 	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",
 	"", "", "", "", "", "", "", "",
@@ -75,6 +75,8 @@ function merchantSkills() {
 	exchangeGemsQuests();
 	//Craft items
 	craftItems();
+	//Dismantle items
+	dismantleItems();
 
 	//Visit farm-party every 10 minutes.
 	//Bring potions, take their gold and items
@@ -634,5 +636,30 @@ function craftItems() {
 			}
 		}
 		return ingredients.length === ingredientsComplete.length ? true : false;
+	}
+}
+
+//Dismantle Items
+function dismantleItems() {
+	if (findDismantleItems("find")) {
+		close_stand();
+		smart_move(find_npc("craftsman"), () => {
+			dismantle(findDismantleItems("slot"));
+			setTimeout(() => {
+				if (!findDismantleItems("find")) openMerchantStand();
+			}, 6000);
+		});
+		return;
+	}
+	function findDismantleItems(arg) {
+		for (const slot in character.items) {
+			if (character.items[slot]) {
+				if (arg === "find") {
+					if (itemsToDismantle.indexOf(character.items[slot].name) !== -1) return true;
+				} else if (arg === "slot") {
+					if (itemsToDismantle.indexOf(character.items[slot].name) !== -1) return slot;
+				}
+			}
+		}
 	}
 }

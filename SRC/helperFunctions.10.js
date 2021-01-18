@@ -26,6 +26,9 @@ function addButtons() {
 	add_bottom_button("move2Main", "🏠", () => {
 		smart_move({ to: "main" });
 	});
+	add_bottom_button("move2Bank", "💰", () => {
+		smart_move({ to: "bank" });
+	});
 	add_bottom_button("move2Farm", "🚜", () => {
 		getFarmingSpot(farmMonsterType, "move");
 	});

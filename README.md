@@ -216,7 +216,7 @@ let farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
 
 ## Recap
 
-The code can run on it's own several days / weeks, if you tweak the values correctly. The merchant's inventory requires attention from time to time, because I don't want to auto-sell good items, so they keep piling up (intentionally). You can tweak that of course, all the code is there.
+The code can run on it's own over several days / weeks, if you tweak the values correctly. The merchant's inventory / Bank slots require attention from time to time. This is because I don't want to auto-sell good items, so they keep piling up (intentionally). You can tweak that of course, all the code is there. 
 
 Enjoy!
 

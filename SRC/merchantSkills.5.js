@@ -3,10 +3,10 @@ const minScrolls = 100;
 
 //Potion Thresholds
 const potions = {
-	hpot0: 3,
-	hpot1: 3,
-	mpot0: 24,
-	mpot1: 24
+	hpot0: 12,
+	hpot1: 15,
+	mpot0: 30,
+	mpot1: 30
 };
 //Cost 4800
 
@@ -23,9 +23,9 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"wshoes", "", "", "beewings", "wcap", "", //bfur ink spores
 	"strearring", "stramulet", "wattire", "poison", "rattail",
 	"wbreeches", "gslime", "", "", "shoes", "", //ascale cscale lotusf
-	"pants", "spear", "spidersilk", "sstinger", "", //snakefang
+	"pants", "spear", "", "sstinger", "", //snakefang spidersilk
 	"smush", "frogt", "gloves1", "stinger", "wgloves",
-	"snakeoil", "dstones", "helmet1", "bwing",
+	"", "dstones", "helmet1", "bwing", //snakeoil
 	"tshirt0", "tshirt1", "tshirt2", "cshell", "whiteegg",
 	"quiver", "hbow", "shield", "mushroomstaff", "", "", "", "", //quiver
 	"stramulet", "strbelt", "strearring", "", "", //"strring"

@@ -60,7 +60,6 @@ use_skill("curse");
 
 //Check if the cooldown of a class skill has passed
 is_on_cooldown(skill)
-can_use(name)
 
 //############# Party List Array #############
 

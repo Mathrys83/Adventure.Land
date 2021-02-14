@@ -137,8 +137,9 @@ function usePotions() {
 
 function drinkPotions() {
 	if (character.ctype === "merchant") return;
-	let potions = ["elixirdex0", "elixirdex1", "elixirdex2",
-		"elixirint0", "elixirint1", "elixirint2",
+	let potions = [
+		"elixirdex2", "elixirdex1", "elixirdex0",
+		"elixirint2", "elixirint1", "elixirint0",
 		//"elixirvit0", "elixirvit1", "elixirvit2",
 		//"elixirstr0", "elixirstr1", "elixirstr2",
 		"elixirluck"

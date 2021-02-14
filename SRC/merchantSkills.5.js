@@ -3,7 +3,7 @@ const minScrolls = 100;
 
 //Potion Thresholds
 const potions = {
-	hpot0: 12,
+	hpot0: 15,
 	hpot1: 15,
 	mpot0: 30,
 	mpot1: 30

@@ -7,6 +7,8 @@ load_code("merchantSkills");
 load_code("mageSkills");
 load_code("priestSkills");
 load_code("rangerSkills");
+load_code("sendCodeMessages");
+load_code("handleCodeMessages");
 
 //Hotkeys!
 map_key("5", "snippet", "loadCharacters()");
@@ -148,7 +150,7 @@ function tier2Actions() {
 	updateFarmingSpot();
 
 	//If merchant moves with the stand open, close it
-	if (is_moving(character) && character.ctype === "merchant") if (character.stand) close_stand();
+	if (is_moving(character) && character.ctype === "merchant" && character.stand) close_stand();
 
 	//If character is moving, do nothing
 	if (is_moving(character)) return;
@@ -163,8 +165,9 @@ function tier2Actions() {
 	relocateItems();
 	//Arranges Inventory without gaps
 	tidyInventory();
-	//Transfer loot to merchant
+	//Functions for non-merchant characters
 	if (character.ctype !== "merchant") {
+		requestHealthPotion();
 		drinkPotions();
 		transferLoot(merchantName);
 	}

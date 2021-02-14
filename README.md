@@ -121,6 +121,7 @@ Once the stand is open, the merchant continues his work:
 - Tidy the inventory so there are no gaps (from crafting / selling things)
 - Give other players the "merchant's luck"-buff, with a chance to duplicate a free item from them
 - Auto-buy cheap items from other merchants. If they sell an item under it's value, your merchant will buy it automatically. Sneaky!
+- Auto-Join giveaways: Automatically partake when a player hosts a giveaway - Merry christmas!
 
 Other functions
 

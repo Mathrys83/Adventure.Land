@@ -411,19 +411,21 @@ function buyCheapStuff() {
 			let tradeSlots = Object.keys(otherPlayer.slots).filter(tradeSlot => tradeSlot.includes("trade"));
 			tradeSlots.forEach(tradeSlot => {
 				let otherPlayerTradeSlot = otherPlayer.slots[tradeSlot];
-				if (otherPlayerTradeSlot
-					&& !otherPlayerTradeSlot.b //Excludes "whishlisted" items! Trade slots can "sell" or "wishlist"!
-					&& otherPlayerTradeSlot.price < item_value(otherPlayerTradeSlot)
-					&& character.gold > otherPlayerTradeSlot.price) {
-					//Don't try to buy Giveaways
-					if (!otherPlayerTradeSlot.giveaway) {
+				//Must be a Trade-Slot
+				if (otherPlayerTradeSlot) {
+					if (!otherPlayerTradeSlot.b //Excludes "whishlisted" items! Trade slots can "sell" or "wishlist"!
+						&& otherPlayerTradeSlot.price < item_value(otherPlayerTradeSlot)
+						&& character.gold > otherPlayerTradeSlot.price
+						//Don't try to buy Giveaways
+						&& !otherPlayerTradeSlot.giveaway) {
 						//If it's a single item, buy it.
 						if (!otherPlayerTradeSlot.q) {
 							log(`Buying 1 from ${otherPlayer} Slot ${tradeSlot}`)
 							trade_buy(otherPlayer, tradeSlot, 1);
 							//If the item has a quantity, buy as many as possible
 						} else if (otherPlayerTradeSlot.q) {
-							let maxBuy = Math.floor(character.gold / otherPlayerTradeSlot.price);
+							//Maximum possible quantity of items that can be bought wit available gold
+							let maxBuy = Math.floor(character.gold / otherPlayerTradeSlot.price) < otherPlayerTradeSlot.q ? Math.floor(character.gold / otherPlayerTradeSlot.price) : otherPlayerTradeSlot.q;
 							trade_buy(otherPlayer, tradeSlot, maxBuy);
 							//parent.trade_buy(tradeSlot, otherPlayer.name, otherPlayerTradeSlot.rid, maxBuy);
 						}

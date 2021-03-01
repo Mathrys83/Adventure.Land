@@ -1,5 +1,5 @@
-//If Health-Potions are exhausted,
-//the character will request some from other Party-Members
+//If a characters Health-Potions are exhausted,
+//he will request some from other Party-Members
 function requestHealthPotion() {
   if (character.ctype === "merchant") return;
   const potions = ["hpot0", "hpot1"];

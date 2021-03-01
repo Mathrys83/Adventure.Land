@@ -23,7 +23,7 @@ addButtons();
 
 ######################### Custom Settings ##########################
 
-								Adjust below values to your needs
+					Adjust below values to your needs
 
 ###################################################################
 */
@@ -67,7 +67,7 @@ const requiresMaster = [
 //Items to upgrade
 const itemsToUpgrade = [
 	"sshield", "staff", "slimestaff", "staffofthedead", "maceofthedead", "pmace",
-	"firebow", "frostbow", "firestaff", "t2bow",
+	"firebow", "frostbow", "firestaff", "t2bow", "gphelmet", "xmassweater",
 	//Hunter Sets
 	"mchat", "mcgloves", "mcpants", "mcarmor", "mcboots",
 	"mmhat", "mmgloves", "mmpants", "mmarmor", "mmshoes",

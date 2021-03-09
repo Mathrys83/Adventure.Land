@@ -133,6 +133,13 @@ Other functions
 
 - Auto-Dismantle: Dismantle items of your choosing to get rare crafting-materials
 
+## Code Messages (CM's)
+
+- If a character runs out of healtp-potions, it will ask party-members to pass some health-potions
+- Party-members will send the potions to the requesting character, if they are in range.
+
+I didn't do much with CM's yet, but the modules to create ("sendCodeMessages") and handle ("handleCodeMessages") CM's are in place and ready to use.
+
 ## General functions
 
 There's a  module called "helperFunctions": It holds all functions in one place which are useful to every character (not to waste module-slots). They are quite helpful and take care of a lot of things:

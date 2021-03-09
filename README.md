@@ -82,11 +82,11 @@ Here's a list of what the code is capable of so far:
 
 ## Individual characters
 
-- The mage can: auto-attack enemies (farming), energize partymembers, burst enemies and shield hurt allies from damage
-- The Ranger is also capable to auto-attack enemies (farming), he can use the "hunters mark" and he uses the super-shots (higher dps) skill on enemies. He also uses Multi-Shot for optimal farming efficiency.
-- The priest also can farm on it's own, heal party-members, and heal the whole party at once if needed. He can also debuff (curse) enemies
+- The Mage can: Auto-attack enemies (farming), energize partymembers, burst enemies (controlled and uncontrolled), and shield hurt allies from damage
+- The Ranger is capable to auto-attack enemies (farming), and he can use the hunters mark" to debuff enemies. He also uses Multi-Shot (3-Shot and 5-Shot) for optimal farming efficiency. Also, he can both use the super-shot skill (higher dps), as well as the piercing-shot skill against armored enemies
+- The Priest also can farm on it's own, heal individual party-members, asl well as healing the whole party at once, if needed. He can also curse (debuff) enemies, use dark blessing (buff farming-party) and absorb sins (to protect your farming-party)
 
-The individual character modules are still very basic. Farming low-level mob's did not require writing complex code, or even character interaction (beyond healing), so far.
+The individual character modules are still very basic. Farming low-level mob's did not require writing complex code.
 
 ### The merchant
 

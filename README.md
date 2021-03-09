@@ -160,10 +160,20 @@ I tried to make the code as open as possible. However, you have to change a few 
 Adjust these variables, and you're good to go:
 
 ```javascript
+/*
+###################################################################
+
+######################### Custom Settings ##########################
+
+					Adjust below values to your needs
+
+###################################################################
+*/
+
 //Name of your merchant
-const merchantName = "Hank";
+const merchantName = "TheGoldenOne";
 //Name of your characters
-const characterNames = ["Freddy", "Frank", "John"];
+const characterNames = ["Paul", "MacicMage", "RobinRanger"];
 //Designate a Master for hunting tough monsters
 const hunterMaster = characterNames[0];
 //Master for hunting tough monsters- Handled by updateFarmingSpot()
@@ -172,7 +182,7 @@ let master = "";
 const hunterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
 //Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-const allMonstersToFarm = ["crabx", "bbpompom", "ghost"]; //"porcupine", "porcupine", "croc", "armadillo", "arcticbee", "crabx"
+const allMonstersToFarm = ["rat", "crabx", "bbpompom", "ghost"];
 //Monster you are currently farming - Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
 //Monsters your characters are allowed to hunt. Only enter monsters you are strong enough to defeat!
@@ -180,14 +190,14 @@ const allowedMonsters = [
 	"hen", "rooster", "goo", "crab", "bee", "minimush", "frog",
 	"squigtoad", "osnake", "snake", "rat", "armadillo", "croc",
 	"squig", "poisio", "snowman", "porcupine", "arcticbee",
-	"spider", "tortoise", "stoneworm", "bat", "scorpion", "gscorpion",
-	"iceroamer", "crabx", "jr", "greenjr", "bbpompom", "",
-	"ghost", "", ""];
+	"spider", "tortoise", "bat", "scorpion", "gscorpion",
+	"iceroamer", "crabx", "jr", "greenjr", "bbpompom", "ghost",
+	"xscorpion"];
 /*
 Monsters that are too strong for a single character are listed below.
 Your Master-Character will choose a monster, which the whole party will then attack.
 Also: Characters will start using their offensive skills if a monster is on this list
-(They don't use offensive skills against weak monsters, conserve MP)
+(They don't use offensive skills against weak monsters, to conserve MP)
 */
 const requiresMaster = [
 	"poisio", "scorpion", "gscorpion", "tortoise", "stoneworm",
@@ -195,22 +205,26 @@ const requiresMaster = [
 	"bbpompom", "booboo", "prat", "boar", "ghost", "mummy",
 	"mole", "wolfie", "wolf", "xscorpion", "bigbird"];
 //Items to upgrade
+//Items on this list get auto-upgraded
 const itemsToUpgrade = [
-	"sshield", "staff", "slimestaff", "staffofthedead", "pmace",
-	"firebow", "frostbow", "firestaff",
+	"sshield", "staff", "slimestaff", "staffofthedead", "maceofthedead", "pmace",
+	"firebow", "frostbow", "firestaff", "t2bow", "gphelmet", "xmassweater",
+	"cape", "bcape", "", "", "",
 	//Hunter Sets
 	"mchat", "mcgloves", "mcpants", "mcarmor", "mcboots",
 	"mmhat", "mmgloves", "mmpants", "mmarmor", "mmshoes",
 	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
 	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
 	"mrnhat", "mrngloves", "mrnpants", "mrnarmor", "mrnboots",
+	"", "", "", "", "",
+	"", "", "", "", "",
 	"merry"];
-//Merchant auto-crafts below items if he has the ingredients in his inventory
+//The merchant auto-crafts below listed items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = [
-  "ctristone", "firebow", "frostbow","fierygloves", "wingedboots",
-  "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1",
-  "elixirvit2", "xbox"];
+const itemsToCraft = ["ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox"];
+//Items to be dismantled are listed below
+//Auto-dismantle items to get rare crafting-materials
+const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead"];
 //Smart-Moveable Object of your farm-location, handled by updateFarmingSpot()
 //Farming spots are found in G.maps.main
 let farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
@@ -219,8 +233,7 @@ let farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
 
 ## To do's
 
-- At the moment, I do not have all skills unlocked. Therefor, I have not written code for them yet.
-- A ton of other things I don't even know about yet is also not done yet. :)
+- A ton of things I don't even know about yet... It's a learning experience! :)
 
 ## Recap
 

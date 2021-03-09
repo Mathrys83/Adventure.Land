@@ -204,6 +204,9 @@ const requiresMaster = [
 	"bat", "spider", "iceroamer", "crabx", "jr", "greenjr",
 	"bbpompom", "booboo", "prat", "boar", "ghost", "mummy",
 	"mole", "wolfie", "wolf", "xscorpion", "bigbird"];
+//Monsters listed here always get attacked on sight
+const specialMonsters = ["cutebee", "snowman", "goldenbat",
+	"wabbit", "phoenix", "fvampire", "grinch", "", ""];
 //Items to upgrade
 //Items on this list get auto-upgraded
 const itemsToUpgrade = [

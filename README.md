@@ -9,7 +9,7 @@ The officlal website of the game can be found [here](https://adventure.land/).
 
 The basic idea of the game itself is super appealing: The most forbidden thing in *any* game, is to write a bot for it. *Here, BOTTING IS THE GAME!* :)
 
-![Adventure.Land Farming Party](https://github.com/johnnyawesome/Adventure.Land/blob/master/DemoImg/AdventureLandFarming.gif)
+![Adventure.Land Farming Party](https://raw.githubusercontent.com/johnnyawesome/Adventure.Land/master/DemoImg/AdventureLandFarming1.gif)
 
 (This is not my first coding game, I also played [Screeps](https://screeps.com/), and you can [check out my source here](https://github.com/johnnyawesome/Screeps)).
 

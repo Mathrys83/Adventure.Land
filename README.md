@@ -82,7 +82,7 @@ Here's a list of what the code is capable of so far:
 
 ## Individual characters
 
-- The Mage can: Auto-attack enemies (farming), energize partymembers, burst enemies (controlled and uncontrolled), and shield hurt allies from damage
+- The Mage can: Auto-attack enemies (farming), energize party-members, burst enemies (controlled and uncontrolled), and shield hurt allies from damage
 - The Ranger is capable to auto-attack enemies (farming), and he can use the hunters mark to debuff enemies. He also uses Multi-Shot (3-Shot and 5-Shot) for optimal farming efficiency. Also, he can both use the super-shot skill (higher dps), as well as the piercing-shot skill against armored enemies
 - The Priest also can farm on it's own, heal individual party-members, as well as healing the whole party at once, if needed. He can also curse (debuff) enemies, use dark blessing (buff farming-party) and absorb sins (to protect your farming-party)
 

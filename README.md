@@ -224,7 +224,8 @@ const itemsToUpgrade = [
 	"merry"];
 //The merchant auto-crafts below listed items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = ["ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox"];
+const itemsToCraft = ["ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1",
+	"elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox"];
 //Items to be dismantled are listed below
 //Auto-dismantle items to get rare crafting-materials
 const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead"];

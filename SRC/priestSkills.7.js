@@ -32,7 +32,29 @@ function priestSkills(target) {
 					log(`Heal failed: ${message.reason}`);
 				});
 			}
+			//Absorb Sins of a Partymember
+			if (character.level >= 55
+				&& partyMember.name !== character.name
+				&& partyMember.hp < (partyMember.max_hp * healingThreshold)
+				&& character.mp >= G.skills.absorb.mp
+				&& !partyMember.rip
+				//&& can_heal(partyMember)
+				&& is_in_range(partyMember, "absorb")
+				&& !is_on_cooldown("absorb")) {
+				use_skill("absorb", partyMember);
+				game_log(`Absorbed sins of ${partyMember.name}`);
+			}
 		}
+	}
+
+	//Use Dark Blessing after reaching Lvl 70
+	if (character.level >= 70
+		&& validateOffensiveSkill(target, manaReserve)
+		&& character.mp > (character.max_mp * manaReserve)
+		&& character.mp > G.skills.darkblessing.mp
+		&& !is_on_cooldown("darkblessing")) {
+		use_skill("darkblessing");
+		game_log("Used Dark Blessing");
 	}
 
 	//Curse the enemy

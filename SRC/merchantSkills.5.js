@@ -4,9 +4,9 @@ const minScrolls = 100;
 //Potion Thresholds
 const potions = {
 	hpot0: 15,
-	hpot1: 15,
+	hpot1: 9,
 	mpot0: 30,
-	mpot1: 30
+	mpot1: 45
 };
 //Cost 4800
 
@@ -30,7 +30,7 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"quiver", "hbow", "shield", "mushroomstaff", "", "", "", "", //quiver
 	"stramulet", "strbelt", "strearring", "", "", //"strring"
 	"hpbelt", "", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
-	"throwingstars", "smoke", "phelmet", "", "", "", "", "",
+	"throwingstars", "smoke", "phelmet", "basher", "xmace", "", "", "",
 	//XMas Set
 	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",
 	"", "", "", "", "", "", "", "",

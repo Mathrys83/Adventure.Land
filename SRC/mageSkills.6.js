@@ -47,6 +47,8 @@ function mageSkills(target) {
 		//Controlled burst
 		if (character.level >= 75
 			&& !master
+			//Only use these skills against weak monsters
+			&& !requiresMaster.includes(farmMonsterType)
 			&& !is_on_cooldown("cburst")
 			&& character.mp > G.skills.cburst.mp) {
 			let targets = Object.values(parent.entities).filter(entity => entity.mtype === farmMonsterType && entity.level <= 1 && is_in_range(entity, "cburst"));

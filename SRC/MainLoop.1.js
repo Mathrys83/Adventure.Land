@@ -45,25 +45,30 @@ const allMonstersToFarm = ["rat", "crabx", "bbpompom", "ghost"]; //"porcupine", 
 let farmMonsterType = scheduleFarming();
 //Monsters your characters are allowed to hunt. Only enter monsters you are strong enough to defeat!
 const allowedMonsters = [
-	"hen", "rooster", "goo", "crab", "bee", "minimush", "frog",
+	"hen", "rooster", "goo", "crab", "bee", "cutebee", "minimush", "frog",
 	"squigtoad", "osnake", "snake", "rat", "armadillo", "croc",
 	"squig", "poisio", "snowman", "porcupine", "arcticbee",
-	"spider", "tortoise", "bat", "scorpion", "gscorpion",
+	"spider", "tortoise", "bat", "goldenbat", "wabbit", "scorpion", "gscorpion",
 	"iceroamer", "crabx", "jr", "greenjr", "bbpompom", "ghost",
 	"xscorpion", "", "", "", "", "", "", "",
+	"phoenix", "fvampire", "grinch",
 	"", "", "", "", "", "", "", ""];
 /*
 Monsters that are too strong for a single character are listed below.
 Your Master-Character will choose a monster, which the whole party will then attack.
 Also: Characters will start using their offensive skills if a monster is on this list
-(They don't use offensive skills against weak monsters, conserve MP)
+(They don't use offensive skills against weak monsters, to conserve MP)
 */
 const requiresMaster = [
-	"poisio", "scorpion", "gscorpion", "tortoise", "stoneworm",
-	"bat", "spider", "iceroamer", "crabx", "jr", "greenjr",
+	"poisio", "snowman", "scorpion", "gscorpion", "tortoise", "stoneworm",
+	"bat", "spider", "goldenbat", "iceroamer", "crabx", "jr", "greenjr",
 	"bbpompom", "booboo", "prat", "boar", "ghost", "mummy",
 	"mole", "wolfie", "wolf", "xscorpion", "bigbird",
+	"wabbit", "phoenix", "fvampire", "grinch",
 	"", "", "", "", "", "", "", ""];
+//Monsters listed here always get attacked on sight
+const specialMonsters = ["cutebee", "snowman", "goldenbat",
+	"wabbit", "phoenix", "fvampire", "grinch", "", ""];
 //Items to upgrade
 const itemsToUpgrade = [
 	"sshield", "staff", "slimestaff", "staffofthedead", "maceofthedead", "pmace",
@@ -78,10 +83,11 @@ const itemsToUpgrade = [
 	"", "", "", "", "",
 	"", "", "", "", "",
 	"merry"];
-//Merchant auto-crafts below items if he has the ingredients in his inventory
+//The merchant auto-crafts below listed items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
 const itemsToCraft = ["ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox"];
-//Items to be dismantled
+//Items to be dismantled are listed below
+//Auto-dismantle items to get rare crafting-materials
 const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead", "", "", ""];
 //Smart-Moveable Object of your farm-location, handled by updateFarmingSpot()
 //Farming spots are found in G.maps.main
@@ -168,7 +174,7 @@ function tier2Actions() {
 	tidyInventory();
 	//Functions for non-merchant characters
 	if (character.ctype !== "merchant") {
-		requestHealthPotion();
+		requestPotions();
 		drinkPotions();
 		transferLoot(merchantName);
 	}

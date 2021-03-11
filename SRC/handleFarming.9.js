@@ -107,9 +107,9 @@ function getFarmingSpot(farmMonsterType = "crab", action = "move") {
       // On success
       //If there is no master, spread the characters around inside the farming spot, for more efficiency
       if (!master) {
-        if (character.name === characterNames[0]) xmove(farmSpotCenterX, farmSpotCenterY + 40);
-        if (character.name === characterNames[1]) xmove(farmSpotCenterX + 45, farmSpotCenterY - 20);
-        if (character.name === characterNames[2]) xmove(farmSpotCenterX - 45, farmSpotCenterY - 20);
+        if (character.name === characterNames[0]) xmove(farmSpotCenterX, farmSpotCenterY + 60); //Old: +40
+        if (character.name === characterNames[1]) xmove(farmSpotCenterX + 70, farmSpotCenterY - 30); //Old: +45 / -20
+        if (character.name === characterNames[2]) xmove(farmSpotCenterX - 70, farmSpotCenterY - 30); //Old: -45 / -20
       }
     }).catch((data) => {
       if (data.reason === "failed") {

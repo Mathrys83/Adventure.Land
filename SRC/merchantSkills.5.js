@@ -3,12 +3,12 @@ const minScrolls = 100;
 
 //Potion Thresholds
 const potions = {
-	hpot0: 15,
-	hpot1: 9,
-	mpot0: 30,
-	mpot1: 45
+	hpot0: 30,
+	hpot1: 15,
+	mpot0: 150,
+	mpot1: 15
 };
-//Cost 4800
+//Cost 19800
 
 //Selling parameters
 const sellItemLevel = 3;
@@ -134,27 +134,38 @@ function tranferPotions() {
 
 			//Deliver essential potions (Health & Mana)
 			essentialPotions.forEach(potion => {
-				if (locate_item(potion) !== -1) send_item(partyMember, locate_item(potion), Math.floor(quantity(potion) / 3));
-				log("Delivered Potions!");
+				if (locate_item(potion) !== -1) {
+					send_item(partyMember, locate_item(potion), Math.floor(quantity(potion) / 3));
+					log("Delivered essential Potions!");
+				}
 			});
 			//Deliver luck potions
 			luckPotions.forEach(potion => {
-				if (locate_item(potion) !== -1) send_item(partyMember, locate_item(potion), Math.floor(quantity(potion) / 3));
-				log("Delivered Luck Potions!");
+				if (locate_item(potion) !== -1) {
+					send_item(partyMember, locate_item(potion), Math.floor(quantity(potion) / 3));
+					log("Delivered Luck Potions!");
+				}
 			});
 			//Deliver dexterity potions to ranger
 			if (partyMember.ctype === "ranger") {
 				dexPotions.forEach(potion => {
-					if (locate_item(potion) !== -1) send_item(partyMember, locate_item(potion), quantity(potion));
-					log("Delivered DexPotions!");
+					if (locate_item(potion) !== -1) {
+						send_item(partyMember, locate_item(potion), quantity(potion));
+						log("Delivered DexPotions!");
+					}
 				});
 			}
 			//Deliver intelligence potions to Priest & Mage
 			if (partyMember.ctype === "priest" || partyMember.ctype === "mage") {
 				intPotions.forEach(potion => {
-					if (locate_item(potion) !== -1 && quantity(potion) % 2 === 0) send_item(partyMember, locate_item(potion), quantity(potion) / 2);
-					if (quantity(potion) % 2 !== 0 && Math.round(Math.random()) === 1) send_item(partyMember, locate_item(potion), 1);
-					log("Delivered intPotions!");
+					if (locate_item(potion) !== -1 && quantity(potion) % 2 === 0) {
+						send_item(partyMember, locate_item(potion), quantity(potion) / 2);
+						log("Delivered intPotions!");
+					}
+					if (quantity(potion) % 2 !== 0 && Math.round(Math.random()) === 1) {
+						send_item(partyMember, locate_item(potion), 1);
+						log("Delivered intPotions!");
+					}
 				});
 			}
 		}
@@ -263,7 +274,7 @@ function depositSelectedItems() {
 								&& (slot.q
 									|| slot.level <= item.level)))) {
 						bank_store(index);
-						log("Item stored in bank!");
+						log(`Stored ${item.name} in bank!`);
 					}
 				});
 			}

@@ -47,7 +47,7 @@ function priestSkills(target) {
 		}
 	}
 
-	//Use Dark Blessing after reaching Lvl 70
+	//Use Dark Blessing
 	if (character.level >= 70
 		&& validateOffensiveSkill(target, manaReserve)
 		&& character.mp > (character.max_mp * manaReserve)

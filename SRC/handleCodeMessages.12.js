@@ -4,13 +4,13 @@ function on_cm(name, data) {
     && get_player(name).owner === character.owner) {
 
     //Handles all CM's
-    if (data.message === "needHealthPot") sendHealthPotion(name, data);
+    if (data.message === "needPotions") sendPotion(name, data);
   }
 }
 
 //Sends Health Potions to Partymembers
-function sendHealthPotion(name, data) {
+function sendPotion(name, data) {
   if (character.ctype === "merchant") return;
-  if (locate_item(data.potion) !== -1
-    && quantity(data.potion) >= 2) send_item(name, locate_item(data.potion), Math.floor(quantity(data.potion) / 2));
+  for (potion of data.potions) if (locate_item(potion) !== -1 && quantity(potion) >= 2) send_item(name, locate_item(potion), Math.floor(quantity(potion) / 2));
+  //log(`Got cm from ${name} requesting ${data.potions}`, "red")
 }

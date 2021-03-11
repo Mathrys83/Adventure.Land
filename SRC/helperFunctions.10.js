@@ -70,9 +70,11 @@ function transferLoot(merchantName) {
 		if (character.gold > 1000) send_gold(merchant, character.gold)
 		//Transfer Items
 		character.items.forEach((item, index) => {
-			if (item && !keepItems.includes(item.name)) send_item(merchant, index, 9999);
+			if (item && !keepItems.includes(item.name)) {
+				send_item(merchant, index, 9999);
+				log("Sent items to merchant.");
+			}
 		});
-		log("Sent items to merchant.");
 	}
 }
 
@@ -174,14 +176,14 @@ function followMaster() {
 		//If master is on screen, follow him
 		if (theMaster
 			&& Math.ceil(distance(character, theMaster)) > masterMaxDist) {
-			log("Following Master with Get_Player");
+			//log("Following Master with Get_Player");
 			xmove(theMaster.x, theMaster.y);
 		}
 		//If the master is too far away,
 		//followers read masters location from localStorage
 		else if (!theMaster
 			&& get("MasterPos")) {
-			log("Following Master from Local Storage");
+			//log("Following Master from Local Storage");
 			smart_move(get("MasterPos"));
 		}
 		//Keep a little distance to the master when farming

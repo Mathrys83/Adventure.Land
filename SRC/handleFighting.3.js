@@ -21,6 +21,7 @@ function validateOffensiveSkill(target, manaReserve) {
 
 function getTarget() {
 
+	//If the character already has a valid target, attack it
 	let target = get_targeted_monster();
 	if (validateTarget(target)) {
 		return target;
@@ -28,7 +29,7 @@ function getTarget() {
 		change_target(null);
 	}
 	//If there is no master, or character is master, choose target freely
-	if ((!master && !target) || character.name == master) {
+	if ((!master && !target) || character.name === master) {
 		//Returns any monster that targets any party-member
 		for (const partyMember of parent.party_list) {
 			target = get_nearest_monster({ target: partyMember });
@@ -38,6 +39,15 @@ function getTarget() {
 				return target;
 			}
 		}
+
+		//Looks for special monsters
+		//"Object.values(parent.entities)" returns an array, we only want index 0
+		target = Object.values(parent.entities).filter(entity => specialMonsters.includes(entity.mtype) && is_in_range(entity, "attack"))[0];
+		if (validateTarget(target)) {
+			change_target(target);
+			return target;
+		}
+
 		//Returns any monster that targets nobody
 		target = get_nearest_monster({
 			type: farmMonsterType,

@@ -25,9 +25,9 @@ const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
 	"wbreeches", "gslime", "", "", "shoes", "", //ascale cscale lotusf
 	"pants", "spear", "", "sstinger", "", //snakefang spidersilk
 	"smush", "frogt", "gloves1", "stinger", "wgloves",
-	"", "dstones", "helmet1", "bwing", //snakeoil
+	"sword", "dstones", "helmet1", "bwing", //snakeoil
 	"tshirt0", "tshirt1", "tshirt2", "cshell", "whiteegg",
-	"quiver", "hbow", "shield", "mushroomstaff", "", "", "", "", //quiver
+	"quiver", "hbow", "shield", "mushroomstaff", "swifty", "", "", "", //quiver
 	"stramulet", "strbelt", "strearring", "", "", //"strring"
 	"hpbelt", "", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
 	"throwingstars", "smoke", "phelmet", "basher", "xmace", "", "", "",

@@ -54,13 +54,16 @@ function addButtons() {
 function transferLoot(merchantName) {
 	if (character.ctype === "merchant") return;
 	let merchant = get_player(merchantName);
-	let keepItems = ["hpot0", "mpot0", "hpot1", "mpot1",
+	let keepItems = [
+		//Items
+		"tracker", "jacko", "orbg",
+		//Potions / Elixirs
+		"hpot0", "mpot0", "hpot1", "mpot1",
 		"elixirdex0", "elixirdex1", "elixirdex2",
 		"elixirint0", "elixirint1", "elixirint2",
 		//"elixirvit0", "elixirvit1", "elixirvit2",
 		//"elixirstr0", "elixirstr1", "elixirstr2",
-		"elixirluck",
-		"tracker"
+		"elixirluck"
 	];
 	if (character.ctype !== "merchant"
 		&& merchant
@@ -75,6 +78,8 @@ function transferLoot(merchantName) {
 				log("Sent items to merchant.");
 			}
 		});
+		//Send spare jackos to the merchant, too
+		if (locate_item("jacko") !== -1 && locate_item("jacko") !== 40) send_item(merchant, locate_item("jacko"), 9999);
 	}
 }
 
@@ -87,8 +92,8 @@ function tidyInventory() {
 	}
 }
 
+//Relocate certain items to certain slots
 function relocateItems() {
-
 	if (locate_item("hpot1") !== -1
 		&& locate_item("hpot1") !== 35) swap(locate_item("hpot1"), 35);
 	if (locate_item("mpot1") !== -1
@@ -97,9 +102,13 @@ function relocateItems() {
 		&& locate_item("hpot0") !== 37) swap(locate_item("hpot0"), 37);
 	if (locate_item("mpot0") !== -1
 		&& locate_item("mpot0") !== 38) swap(locate_item("mpot0"), 38);
+	if (locate_item("tracker") !== -1
+		&& locate_item("tracker") !== 39) swap(locate_item("tracker"), 39);
+	if (locate_item("jacko") !== -1
+		&& locate_item("jacko") !== 40) swap(locate_item("jacko"), 40);
 }
 
-//on_party_invite gets called _automatically_ by the game on an invite 
+//on_party_invite gets called _automatically_ by the game on an invite-event 
 function on_party_invite(name) {
 	if (get_player(name) &&
 		get_player(name).owner !== character.owner) return;
@@ -118,20 +127,20 @@ function usePotions() {
 			if (locate_item("mpot0") !== -1) consume(locate_item("mpot0"));
 			//If character has no potions, generate them
 		} else if (!is_on_cooldown("use_hp") || !is_on_cooldown("use_mp")
-			&& (character.hp < (character.max_hp - 150)
-				|| character.mp < (character.max_mp - 250))
+			&& (character.hp < (character.max_hp - G.items.hpot0.gives[0][1])
+				|| character.mp < (character.max_mp - G.items.mpot0.gives[0][1]))
 			&& locate_item("mpot0") === -1
 			&& locate_item("mpot1") === -1
 			&& locate_item("hpot0") === -1
 			&& locate_item("hpot1") === -1) {
 			use_hp_or_mp();
-		} else if (!is_on_cooldown("use_hp") && (character.hp < (character.max_hp - 400) && locate_item("hpot1") !== -1)) {
+		} else if (!is_on_cooldown("use_hp") && (character.hp < (character.max_hp - G.items.hpot1.gives[0][1]) && locate_item("hpot1") !== -1)) {
 			consume(locate_item("hpot1"));
-		} else if (!is_on_cooldown("use_mp") && (character.mp < (character.max_mp - 500) && locate_item("mpot1") !== -1)) {
+		} else if (!is_on_cooldown("use_mp") && (character.mp < (character.max_mp - G.items.mpot1.gives[0][1]) && locate_item("mpot1") !== -1)) {
 			consume(locate_item("mpot1"));
-		} else if (!is_on_cooldown("use_hp") && (character.hp < (character.max_hp - 200) && locate_item("hpot0") !== -1)) {
+		} else if (!is_on_cooldown("use_hp") && (character.hp < (character.max_hp - G.items.hpot0.gives[0][1]) && locate_item("hpot0") !== -1)) {
 			consume(locate_item("hpot0"));
-		} else if (!is_on_cooldown("use_mp") && (character.mp < (character.max_mp - 300) && locate_item("mpot0") !== -1)) {
+		} else if (!is_on_cooldown("use_mp") && (character.mp < (character.max_mp - G.items.mpot0.gives[0][1]) && locate_item("mpot0") !== -1)) {
 			consume(locate_item("mpot0"));
 		}
 	}

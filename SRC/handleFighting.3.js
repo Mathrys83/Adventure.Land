@@ -15,7 +15,7 @@ function validateTarget(target) {
 function validateOffensiveSkill(target, manaReserve) {
 	if (target
 		&& target.level > 1
-		//  || (master || requiresMaster.includes(target.mtype))
+		&& requiresMaster.includes(target.mtype)
 		&& character.mp > (character.max_mp * manaReserve)) return true;
 }
 
@@ -34,7 +34,7 @@ function getTarget() {
 		for (const partyMember of parent.party_list) {
 			target = get_nearest_monster({ target: partyMember });
 			if (validateTarget(target)) {
-				log("Targeting monster that attacks party-member");
+				//log("Targeting monster that attacks party-member");
 				change_target(target);
 				return target;
 			}
@@ -86,7 +86,7 @@ function getTarget() {
 function autoFight(target) {
 	if (validateTarget(target)) {
 		if (!is_in_range(target, "attack")) {
-			//log("Target not in range, moving to it");
+			log("Target not in range, moving to it");
 			xmove(
 				character.x + Math.floor((target.x - character.x) * 0.3),
 				character.y + Math.floor((target.y - character.y) * 0.3)
@@ -100,5 +100,23 @@ function autoFight(target) {
 				//log(`Attack failed: ${message.reason}`);
 			});
 		}
+	}
+}
+
+//Scare Monster away if HP are low
+function scareMonsters() {
+	if (character.ctype === "merchant") return;
+	if (get_nearest_monster({ target: character.name })
+		//If the HP are lower that the monster's attack times 3,
+		//or of the characters HP are below 25%
+		&& (character.hp < get_nearest_monster({ target: character.name }).attack * 3
+			|| character.hp < (character.max_hp / 4))
+		&& locate_item("jacko") !== -1
+		&& character.mp >= G.skills.scare.mp
+		&& !is_on_cooldown("scare")) {
+		equip(locate_item("jacko"));
+		use_skill("scare");
+		game_log("Scared monsters");
+		setTimeout(() => equip(locate_item("orbg")), 1000);
 	}
 }

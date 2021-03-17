@@ -79,6 +79,7 @@ Here's a list of what the code is capable of so far:
 - Farming / Hunting small enemies get attacked by individual characters
 - Farming / Hunting big enemies get attacked by all characters (All characters target one single enemy)
 - Master-Mode (Define a master the other characters follow. Also: Only the master chooses targets. All characters then attack the chosen target. This lets you take on bigger enemies!)
+- If health falls below 25% of HP, and you have a Jacko in yoir inventory, monsters get scared away (Saving your characters life)
 
 ## Individual characters
 
@@ -115,8 +116,9 @@ Once the stand is open, the merchant continues his work:
 
 - Auto-Upgrade designated items into a higher level item
 - Auto-Compound several designated items at once into a higher level item
-- Put these higher level items on the merchant-stand for sale (if needed)
-- NEW: Auto-Dismantle designated items to get crafting-materials
+- NEW: Mass-Production! Both new skills are implemented! If the merchant has enough Mana, Upgrading and Compounding now is 90% faster! If the merchant doesn't have enough Mana for the fastest Upgrading / Compounding skill, but enough Mana for the 50% faster Upgrading / Compounding skill, then that skill will be used. If he doesn't have enough Mana for both skills, he will Upgrade / Compound at a normal speed.
+- The merchant will put these higher level items on the merchant-stand for sale (if needed)
+- NEW: Auto-Dismantle designated items to get rare crafting-materials
 - Sell "trash", so your inventory doesn't fill up. You can choose what items are considered "trash". This "trash" will be auto-sold to keep your inventory free
 - Tidy the inventory so there are no gaps (from crafting / selling things)
 - Give other players the "merchant's luck"-buff, with a chance to duplicate a free item from them

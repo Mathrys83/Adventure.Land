@@ -105,6 +105,7 @@ function autoFight(target) {
 
 //Scare Monster away if HP are low
 function scareMonsters() {
+	const mainOrb = character.slots.orb.name;
 	if (character.ctype === "merchant") return;
 	if (get_nearest_monster({ target: character.name })
 		//If the HP are lower that the monster's attack times 3,
@@ -117,6 +118,6 @@ function scareMonsters() {
 		equip(locate_item("jacko"));
 		use_skill("scare");
 		game_log("Scared monsters");
-		setTimeout(() => equip(locate_item("orbg")), 1000);
+		setTimeout(() => equip(locate_item(mainOrb)), 1000);
 	}
 }

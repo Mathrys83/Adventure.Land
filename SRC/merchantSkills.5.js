@@ -292,6 +292,9 @@ function upgradeItems() {
 				&& itemsToUpgrade.indexOf(character.items[slot].name) !== -1
 				&& G.items[character.items[slot].name].upgrade)
 			&& character.items[slot].level <= maxUpgradeLevel) {
+			//Use massproduction skill
+			massProduction();
+			//Upgrade item
 			upgrade(slot, locate_item(scrolls[item_grade(character.items[slot])])).then(
 				(data) => {
 					game_log(`Upgraded ${character.items[slot].name}`);
@@ -312,6 +315,9 @@ function compoundItems(level) {
 	if (triple
 		&& triple.length === 3
 		&& !character.q.compound) {
+		//Use massproduction skill
+		massProduction();
+		//Compound item
 		compound(triple[0], triple[1], triple[2], locate_item(scrolls[item_grade(character.items[triple[0]])])).then((data) => {
 			(data.success) ? game_log(`Compounded level ${data.level} accessory!`) : game_log("Compound Failed - Item lost!");
 		}).catch((data) => {
@@ -340,6 +346,21 @@ function compoundItems(level) {
 	}
 }
 */
+
+//Mass Production
+function massProduction() {
+	if (character.level >= 60
+		&& character.mp > G.skills.massproductionpp.mp
+		&& !is_on_cooldown("massproductionpp")) {
+		use_skill("massproductionpp");
+		game_log("Used Mass Production 90%");
+	} else if (character.level >= 30
+		&& character.mp > G.skills.massproduction.mp
+		&& !is_on_cooldown("massproduction")) {
+		use_skill("massproduction");
+		game_log("Used Mass Production 50%");
+	}
+}
 
 //Find a triple of items (same item, same level) 
 function findTriple(level) {

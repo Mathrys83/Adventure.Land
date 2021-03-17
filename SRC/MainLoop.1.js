@@ -61,7 +61,7 @@ Also: Characters will start using their offensive skills if a monster is on this
 (They don't use offensive skills against weak monsters, to conserve MP)
 */
 const requiresMaster = [
-	"poisio", "snowman", "scorpion", "gscorpion", "tortoise", "stoneworm",
+	"poisio", "snowman", "scorpion", "gscorpion", "stoneworm", //"tortoise",
 	"bat", "spider", "goldenbat", "iceroamer", "crabx", "jr", "greenjr",
 	"bbpompom", "booboo", "prat", "boar", "ghost", "mummy",
 	"mole", "wolfie", "wolf", "xscorpion", "bigbird",

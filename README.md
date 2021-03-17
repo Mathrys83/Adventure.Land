@@ -152,6 +152,7 @@ There's a  module called "helperFunctions": It holds all functions in one place 
 - Auto-Transfer loot (to the merchant)
 - Drink / Relocate potions
 - Tidying the inventory (arranging all items, gap-free)
+- Scare monsters away, if low on HP
 - Following the  Master, cross-map and cross-continent
 - Show status: Nice button with an abundance of information (Active hunting quests / Farming mode / Master / Map where yor characters are / What monster they're farming / hunting / etc.)
 

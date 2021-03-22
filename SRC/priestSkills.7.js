@@ -2,7 +2,8 @@ function priestSkills(target) {
 
 	//How much Mana should be kept in reserve
 	const manaReserve = 0.7;
-	const healingThreshold = 0.8;
+	const maxHealing = character.attack;
+	const maxPartyHealing = (() => { for (let i = G.skills.partyheal.levels.length - 1; i >= 0; i--) if (G.skills.partyheal.levels[i][0] <= character.level) return G.skills.partyheal.levels[i][1] })();
 	let hurtPartyMembers = 0;
 
 	//Healing (Party-Heal and healing individual characters)
@@ -10,7 +11,7 @@ function priestSkills(target) {
 		const partyMember = get_player(name);
 		if (partyMember) {
 			//Heal COMPLETE Party
-			if (partyMember.hp < (partyMember.max_hp * healingThreshold)
+			if (partyMember.hp < (partyMember.max_hp - maxPartyHealing)
 				&& partyMember.rip === false) hurtPartyMembers++;
 			if (hurtPartyMembers >= 2
 				&& character.mp >= G.skills.partyheal.mp
@@ -19,7 +20,7 @@ function priestSkills(target) {
 				game_log("Healing Party");
 			}
 			//Heal ONE Partymember
-			if (partyMember.hp < (partyMember.max_hp * healingThreshold)
+			if (partyMember.hp < (partyMember.max_hp - maxHealing)
 				&& character.mp >= character.mp_cost
 				&& !partyMember.rip
 				//&& can_heal(partyMember)
@@ -35,7 +36,7 @@ function priestSkills(target) {
 			//Absorb Sins of a Partymember
 			if (character.level >= 55
 				&& partyMember.name !== character.name
-				&& partyMember.hp < (partyMember.max_hp * healingThreshold)
+				&& partyMember.hp < (partyMember.max_hp - (maxHealing * 2))
 				&& character.mp >= G.skills.absorb.mp
 				&& !partyMember.rip
 				//&& can_heal(partyMember)

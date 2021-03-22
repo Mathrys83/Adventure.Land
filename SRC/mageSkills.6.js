@@ -53,13 +53,16 @@ function mageSkills(target) {
 			&& character.mp > G.skills.cburst.mp) {
 			let targets = Object.values(parent.entities).filter(entity => entity.mtype === farmMonsterType && entity.level <= 1 && is_in_range(entity, "cburst"));
 			let targets2 = [];
-			let maxTargets = Math.floor(character.mp / (target.max_hp * 1.85));
 			for (target of targets) {
-				targets2.push([target, target.max_hp * 1.8]);
+				const manaModifier = target.max_hp * 1.85
+				const maxTargets = Math.floor(character.mp / manaModifier);
+				targets2.push([target, manaModifier]);
 				if (targets2.length === maxTargets) break;
 			}
-			use_skill("cburst", targets2);
-			game_log("Used controlled Burst");
+			if (targets2.length) {
+				use_skill("cburst", targets2);
+				game_log("Used controlled Burst");
+			}
 		}
 	}
 }

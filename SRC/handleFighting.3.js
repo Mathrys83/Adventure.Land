@@ -1,5 +1,6 @@
 function validateTarget(target) {
-	if (target
+	if (attackToggle
+		&& target
 		&& target.visible
 		&& parent.entities[target.id]
 		&& is_in_range(target, "attack")
@@ -13,7 +14,8 @@ function validateTarget(target) {
 
 //Only use skill when necessary
 function validateOffensiveSkill(target, manaReserve) {
-	if (target
+	if (attackToggle
+		&& target
 		&& target.level > 1
 		&& requiresMaster.includes(target.mtype)
 		&& character.mp > (character.max_mp * manaReserve)) return true;
@@ -105,8 +107,8 @@ function autoFight(target) {
 
 //Scare Monster away if HP are low
 function scareMonsters() {
-	const mainOrb = character.slots.orb.name;
 	if (character.ctype === "merchant") return;
+	const mainOrb = character.slots.orb.name;
 	if (get_nearest_monster({ target: character.name })
 		//If the HP are lower that the monster's attack times 3,
 		//or of the characters HP are below 25%
@@ -118,6 +120,8 @@ function scareMonsters() {
 		equip(locate_item("jacko"));
 		use_skill("scare");
 		game_log("Scared monsters");
+		//Stop attacking monsters
+		attackToggle = false;
 		setTimeout(() => equip(locate_item(mainOrb)), 1000);
 	}
 }

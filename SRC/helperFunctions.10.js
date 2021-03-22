@@ -37,18 +37,6 @@ function addButtons() {
 		character.stand ? close_stand() : open_stand();
 	});
 	add_bottom_button("Pause", "⏸️", pause);
-
-	/*
-	add_bottom_button("loadChar", "Load Char", () => {
-		loadCharacters();
-	});
-	add_bottom_button("initPart", "Init Party", () => {
-		initParty();
-	});
-	add_bottom_button("stopChar", "Stop Char", () => {
-		stopCharacters();
-	});
-	*/
 }
 
 function transferLoot(merchantName) {
@@ -56,8 +44,14 @@ function transferLoot(merchantName) {
 	let merchant = get_player(merchantName);
 	let keepItems = [
 		//Items
-		"tracker", "jacko", "orbg",
-		//Potions / Elixirs
+		"tracker",
+		//Orbs
+		"jacko", "orbg", "talkingskull",
+		//Gloves
+		"handofmidas", "mpgloves", "mmgloves", "mrngloves",
+		//Offhands
+		"lantern", "wbook1", "t2quiver",
+		//Potions & Elixirs
 		"hpot0", "mpot0", "hpot1", "mpot1",
 		"elixirdex0", "elixirdex1", "elixirdex2",
 		"elixirint0", "elixirint1", "elixirint2",
@@ -79,16 +73,13 @@ function transferLoot(merchantName) {
 			}
 		});
 		//Send spare jackos to the merchant, too
-		if (locate_item("jacko") !== -1 && locate_item("jacko") !== 40) send_item(merchant, locate_item("jacko"), 9999);
+		//if (locate_item("jacko") !== -1 && locate_item("jacko") !== 40) send_item(merchant, locate_item("jacko"), 9999);
 	}
 }
 
 function tidyInventory() {
 	for (let i = 34; i > 0; i--) {
-		if (character.items[i] && !character.items[i - 1]) {
-			swap(i, i - 1)
-			log(`Tidying Inventory Slot ${i}`);
-		}
+		if (character.items[i] && !character.items[i - 1]) swap(i, i - 1);
 	}
 }
 
@@ -108,32 +99,27 @@ function relocateItems() {
 		&& locate_item("jacko") !== 40) swap(locate_item("jacko"), 40);
 }
 
-//on_party_invite gets called _automatically_ by the game on an invite-event 
-function on_party_invite(name) {
-	if (get_player(name) &&
-		get_player(name).owner !== character.owner) return;
-	accept_party_invite(name);
-}
-
 //Replenish Health and Mana
 function usePotions() {
 	if (!character.rip) {
-		//If character has at least half of maxHP but no Mana, use Mana Potion
+		//If character has at least half of Max_HP but no Mana, use Mana Potion
+		//If character has almost no Mana, also use Mana Potion [To be able to use Scare-Ability]
 		if (!is_on_cooldown("use_mp")
+			//If character has at least half of it's Hp...
 			&& character.hp > (character.max_hp / 2)
-			&& character.mp < (character.max_mp / 5)
+			//And less than it's maximum MP...
+			&& (character.mp <= character.max_mp - (G.items.mpot0.gives[0][1] - 1)
+				//Or almost no MP...
+				|| character.mp < (character.max_mp / 10))
 			&& (locate_item("mpot1") !== -1 || locate_item("mpot0") !== -1)) {
-			if (locate_item("mpot1") !== -1) consume(locate_item("mpot1"));
-			if (locate_item("mpot0") !== -1) consume(locate_item("mpot0"));
-			//If character has no potions, generate them
-		} else if (!is_on_cooldown("use_hp") || !is_on_cooldown("use_mp")
-			&& (character.hp < (character.max_hp - G.items.hpot0.gives[0][1])
-				|| character.mp < (character.max_mp - G.items.mpot0.gives[0][1]))
-			&& locate_item("mpot0") === -1
-			&& locate_item("mpot1") === -1
-			&& locate_item("hpot0") === -1
-			&& locate_item("hpot1") === -1) {
-			use_hp_or_mp();
+			if (locate_item("mpot1") !== -1
+				&& character.mp < (character.max_mp - G.items.mpot1.gives[0][1])) {
+				consume(locate_item("mpot1"));
+			} else if (locate_item("mpot0") !== -1
+				&& character.mp < (character.max_mp - G.items.hpot0.gives[0][1])) {
+				consume(locate_item("mpot0"));
+			}
+			//Use regular potions
 		} else if (!is_on_cooldown("use_hp") && (character.hp < (character.max_hp - G.items.hpot1.gives[0][1]) && locate_item("hpot1") !== -1)) {
 			consume(locate_item("hpot1"));
 		} else if (!is_on_cooldown("use_mp") && (character.mp < (character.max_mp - G.items.mpot1.gives[0][1]) && locate_item("mpot1") !== -1)) {
@@ -142,11 +128,38 @@ function usePotions() {
 			consume(locate_item("hpot0"));
 		} else if (!is_on_cooldown("use_mp") && (character.mp < (character.max_mp - G.items.mpot0.gives[0][1]) && locate_item("mpot0") !== -1)) {
 			consume(locate_item("mpot0"));
+			//If character has no potions, generate them
+		} else if ((!is_on_cooldown("use_hp") || !is_on_cooldown("use_mp"))
+			&& (character.hp < (character.max_hp - G.items.hpot0.gives[0][1])
+				|| character.mp < (character.max_mp - G.items.mpot0.gives[0][1]))
+			&& locate_item("mpot0") === -1
+			&& locate_item("mpot1") === -1
+			&& locate_item("hpot0") === -1
+			&& locate_item("hpot1") === -1) {
+			use_hp_or_mp();
 		}
 	}
 }
 
-function drinkPotions() {
+//If a characters Health / Mana Potions are exhausted,
+//it will request some from other Party-Members
+function requestPotions() {
+	if (character.ctype === "merchant") return;
+	const potions = ["hpot0", "hpot1", "mpot0", "mpot1"];
+	let recipients = [];
+	let neededPotions = [];
+	for (member of parent.party_list) if (member !== character.name && member !== merchantName) recipients.push(member);
+	for (potion of potions) if (locate_item(potion) === -1) neededPotions.push(potion);
+	if (neededPotions.length) {
+		send_cm(recipients, {
+			message: "needPotions",
+			potions: neededPotions
+		});
+	}
+}
+
+//Drink Elixirs
+function drinkElixirs() {
 	if (character.ctype === "merchant") return;
 	let potions = [
 		"elixirdex2", "elixirdex1", "elixirdex0",
@@ -165,6 +178,52 @@ function drinkPotions() {
 	}
 }
 
+function lootMidas() {
+	if (character.ctype === "merchant") return;
+	//If farmMonsterType doesn't require a master, equip handofmidas permanently and loot every tick
+	if (!requiresMaster.includes(farmMonsterType)
+		&& distance(character, farmingSpotData) < 200) {
+		equipMidasAndLoot();
+		//If farmMonsterType does require a master:
+		//- Check if there are chests
+		//- The master will loot 
+		//- If there's no master around, character will loot
+	} else if (requiresMaster.includes(farmMonsterType)
+		&& Object.keys(get_chests()).length
+		&& (character.name === master || !get_player(master))) {
+		equipMidasAndLoot();
+	} else {
+		equipRegularGloves();
+	}
+	function equipMidasAndLoot() {
+		if (character.slots.gloves.name !== "handofmidas" && locate_item("handofmidas") !== -1) equip(locate_item("handofmidas"));
+		loot();
+	}
+	function equipRegularGloves() {
+		if (character.ctype === "priest") equipGloves("mpgloves");
+		if (character.ctype === "mage") equipGloves("mmgloves");
+		if (character.ctype === "ranger") equipGloves("mrngloves");
+
+		function equipGloves(gloveModel) {
+			if (character.slots.gloves.name !== gloveModel && locate_item(gloveModel) !== -1) equip(locate_item(gloveModel));
+		}
+	}
+}
+
+//Equip the Lantern when hunting specialMonsters
+//[Only Priest & Mage - Ranger can't equip it!]
+function equipLantern(monsterType) {
+	if (character.ctype === "merchant" || character.ctype === "ranger") return;
+	//If farmMonsterType is a special monster, equip the lantern
+	if (specialMonsters.includes(monsterType)
+		&& distance(character, farmingSpotData) < 200) {
+		if (character.slots.offhand.name !== "lantern" && locate_item("lantern") !== -1) equip(locate_item("lantern"));
+		//If farmMonsterType is a regular monster, equip regular Book of Secrets
+	} else {
+		if (character.slots.offhand.name !== "wbook1" && locate_item("wbook1") !== -1) equip(locate_item("wbook1"));
+	}
+}
+
 //Master character lays breadcrumbs
 function masterBreadcrumbs() {
 	//Master writes location to localStorage
@@ -180,7 +239,6 @@ function masterBreadcrumbs() {
 function followMaster() {
 	let theMaster = get_player(master);
 	const masterMaxDist = 50;
-	let masterMinDist = masterMaxDist * 0.8;
 	if (master && character.name !== master) {
 		//If master is on screen, follow him
 		if (theMaster
@@ -194,14 +252,6 @@ function followMaster() {
 			&& get("MasterPos")) {
 			//log("Following Master from Local Storage");
 			smart_move(get("MasterPos"));
-		}
-		//Keep a little distance to the master when farming
-		else if (theMaster
-			&& character.map === farmingSpotData.map
-			&& distance(character, theMaster) < masterMaxDist * 0.5
-			&& distance(character, farmingSpotData) < masterMaxDist * 0.5) {
-			if (character.name === characterNames[1]) xmove(farmingSpotData.x + masterMinDist, farmingSpotData.y - masterMinDist);
-			if (character.name === characterNames[2]) xmove(farmingSpotData.x - masterMinDist, farmingSpotData.y - masterMinDist);
 		}
 	}
 }

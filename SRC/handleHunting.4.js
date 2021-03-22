@@ -28,7 +28,6 @@ function handleHuntQuest() {
 			if (character.s.monsterhunt.c === 0) {
 				log("Fulfilled Hunter Quest");
 				smart_move({ to: "monsterhunter" }, () => {
-					log("Moving to questGiver with FULFILLED quest");
 					//Remove fulfilled quest from localStorage
 					huntedMonsters.forEach((element, index) => {
 						if (element.questGiver === character.name) {

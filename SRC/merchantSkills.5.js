@@ -19,28 +19,26 @@ const maxCompoundLevel = 3;
 //Max level to be upgraded
 const maxUpgradeLevel = 5;
 
-const trashName = ["cclaw", "crabclaw", "shoes1", "coat1", "pants1",
-	"wshoes", "", "", "beewings", "wcap", "", //bfur ink spores
-	"strearring", "stramulet", "wattire", "poison", "rattail",
-	"wbreeches", "gslime", "", "", "shoes", "", //ascale cscale lotusf
-	"pants", "spear", "", "sstinger", "", //snakefang spidersilk
-	"smush", "frogt", "gloves1", "stinger", "wgloves",
-	"sword", "dstones", "helmet1", "bwing", //snakeoil
-	"tshirt0", "tshirt1", "tshirt2", "cshell", "whiteegg",
-	"quiver", "hbow", "shield", "mushroomstaff", "swifty", "", "", "", //quiver
-	"stramulet", "strbelt", "strearring", "", "", //"strring"
-	"hpbelt", "", "hpamulet", "", "", "", "", "", // ringsj hpamulet hpbelt
-	"throwingstars", "smoke", "phelmet", "basher", "xmace", "", "", "",
+const trashName = [
+	// ringsj hpamulet hpbelt strring quiver snakeoil snakefang
+	//spidersilk ascale cscale lotusf bfur ink spores
+	"cclaw", "crabclaw", "shoes1", "coat", "coat1", "pants1",
+	"wshoes", "beewings", "wcap", "strearring", "stramulet",
+	"wattire", "poison", "rattail", "wbreeches", "gslime",
+	"shoes", "pants", "spear", "sstinger", "smush", "frogt",
+	"gloves", "gloves1", "stinger", "wgloves", "sword",
+	"dstones", "helmet", "helmet1", "bwing", "tshirt0",
+	"tshirt1", "tshirt2", "cshell", "whiteegg", "quiver",
+	"hbow", "shield", "mushroomstaff", "swifty", "stramulet",
+	"strbelt", "strearring", "hpbelt", "hpamulet",
+	"throwingstars", "smoke", "phelmet", "basher",
+	"xmace", "dagger", "", "", "",
+	"", "", "", "", "", "", "", "",
 	//XMas Set
 	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",
 	"", "", "", "", "", "", "", "",
-	"", "", "", "", "", "", "", "",
-	"", "", "", "", "", "", "", "",
-	"", "", "", "", "", "", "", "",
 	//Unneeded elixirs
 	"elixirstr0", "elixirstr1", "elixirstr2",
-	"", "", "", "", "", "", "", "",
-	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", ""];
 
@@ -53,11 +51,13 @@ function merchantSkills() {
 
 		//Sell unwanted items
 		sellTrash();
+
 		//Buy cheap items from other merchants
 		buyCheapStuff();
 
 		//Upgrade items
 		upgradeItems();
+
 		//Compound items
 		for (let i = 0; i < maxCompoundLevel; i++) if (findTriple(i)) compoundItems(i);
 
@@ -69,12 +69,16 @@ function merchantSkills() {
 
 	//Check if party is incomplete, restore of not
 	restoreParty();
+
 	//Buff players with merchant's luck
 	merchantsLuck();
+
 	//Exchange Gems and Quests
 	exchangeGemsQuests();
+
 	//Craft items
 	craftItems();
+
 	//Dismantle items
 	dismantleItems();
 
@@ -97,14 +101,18 @@ function merchantSkills() {
 					depositGold();
 					//depositValuableItems();
 					depositSelectedItems();
-					if (buyScrolls("check")) {
-						smart_move({ to: "scrolls" }, () => {
-							buyScrolls("buy");
+					//Wait after depositing items.
+					//Depositing multiple items and immediately smart_moving can result in a kick (Call-cost too high)
+					setTimeout(() => {
+						if (buyScrolls("check")) {
+							smart_move({ to: "scrolls" }, () => {
+								buyScrolls("buy");
+								openMerchantStand();
+							});
+						} else {
 							openMerchantStand();
-						});
-					} else {
-						openMerchantStand();
-					}
+						}
+					}, 2000);
 				});
 			});
 		});

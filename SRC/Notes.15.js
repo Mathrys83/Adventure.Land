@@ -38,14 +38,16 @@ xmove(x,y)
 //Short:
 smart_move({to:"goo"});
 
-//or long...
-smart_move({to:"goo"}, function(){
+//or with callback-function...
+smart_move({to:"goo"}, () => {
     game_log("Arrived at Goo!", "#4CE0CC");
 });
 
 //############# Log #############
 
-game_log( "Text", "#00FF00");
+log( "Text", "red");
+//or:
+log( "Text", "#00FF00");
 
 //############# Max HP / MP #############
 
@@ -59,7 +61,7 @@ use_skill("curse");
 //############# Check Cooldown of Skill #############
 
 //Check if the cooldown of a class skill has passed
-is_on_cooldown(skill)
+is_on_cooldown("curse")
 
 //############# Party List Array #############
 
@@ -68,7 +70,7 @@ parent.party_list
 
 //############# Target same target as other player #############
 
-let other_player = parent.entities["warrior's name"];
+let other_player = get_player("PlayerName")
 if (other_player) {
     target_id = other_player.target;
     target = parent.entities[target_id];
@@ -90,7 +92,7 @@ game_log(parent.entities[x1].max_hp);
 
 //parent.party_list is an array with the names of PartyMembers
 //We iterate over it
-parent.party_list.forEach(function(otherPlayerName){
+parent.party_list.forEach((otherPlayerName) => {
     // !!! IMPORTANT !!! parent.entities ONLY holds OTHER players, NOT
     //the current player running this code!! Therefor....
     let partyMember = parent.entities[otherPlayerName];
@@ -122,13 +124,13 @@ var leader = get_player("Playername");
         );
     }
 
-//############# Find item in inventory #############
+//############# Find item inside inventory #############
 
-log(locate_item("mpot0"))
+locate_item("mpot0")
 
-//############# Quantity of an Item in Inventory #############
+//############# Quantity of an Item inside Inventory #############
 
-log(quantity("mpot0"));
+quantity("mpot0");
 
 //############# Use / Consume an Item from Inventory #############
 
@@ -168,16 +170,16 @@ eval.apply( window, [data] );
 
 map_key("5","snippet","loadCharacters()");
 
-//############# All Monsters #############
-
-//Coordinates where monsters sparn, their number etc
-G.maps.main.monsters
-
 //############# All Map Data! #############
 
 G.maps
 
-//############# Monster Hunt get quest and/or turn in quest #############
+//############# All Monsters #############
+
+//Coordinates where monsters spawn, their number etc.
+G.maps.main.monsters
+
+//############# Monster Hunt get quest and / or turn in quest #############
 
 parent.socket.emit("monsterhunt");
 
@@ -212,7 +214,7 @@ while(todo.length){
         }
     }
 }
-console.log(accessible_maps);
+log(accessible_maps);
 
 //############# Delete Target #############
 
@@ -220,15 +222,15 @@ change_target(null)
 
 //############# Check Target #############
 
-function validateTarget(target){
-    if(target
-       && target.visible
-       && parent.entities[target.id]
-       && is_in_range(target,"attack")
-       && !target.rip
-       && target !== null){
+function validateTarget(target) {
+    if (target
+        && target.visible
+        && parent.entities[target.id]
+        && is_in_range(target, "attack")
+        && !target.dead
+        && target !== null) {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -252,6 +254,19 @@ smart_move(find_npc("santa"));
 //############# Teleport to town #############
 
 parent.socket.emit('town')
+
+//############# Open and Close Merchant Stand #############
+
+open_stand();
+close_stand();
+
+//############# Smart-Move alternative that doesn't run while already moving #############
+
+function smart_move2(destination, on_done)
+{
+    if (smart.moving) return;
+    smart_move(destination, on_done);
+}
 
 //############# TEXT #############
 
@@ -289,10 +304,5 @@ Stops Rendering
 //############# See Chat Functions #############
 
 /help
-
-//############# Open and Close Merchant Stand #############
-
-parent.socket.emit("merchant",{num:}) and parent.socket.emit("merchant",{close:1})
-num in the first one being whatever item spot you have your stand in
 
 */

@@ -10,19 +10,21 @@ function priestSkills(target) {
 	for (const name of parent.party_list) {
 		const partyMember = get_player(name);
 		if (partyMember) {
+
 			//Heal COMPLETE Party
 			if (partyMember.hp < (partyMember.max_hp - maxPartyHealing)
-				&& partyMember.rip === false) hurtPartyMembers++;
+				&& !partyMember.rip) hurtPartyMembers++;
 			if (hurtPartyMembers >= 2
 				&& character.mp >= G.skills.partyheal.mp
 				&& !is_on_cooldown("partyheal")) {
 				use_skill("partyheal");
 				game_log("Healing Party");
 			}
+
 			//Heal ONE Partymember
 			if (partyMember.hp < (partyMember.max_hp - maxHealing)
-				&& character.mp >= character.mp_cost
 				&& !partyMember.rip
+				&& character.mp >= character.mp_cost
 				//&& can_heal(partyMember)
 				&& is_in_range(partyMember, "heal")
 				&& !is_on_cooldown("heal")) {
@@ -33,6 +35,7 @@ function priestSkills(target) {
 					log(`Heal failed: ${message.reason}`);
 				});
 			}
+
 			//Absorb Sins of a Partymember
 			if (character.level >= 55
 				&& partyMember.name !== character.name

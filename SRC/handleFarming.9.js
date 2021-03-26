@@ -1,10 +1,16 @@
 //Update farming spot.
-//If a hunt is going on, go there
+//1. Check for Event-Monsters
+//2. Do Hunting-Quests
+//3. Regular farming
 function updateFarmingSpot() {
-  let huntedMonsters = get("huntedMonsters");
-  //Hunted Monsters can be not set, or an empty array
-  //of length 0, that's why both must be checked
-  if (hunterToggle
+  const huntedMonsters = get("huntedMonsters");
+  //Check for rare Event-Monsters
+  if (eventMonsterToggle
+    && findEventMonsters("getMonster")) {
+    farmMonsterType = findEventMonsters("getMonster");
+    //Hunted Monsters can be not set, or an empty array
+    //of length 0, that's why both must be checked
+  } else if (hunterToggle
     && huntedMonsters
     && huntedMonsters.length > 0) {
     farmMonsterType = huntedMonsters[huntedMonsters.length - 1].monsterType;
@@ -12,14 +18,14 @@ function updateFarmingSpot() {
     farmMonsterType = scheduleFarming();
   }
   //No matter if a hunt is going on or not, update farmingSpotData
-  farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
+  farmingSpotData = getFarmingSpot(farmMonsterType, "getFarmingSpotData");
   //Adjust master according to monster difficulty
-  requiresMaster.includes(farmMonsterType) ? master = hunterMaster : master = "";
+  master = requiresMaster.includes(farmMonsterType) ? hunterMaster : "";
 }
 
 //Cycles through allMonstersToFarm, returning a different monster depending on the time of the day
 function scheduleFarming() {
-  let slotSize = 24 / allMonstersToFarm.length;
+  const slotSize = 24 / allMonstersToFarm.length;
   let carryOver = 0;
   for (const monster of allMonstersToFarm) {
     for (let i = 0; i < slotSize; i++) {
@@ -37,6 +43,21 @@ Allowed "action" arguments:
   "coord" -> Returns the coordinates on the map where the monster is located
 */
 function getFarmingSpot(farmMonsterType = "crab", action = "move") {
+
+  //Special logic to hunt rare Event-Monsters
+  //Must always return something, to stop code below
+  //###########################################
+  if (eventMonsters.includes(farmMonsterType)) {
+    if (action === "move") {
+      smart_move(findEventMonsters("getFarmingSpotData"));
+      log(`Moving to Event-Monster: ${farmMonsterType}`);
+      return;
+    } else if (action === "getFarmingSpotData") {
+      return findEventMonsters(action);
+    }
+  }
+  //############## End Event-Monsters ################
+
   const availableMaps = [
     "main",
     "woffice",
@@ -93,9 +114,10 @@ function getFarmingSpot(farmMonsterType = "crab", action = "move") {
 
   //Move to farming spot
   //monsterBoundary holds the boundaries of the monster-spawn (for better readability)
-  let monsterBoundary = farmingSpots[indexMostMonsters].monster.boundary;
-  let farmSpotCenterX = Math.floor(monsterBoundary[0] + ((monsterBoundary[2] - monsterBoundary[0]) / 2));
-  let farmSpotCenterY = Math.floor(monsterBoundary[1] + ((monsterBoundary[3] - monsterBoundary[1]) / 2));
+  const monsterBoundary = farmingSpots[indexMostMonsters].monster.boundary;
+  //Half of X and Y of monsterBoundary [The rectangle monsters spawn in]
+  const farmSpotCenterX = Math.floor(monsterBoundary[0] + ((monsterBoundary[2] - monsterBoundary[0]) / 2));
+  const farmSpotCenterY = Math.floor(monsterBoundary[1] + ((monsterBoundary[3] - monsterBoundary[1]) / 2));
   if (action === "move") {
     //Switch Map if needed
     log("Moving to farming spot");
@@ -121,11 +143,33 @@ function getFarmingSpot(farmMonsterType = "crab", action = "move") {
     });
 
     //Return the map to farm on
-  } else if (action === "farmingSpotData") {
+  } else if (action === "getFarmingSpotData") {
     return {
       map: farmingSpots[indexMostMonsters].map,
       x: farmSpotCenterX,
       y: farmSpotCenterY
+    }
+  }
+}
+
+//Find Event-Monsters (like snowman, wabbit)
+function findEventMonsters(action) {
+  for (const monster of eventMonsters) {
+    //All properties have to be present to avoid smart-move errors.
+    //(x and y are not present at spawn, but a few seconds later)
+    if (parent.S?.[monster]?.live
+      && parent.S?.[monster]?.map
+      && parent.S?.[monster]?.x
+      && parent.S?.[monster]?.y) {
+      if (action === "getMonster") {
+        return monster;
+      } else if (action === "getFarmingSpotData") {
+        return {
+          map: parent.S[monster].map,
+          x: Math.round(parent.S[monster].x),
+          y: Math.round(parent.S[monster].y)
+        }
+      }
     }
   }
 }

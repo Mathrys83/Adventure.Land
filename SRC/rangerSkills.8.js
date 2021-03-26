@@ -12,7 +12,7 @@ function rangerSkills(target) {
 			&& !is_on_cooldown("attack")
 			//Only use these skills against weak monsters
 			&& !requiresMaster.includes(farmMonsterType)) {
-			let targets = Object.values(parent.entities).filter(entity => entity.mtype === farmMonsterType && entity.level <= 1 && is_in_range(entity, "3shot") && is_in_range(entity, "5shot"));
+			const targets = Object.values(parent.entities).filter(entity => entity.mtype === farmMonsterType && entity.level <= 1 && is_in_range(entity, "3shot") && is_in_range(entity, "5shot"));
 			if (character.level >= 75
 				&& targets.length >= 5
 				&& character.mp > G.skills["5shot"].mp) {

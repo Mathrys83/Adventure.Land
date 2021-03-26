@@ -40,14 +40,16 @@ const characterNames = ["Hierophant", "Magos", "Patroclus"];
 //Designate a Master for hunting tough monsters
 const hunterMaster = characterNames[0];
 //Master for hunting tough monsters -> Handled by updateFarmingSpot()
-let master = "";
+let master = characterNames[0];
 //Toggle if character can attack -> Handled by scareMonsters();
 let attackToggle = true;
 //Toggle the pursuit of Hunter Quests
-const hunterToggle = true;
+const hunterToggle = false;
+//Toggle the pursuit of Event-Monsters (like snowman, wabbit)
+const eventMonsterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
 //Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-//const allMonstersToFarm = ["bbpompom", "ghost", "xscorpion"]; //"porcupine", "croc", "armadillo", "arcticbee", "crabx"
+//const allMonstersToFarm = ["bee", "bbpompom", "ghost", "xscorpion"]; //"porcupine", "croc", "armadillo", "arcticbee", "crabx"
 const allMonstersToFarm = ["xscorpion"];
 //Monster you are currently farming -> Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
@@ -77,11 +79,15 @@ const requiresMaster = [
 //Monsters listed here always get attacked on sight
 const specialMonsters = ["cutebee", "snowman", "goldenbat",
 	"wabbit", "phoenix", "fvampire", "mvampire", "grinch", "", ""];
+//Event-Monster to farm
+//eventMonsters is sequential! Order matters here! eventMonsters[0] gets attacked first, then eventMonsters[1]...
+//All Event-Monsters: pinkgoo, wabbit, franky, grinch, dragold, mrpumpkin, mrgreen
+const eventMonsters = ["wabbit", "snowman"];
 //Items to upgrade
 const itemsToUpgrade = [
 	"sshield", "staff", "slimestaff", "staffofthedead", "maceofthedead", "pmace",
 	"firebow", "frostbow", "firestaff", "t2bow", "gphelmet", "xmassweater",
-	"cape", "bcape", "harbringer", "", "",
+	"cape", "bcape", "harbringer", "mcape", "",
 	//Hunter Sets
 	"mchat", "mcgloves", "mcpants", "mcarmor", "mcboots",
 	"mmhat", "mmgloves", "mmpants", "mmarmor", "mmshoes",
@@ -93,13 +99,13 @@ const itemsToUpgrade = [
 	"merry"];
 //The merchant auto-crafts below listed items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = ["ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox"];
+const itemsToCraft = ["ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox", "basketofeggs"];
 //Items to be dismantled are listed below
 //Auto-dismantle items to get rare crafting-materials
 const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead", "", "", ""];
 //Smart-Moveable Object of your farm-location -> Handled by updateFarmingSpot()
 //Farming spots are found in G.maps.main
-let farmingSpotData = getFarmingSpot(farmMonsterType, "farmingSpotData");
+let farmingSpotData = getFarmingSpot(farmMonsterType, "getFarmingSpotData");
 
 setInterval(main, 1000 / 4); // Main Loop: Repeats every 1/4 seconds.
 setInterval(tier2Actions, 1000); // Tier 2 Loop: Repeats every 1 seconds.
@@ -126,8 +132,8 @@ function main() {
 	//Merchant Skills are Tier 3 actions
 	if (character.ctype === "merchant") return;
 
-	//If character has enough HP, attack!
-	if (character.hp > (character.max_hp / 2)) attackToggle = true;
+	//If character has enough HP and MP, attack!
+	if (character.hp > (character.max_hp / 2) && character.mp > (character.max_mp / 2)) attackToggle = true;
 
 	//Finds a suitable target and attacks it.
 	let target = getTarget();

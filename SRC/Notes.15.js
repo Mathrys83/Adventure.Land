@@ -70,7 +70,7 @@ parent.party_list
 
 //############# Target same target as other player #############
 
-let other_player = get_player("PlayerName")
+const other_player = get_player("PlayerName")
 if (other_player) {
     target_id = other_player.target;
     target = parent.entities[target_id];

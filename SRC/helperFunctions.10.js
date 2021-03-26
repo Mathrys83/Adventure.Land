@@ -41,8 +41,8 @@ function addButtons() {
 
 function transferLoot(merchantName) {
 	if (character.ctype === "merchant") return;
-	let merchant = get_player(merchantName);
-	let keepItems = [
+	const merchant = get_player(merchantName);
+	const keepItems = [
 		//Items
 		"tracker",
 		//Orbs
@@ -102,41 +102,54 @@ function relocateItems() {
 //Replenish Health and Mana
 function usePotions() {
 	if (!character.rip) {
-		//If character has at least half of Max_HP but no Mana, use Mana Potion
-		//If character has almost no Mana, also use Mana Potion [To be able to use Scare-Ability]
+		//Emergency Mana [For Scare-Ability]
 		if (!is_on_cooldown("use_mp")
-			//If character has at least half of it's Hp...
-			&& character.hp > (character.max_hp / 2)
-			//And less than it's maximum MP...
-			&& (character.mp <= character.max_mp - (G.items.mpot0.gives[0][1] - 1)
-				//Or almost no MP...
-				|| character.mp < (character.max_mp / 10))
-			&& (locate_item("mpot1") !== -1 || locate_item("mpot0") !== -1)) {
-			if (locate_item("mpot1") !== -1
-				&& character.mp < (character.max_mp - G.items.mpot1.gives[0][1])) {
-				consume(locate_item("mpot1"));
-			} else if (locate_item("mpot0") !== -1
-				&& character.mp < (character.max_mp - G.items.hpot0.gives[0][1])) {
-				consume(locate_item("mpot0"));
+			//If character has at least half of it's HP...
+			&& (character.hp >= (character.max_hp / 2)
+				//Or almost no HP
+				|| character.hp <= (character.max_hp / 10))
+			//And almost no MP...
+			&& character.mp <= (character.max_mp / 10)) {
+			//...consume Mana Potions
+			useMp();
+			log("Using emergency MP");
+			// ## Use regular potions ##
+			//If below half HP, use HP
+		} else if (character.hp <= (character.max_hp / 2)) {
+			useHp();
+			//If above half HP but below half MP, use MP
+		} else if (character.mp <= (character.max_mp / 2)) {
+			useMp();
+			//If above half HP and half MP, use HP
+		} else if (character.hp <= character.max_hp - G.items.hpot0.gives[0][1]) {
+			useHp();
+			//If full HP use MP
+		} else if (character.mp <= character.max_mp - G.items.mpot0.gives[0][1]) {
+			useMp();
+		}
+
+		function useHp() {
+			if (!is_on_cooldown("use_hp")) {
+				if (locate_item("hpot1") !== -1) {
+					consume(locate_item("hpot1"));
+				} else if (locate_item("hpot0") !== -1) {
+					consume(locate_item("hpot0"));
+				} else {
+					use_skill("use_hp");
+				}
 			}
-			//Use regular potions
-		} else if (!is_on_cooldown("use_hp") && (character.hp < (character.max_hp - G.items.hpot1.gives[0][1]) && locate_item("hpot1") !== -1)) {
-			consume(locate_item("hpot1"));
-		} else if (!is_on_cooldown("use_mp") && (character.mp < (character.max_mp - G.items.mpot1.gives[0][1]) && locate_item("mpot1") !== -1)) {
-			consume(locate_item("mpot1"));
-		} else if (!is_on_cooldown("use_hp") && (character.hp < (character.max_hp - G.items.hpot0.gives[0][1]) && locate_item("hpot0") !== -1)) {
-			consume(locate_item("hpot0"));
-		} else if (!is_on_cooldown("use_mp") && (character.mp < (character.max_mp - G.items.mpot0.gives[0][1]) && locate_item("mpot0") !== -1)) {
-			consume(locate_item("mpot0"));
-			//If character has no potions, generate them
-		} else if ((!is_on_cooldown("use_hp") || !is_on_cooldown("use_mp"))
-			&& (character.hp < (character.max_hp - G.items.hpot0.gives[0][1])
-				|| character.mp < (character.max_mp - G.items.mpot0.gives[0][1]))
-			&& locate_item("mpot0") === -1
-			&& locate_item("mpot1") === -1
-			&& locate_item("hpot0") === -1
-			&& locate_item("hpot1") === -1) {
-			use_hp_or_mp();
+		}
+
+		function useMp() {
+			if (!is_on_cooldown("use_mp")) {
+				if (locate_item("mpot1") !== -1) {
+					consume(locate_item("mpot1"));
+				} else if (locate_item("mpot0") !== -1) {
+					consume(locate_item("mpot0"));
+				} else {
+					use_skill("use_mp");
+				}
+			}
 		}
 	}
 }
@@ -161,7 +174,7 @@ function requestPotions() {
 //Drink Elixirs
 function drinkElixirs() {
 	if (character.ctype === "merchant") return;
-	let potions = [
+	const potions = [
 		"elixirdex2", "elixirdex1", "elixirdex0",
 		"elixirint2", "elixirint1", "elixirint0",
 		//"elixirvit0", "elixirvit1", "elixirvit2",
@@ -237,7 +250,7 @@ function masterBreadcrumbs() {
 
 //Follow master character
 function followMaster() {
-	let theMaster = get_player(master);
+	const theMaster = get_player(master);
 	const masterMaxDist = 50;
 	if (master && character.name !== master) {
 		//If master is on screen, follow him
@@ -259,9 +272,9 @@ function followMaster() {
 function showStatus() {
 	show_json({
 		hunterToggle: hunterToggle ? "✅ Hunter Toggle is active! Happy hunting!" : "❌ Hunter Toggle is deactivated...",
-		huntedMonster: !!get("huntedMonsters").length ? `🏹 You're hunting ${G.monsters[get("huntedMonsters")[get("huntedMonsters").length - 1].monsterType].name}s at ${farmingSpotData.map}.` : "🤷 No hunter quest active.",
-		farmedMonster: !!get("huntedMonsters").length ? `🤷 No farming while a hunter quest is active.` : `🚜 You're farming ${G.monsters[farmMonsterType].name}s at ${farmingSpotData.map}`,
-		master: !!master ? `👑 ${master} is the master for ${!!get("huntedMonsters").length ? "hunting" : "farming"} ${G.monsters[farmMonsterType].name}s.` : `👨‍🌾 No master needed to ${!!get("huntedMonsters").length ? "hunt" : "farm"} ${G.monsters[farmMonsterType].name}s.`
+		huntedMonster: !!get("huntedMonsters").length ? `🏹 You're hunting ${farmMonsterType}s at ${farmingSpotData.map}.` : "🤷 No hunter quest active.",
+		farmedMonster: !!get("huntedMonsters").length ? `🤷 No farming while a hunter quest is active.` : `🚜 You're farming ${farmMonsterType}s at ${farmingSpotData.map}`,
+		master: !!master ? `👑 ${master} is the master for ${!!get("huntedMonsters").length ? "hunting" : "farming"} ${farmMonsterType}s.` : `👨‍🌾 No master needed to ${!!get("huntedMonsters").length ? "hunt" : "farm"} ${farmMonsterType}s.`
 	});
 }
 

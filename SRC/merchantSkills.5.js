@@ -6,7 +6,7 @@ const potions = {
 	hpot0: 30,
 	hpot1: 15,
 	mpot0: 150,
-	mpot1: 15
+	mpot1: 24
 };
 //Cost 19800
 
@@ -36,7 +36,8 @@ const trashName = [
 	"", "", "", "", "", "", "", "",
 	//XMas Set
 	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",
-	"", "", "", "", "", "", "", "",
+	//Easter Set
+	"eears", "ecape", "epyjamas", "eslippers", "carrotsword",
 	//Unneeded elixirs
 	"elixirstr0", "elixirstr1", "elixirstr2",
 	"", "", "", "", "", "", "", "",
@@ -182,11 +183,11 @@ function tranferPotions() {
 
 //Buy Scrolls
 function buyScrolls(action) {
-	let scrolls = ["scroll0", "scroll1", "cscroll0", "cscroll1"];
+	const scrolls = ["scroll0", "scroll1", "cscroll0", "cscroll1"];
 	for (const scroll of scrolls) {
-		let missingScrolls = minScrolls - quantity(scroll);
-		let affordableScrolls = Math.floor(character.gold / G.items[scroll].g);
-		let scrollNum = (missingScrolls <= affordableScrolls) ? missingScrolls : affordableScrolls;
+		const missingScrolls = minScrolls - quantity(scroll);
+		const affordableScrolls = Math.floor(character.gold / G.items[scroll].g);
+		const scrollNum = (missingScrolls <= affordableScrolls) ? missingScrolls : affordableScrolls;
 		if (action === "check") {
 			if (scrollNum > 0) return true;
 		}
@@ -204,11 +205,11 @@ function buyScrolls(action) {
 
 //Buy Compound Scrolls
 function buyScrolls() {
-	let compScrolls = ["cscroll0", "cscroll1"];
+	const compScrolls = ["cscroll0", "cscroll1"];
 	for (const scroll of compScrolls) {
-		let missingScrolls = minScrolls - quantity(scroll);
-		let affordableScrolls = Math.floor(character.gold / G.items[scroll].g);
-		let scrollNum = (missingScrolls <= affordableScrolls) ? missingScrolls : affordableScrolls;
+		const missingScrolls = minScrolls - quantity(scroll);
+		const affordableScrolls = Math.floor(character.gold / G.items[scroll].g);
+		const scrollNum = (missingScrolls <= affordableScrolls) ? missingScrolls : affordableScrolls;
 		if (scrollNum) {
 			getScrolls(scroll, scrollNum);
 			return;
@@ -319,7 +320,7 @@ function upgradeItems() {
 //Compound items
 function compoundItems(level) {
 	const scrolls = ["cscroll0", "cscroll1", "cscroll2"];
-	let triple = findTriple(level);
+	const triple = findTriple(level);
 	if (triple
 		&& triple.length === 3
 		&& !character.q.compound) {
@@ -337,7 +338,7 @@ function compoundItems(level) {
 /*
 //Compound items
 function compoundItems(level) {
-	let triple = findTriple(level);
+	const triple = findTriple(level);
 	if (triple
 		&& triple.length === 3
 		&& !character.q.compound) {
@@ -430,7 +431,7 @@ function sellItems(sellItemLevel = 2, profitMargin = 15) {
 
 //Find empty trade-slots to put goods in
 function findEmptyTradeSlots() {
-	let tradeSlots = Object.keys(character.slots).filter(tradeSlot => tradeSlot.includes("trade"));
+	const tradeSlots = Object.keys(character.slots).filter(tradeSlot => tradeSlot.includes("trade"));
 	//Returns slot + 1 because character.slots is 0-indexed,
 	//but Trate-Slots start with 1 NOT ZERO!
 	for (const slot in tradeSlots) {
@@ -442,15 +443,15 @@ function findEmptyTradeSlots() {
 //Also, auto-join Giveaways
 function buyCheapStuff() {
 	for (const i in parent.entities) {
-		let otherPlayer = parent.entities[i];
+		const otherPlayer = parent.entities[i];
 		if (otherPlayer.player
 			&& otherPlayer.ctype === "merchant"
 			&& otherPlayer.slots
 			&& distance(character, otherPlayer) < G.skills.mluck.range) {
 
-			let tradeSlots = Object.keys(otherPlayer.slots).filter(tradeSlot => tradeSlot.includes("trade"));
+			const tradeSlots = Object.keys(otherPlayer.slots).filter(tradeSlot => tradeSlot.includes("trade"));
 			tradeSlots.forEach(tradeSlot => {
-				let otherPlayerTradeSlot = otherPlayer.slots[tradeSlot];
+				const otherPlayerTradeSlot = otherPlayer.slots[tradeSlot];
 				//Must be a Trade-Slot
 				if (otherPlayerTradeSlot) {
 					if (!otherPlayerTradeSlot.b //Excludes "whishlisted" items! Trade slots can "sell" or "wishlist"!
@@ -460,7 +461,7 @@ function buyCheapStuff() {
 						&& !otherPlayerTradeSlot.giveaway) {
 						//If it's a single item, buy it.
 						if (!otherPlayerTradeSlot.q) {
-							log(`Buying 1 from ${otherPlayer} Slot ${tradeSlot}`)
+							log(`Buying 1 ${otherPlayerTradeSlot.name} from ${otherPlayer}`);
 							trade_buy(otherPlayer, tradeSlot, 1);
 							//If the item has a quantity, buy as many as possible
 						} else if (otherPlayerTradeSlot.q) {
@@ -511,7 +512,7 @@ function merchantsLuck() {
 	}
 	//...and then one random player is picked!
 	if (otherPlayers.length > 0) {
-		let luckyPlayer = Math.floor(Math.random() * otherPlayers.length)
+		const luckyPlayer = Math.floor(Math.random() * otherPlayers.length)
 		use_skill("mluck", otherPlayers[luckyPlayer].name);
 		log(`Giving luck to: ${otherPlayers[luckyPlayer].name}`);
 	}

@@ -44,7 +44,7 @@ function transferLoot(merchantName) {
 	const merchant = get_player(merchantName);
 	const keepItems = [
 		//Items
-		"tracker",
+		"tracker", "computer",
 		//Orbs
 		"jacko", "orbg", "talkingskull",
 		//Gloves
@@ -72,19 +72,38 @@ function transferLoot(merchantName) {
 				log("Sent items to merchant.");
 			}
 		});
-		//Send spare jackos to the merchant, too
+		//Send spare jackos to the merchant, too [Deactivated: Jackos don't drop from monsters, only from rare candy]
 		//if (locate_item("jacko") !== -1 && locate_item("jacko") !== 40) send_item(merchant, locate_item("jacko"), 9999);
 	}
 }
 
 function tidyInventory() {
-	for (let i = 34; i > 0; i--) {
-		if (character.items[i] && !character.items[i - 1]) swap(i, i - 1);
+	for (let i = 0; i <= 34; i++) {
+		if (character.items[i] === null) {
+			for (let j = 34; j > i; j--) {
+				if (character.items[j]) swap(j, i);
+			}
+		}
 	}
 }
 
 //Relocate certain items to certain slots
 function relocateItems() {
+	//All Characters Special Items
+	if (locate_item("tracker") !== -1
+		&& locate_item("tracker") !== 0) swap(locate_item("tracker"), 0);
+	if (locate_item("jacko") !== -1
+		&& locate_item("jacko") !== 1) swap(locate_item("jacko"), 1);
+	//Only farmers have Hand of Midas
+	if (character.ctype !== "merchant"
+		&& locate_item("handofmidas") !== -1
+		&& locate_item("handofmidas") !== 2) swap(locate_item("handofmidas"), 2);
+	//Only Priest and Mage have a lantern
+	if ((character.ctype !== "priest"
+		|| character.ctype !== "mage")
+		&& locate_item("lantern") !== -1
+		&& locate_item("lantern") !== 3) swap(locate_item("lantern"), 3);
+	//Potions
 	if (locate_item("hpot1") !== -1
 		&& locate_item("hpot1") !== 35) swap(locate_item("hpot1"), 35);
 	if (locate_item("mpot1") !== -1
@@ -93,10 +112,6 @@ function relocateItems() {
 		&& locate_item("hpot0") !== 37) swap(locate_item("hpot0"), 37);
 	if (locate_item("mpot0") !== -1
 		&& locate_item("mpot0") !== 38) swap(locate_item("mpot0"), 38);
-	if (locate_item("tracker") !== -1
-		&& locate_item("tracker") !== 39) swap(locate_item("tracker"), 39);
-	if (locate_item("jacko") !== -1
-		&& locate_item("jacko") !== 40) swap(locate_item("jacko"), 40);
 }
 
 //Replenish Health and Mana
@@ -209,7 +224,7 @@ function lootMidas() {
 		equipRegularGloves();
 	}
 	function equipMidasAndLoot() {
-		if (character.slots.gloves.name !== "handofmidas" && locate_item("handofmidas") !== -1) equip(locate_item("handofmidas"));
+		if (character.slots.gloves?.name !== "handofmidas" && locate_item("handofmidas") !== -1) equip(locate_item("handofmidas"));
 		loot();
 	}
 	function equipRegularGloves() {
@@ -218,7 +233,7 @@ function lootMidas() {
 		if (character.ctype === "ranger") equipGloves("mrngloves");
 
 		function equipGloves(gloveModel) {
-			if (character.slots.gloves.name !== gloveModel && locate_item(gloveModel) !== -1) equip(locate_item(gloveModel));
+			if (character.slots.gloves?.name !== gloveModel && locate_item(gloveModel) !== -1) equip(locate_item(gloveModel));
 		}
 	}
 }
@@ -230,10 +245,28 @@ function equipLantern(monsterType) {
 	//If farmMonsterType is a special monster, equip the lantern
 	if (specialMonsters.includes(monsterType)
 		&& distance(character, farmingSpotData) < 200) {
-		if (character.slots.offhand.name !== "lantern" && locate_item("lantern") !== -1) equip(locate_item("lantern"));
+		if (character.slots.offhand?.name !== "lantern" && locate_item("lantern") !== -1) equip(locate_item("lantern"));
 		//If farmMonsterType is a regular monster, equip regular Book of Secrets
 	} else {
-		if (character.slots.offhand.name !== "wbook1" && locate_item("wbook1") !== -1) equip(locate_item("wbook1"));
+		if (character.slots.offhand?.name !== "wbook1" && locate_item("wbook1") !== -1) equip(locate_item("wbook1"));
+	}
+}
+
+//Retrieve items from Bank
+function retrieveFromBank(item) {
+	//Loops through bank-sections
+	for (const box in character.bank) {
+		//Can't retrieve  anything from gold-box
+		if (box === "gold") continue;
+		//Loops through individual bank-slots
+		for (const slot in character.bank[box]) {
+			if (character.bank[box][slot]) {
+				if (character.bank[box][slot].name === item) {
+					bank_retrieve(box, slot);
+					return;
+				}
+			}
+		}
 	}
 }
 

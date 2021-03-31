@@ -45,6 +45,8 @@ let master = characterNames[0];
 let attackToggle = true;
 //Toggle the pursuit of Hunter Quests
 const hunterToggle = false;
+//Go fishing!
+const fishingToggle = true;
 //Toggle the pursuit of Event-Monsters (like snowman, wabbit)
 const eventMonsterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
@@ -71,7 +73,7 @@ Also: Characters will start using their offensive skills if a monster is on this
 */
 const requiresMaster = [
 	"snowman", "scorpion", "gscorpion", "stoneworm", //"poisio", "tortoise",
-	"bat", "spider", "goldenbat", "iceroamer", "crabx", "jr", "greenjr",
+	"bat", "goldenbat", "iceroamer", "crabx", "jr", "greenjr", //"spider",
 	"bbpompom", "booboo", "prat", "boar", "ghost", "mummy",
 	"mole", "wolfie", "wolf", "xscorpion", "bigbird",
 	"wabbit", "phoenix", "fvampire", "mvampire", "grinch",
@@ -85,9 +87,9 @@ const specialMonsters = ["cutebee", "snowman", "goldenbat",
 const eventMonsters = ["wabbit", "snowman"];
 //Items to upgrade
 const itemsToUpgrade = [
-	"sshield", "staff", "slimestaff", "staffofthedead", "maceofthedead", "pmace",
+	"sshield", "slimestaff", "staffofthedead", "maceofthedead", "pmace",
 	"firebow", "frostbow", "firestaff", "t2bow", "gphelmet", "xmassweater",
-	"cape", "bcape", "harbringer", "mcape", "",
+	"cape", "bcape", "harbringer", "mcape", "oozingterror",
 	//Hunter Sets
 	"mchat", "mcgloves", "mcpants", "mcarmor", "mcboots",
 	"mmhat", "mmgloves", "mmpants", "mmarmor", "mmshoes",
@@ -99,18 +101,19 @@ const itemsToUpgrade = [
 	"merry"];
 //The merchant auto-crafts below listed items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = ["ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox", "basketofeggs"];
+const itemsToCraft = ["rod", "ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox", "basketofeggs"];
 //Items to be dismantled are listed below
 //Auto-dismantle items to get rare crafting-materials
-const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead", "", "", ""];
+const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead", "goldenegg", "", ""];
 //Smart-Moveable Object of your farm-location -> Handled by updateFarmingSpot()
 //Farming spots are found in G.maps.main
 let farmingSpotData = getFarmingSpot(farmMonsterType, "getFarmingSpotData");
 
-setInterval(main, 1000 / 4); // Main Loop: Repeats every 1/4 seconds.
+setInterval(main, 1000 / 4); // Main Loop: Repeats 4 times per second.
 setInterval(tier2Actions, 1000); // Tier 2 Loop: Repeats every 1 seconds.
 setInterval(tier3Actions, 5000); // Tier 3 Loop: Repeats every 5 seconds.
 
+//This loop runs 4 times per second
 function main() {
 
 	//Respawn Code is Tier 2
@@ -168,6 +171,7 @@ function main() {
 	}
 }
 
+//This loop runs every 1 second
 function tier2Actions() {
 
 	//If Character is dead, respawn
@@ -181,7 +185,7 @@ function tier2Actions() {
 	//If merchant moves with the stand open, close it
 	if (is_moving(character) && character.ctype === "merchant" && character.stand) close_stand();
 
-	//Merchant Skills are Tier 3 actions
+	//Merchant Skills are Tier 4 actions
 	if (character.ctype === "merchant") return;
 
 	//If the master is moving, he lays breadcrumbs
@@ -194,6 +198,7 @@ function tier2Actions() {
 	if (master && character.name !== master) followMaster();
 }
 
+//This loop runs every 5 seconds
 function tier3Actions() {
 
 	//Respawn Code is Tier 2
@@ -212,7 +217,8 @@ function tier3Actions() {
 	relocateItems();
 
 	//Arranges Inventory without gaps
-	tidyInventory();
+	//[Delay 500ms to not mess with other functions using Inventory]
+	setTimeout(tidyInventory, 500);
 
 	//Functions for non-merchant characters
 	if (character.ctype !== "merchant") {
@@ -225,3 +231,4 @@ function tier3Actions() {
 	//Run Merchant Skills
 	if (character.ctype === "merchant") merchantSkills();
 }
+

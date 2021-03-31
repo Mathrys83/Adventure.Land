@@ -12,7 +12,7 @@ function priestSkills(target) {
 		if (partyMember) {
 
 			//Heal COMPLETE Party
-			if (partyMember.hp < (partyMember.max_hp - maxPartyHealing)
+			if (partyMember.hp < ((partyMember.max_hp - G.items.hpot1.gives[0][1]) - maxPartyHealing)
 				&& !partyMember.rip) hurtPartyMembers++;
 			if (hurtPartyMembers >= 2
 				&& character.mp >= G.skills.partyheal.mp
@@ -22,7 +22,7 @@ function priestSkills(target) {
 			}
 
 			//Heal ONE Partymember
-			if (partyMember.hp < (partyMember.max_hp - maxHealing)
+			if (partyMember.hp < ((partyMember.max_hp - G.items.hpot1.gives[0][1]) - maxHealing)
 				&& !partyMember.rip
 				&& character.mp >= character.mp_cost
 				//&& can_heal(partyMember)
@@ -38,10 +38,10 @@ function priestSkills(target) {
 
 			//Absorb Sins of a Partymember
 			if (character.level >= 55
-				&& partyMember.name !== character.name
+				&& !partyMember.rip
+				&& partyMember.name !== character.name //Don't absorb own sins
 				&& partyMember.hp < (partyMember.max_hp - (maxHealing * 2))
 				&& character.mp >= G.skills.absorb.mp
-				&& !partyMember.rip
 				//&& can_heal(partyMember)
 				&& is_in_range(partyMember, "absorb")
 				&& !is_on_cooldown("absorb")) {

@@ -268,9 +268,13 @@ function smart_move2(destination, on_done)
     smart_move(destination, on_done);
 }
 
-//############# TEXT #############
+//############# Buttons with HTML #############
 
-//############# TEXT #############
+add_bottom_button("btnTest", "<img src='https://www.iconhot.com/icon/png/dot-pictograms/256/sleep-hotel.png' style='background: white; width:20px; height:20px;' alt='Sleep'>", function(){});
+
+//############# Open Inventory #############
+
+parent.on_skill("I") //Presses "I"-Button
 
 //############# TEXT #############
 

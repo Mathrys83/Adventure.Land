@@ -1,14 +1,21 @@
+//Debug mode - Set to True for extensive Logs
+const merchantDebugMode = false;
+
+//Money in pocked [Used to buy Potions, Scrolls and cheap Items]
 const reserveMoney = 1000000;
+//Minimal number of Upgrade & Compound Scrolls to have
 const minScrolls = 100;
 
-//Potion Thresholds
+//Number of potions to buy each round. 
+//Gets tripled if the hunted monster requires a master
 const potions = {
-	hpot0: 30,
-	hpot1: 15,
-	mpot0: 150,
-	mpot1: 24
+	hpot0: 50,
+	hpot1: 50,
+	mpot0: 30,
+	mpot1: 30
 };
-//Cost 19800
+//Cost 19000 @ 50 each
+//Cost 30000 @ 50/50/30/30
 
 //Selling parameters
 const sellItemLevel = 3;
@@ -17,8 +24,9 @@ const profitMargin = 20;
 //Max level to be compounded
 const maxCompoundLevel = 3;
 //Max level to be upgraded
-const maxUpgradeLevel = 5;
+const maxUpgradeLevel = 6;
 
+//Items to be sold
 const trashName = [
 	// ringsj hpamulet hpbelt strring quiver snakeoil snakefang
 	//spidersilk ascale cscale lotusf bfur ink spores
@@ -32,41 +40,21 @@ const trashName = [
 	"hbow", "shield", "mushroomstaff", "swifty", "stramulet",
 	"strbelt", "strearring", "hpbelt", "hpamulet",
 	"throwingstars", "smoke", "phelmet", "basher",
-	"xmace", "dagger", "", "", "",
+	"xmace", "dagger", "bataxe", "", "",
 	"", "", "", "", "", "", "", "",
 	//XMas Set
 	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",
 	//Easter Set
-	"eears", "ecape", "epyjamas", "eslippers", "carrotsword",
+	"eears", "ecape", "epyjamas", "eslippers", "carrotsword", "pinkie",
 	//Unneeded elixirs
 	"elixirstr0", "elixirstr1", "elixirstr2",
 	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", ""];
 
+//True when Merchant is making his round
+let bigRound = false;
+
 function merchantSkills() {
-
-	//Functions only used on "main" map
-	if (character.map === "main"
-		&& Math.abs(character.x) < 500
-		&& Math.abs(character.y) < 500) {
-
-		//Sell unwanted items
-		sellTrash();
-
-		//Buy cheap items from other merchants
-		buyCheapStuff();
-
-		//Upgrade items
-		upgradeItems();
-
-		//Compound items
-		for (let i = 0; i < maxCompoundLevel; i++) if (findTriple(i)) compoundItems(i);
-
-		//searchItems2bSold Returns Array SLOTS. Therefor it can return ZEROES
-		//So we have to specifically look for UNDEFINED
-		if (searchItems2bSold(sellItemLevel) !== undefined
-			&& findEmptyTradeSlots() !== undefined) sellItems(sellItemLevel, profitMargin);
-	}
 
 	//Check if party is incomplete, restore of not
 	restoreParty();
@@ -74,54 +62,123 @@ function merchantSkills() {
 	//Buff players with merchant's luck
 	merchantsLuck();
 
-	//Exchange Gems and Quests
-	exchangeGemsQuests();
+	if (!bigRound) {
+		//Functions only used on "main" map
+		if (character.map === "main"
+			&& Math.abs(character.x) < 250
+			&& Math.abs(character.y) < 250
+			&& !is_moving(character)) {
 
-	//Craft items
-	craftItems();
+			//Sell unwanted items
+			sellTrash();
 
-	//Dismantle items
-	dismantleItems();
+			//Buy cheap items from other merchants
+			buyCheapStuff();
+
+			//Upgrade items
+			upgradeItems();
+
+			//Compound items
+			for (let i = 0; i < maxCompoundLevel; i++) if (findTriple(i)) compoundItems(i);
+
+			//searchItems2bSold Returns Array SLOTS. Therefor it can return ZEROES
+			//So we have to specifically look for UNDEFINED
+			if (searchItems2bSold(sellItemLevel) !== undefined
+				&& findEmptyTradeSlots() !== undefined) sellItems(sellItemLevel, profitMargin);
+		}
+
+		//These functions can run on any map [not just on the marketplace]
+		//Therefor, they have to run in sequence, not to interfere with each other
+		//Craft items
+		if (craftItems("check")) {
+			craftItems();
+			//Dismantle items
+		} else if (dismantleItems("check")) {
+			dismantleItems();
+			//Exchange Gems and Quests
+		} else if (exchangeGemsQuests("check")) {
+			exchangeGemsQuests();
+			//Go Fishing!
+		} else if (goFishing("check")) {
+			goFishing();
+		}
+	}
 
 	//Visit farm-party every 10 minutes.
 	//Bring potions, take their gold and items
-	//Store gold and good items in bank
+	//and store gold and good items in bank
 	if (new Date().getMinutes() % 10 === 0) {
+
+		bigRound = true;
 
 		updateFarmingSpot();
 		close_stand();
+		merchantRound();
 
-		//Make the big round
-		smart_move({ to: "main" }, () => {
+		async function merchantRound() {
+			await smart_move("main"); //code stops here until smart move is finished
 			buyPotions();
+			goFishing("checkFishingRod");
 			relocateItems();
-			smart_move(farmingSpotData, () => {
-				tranferPotions();
-				merchantsLuck();
-				smart_move({ to: "bank" }, () => {
-					depositGold();
-					//depositValuableItems();
-					depositSelectedItems();
-					//Wait after depositing items.
-					//Depositing multiple items and immediately smart_moving can result in a kick (Call-cost too high)
-					setTimeout(() => {
-						if (buyScrolls("check")) {
-							smart_move({ to: "scrolls" }, () => {
-								buyScrolls("buy");
-								openMerchantStand();
-							});
-						} else {
-							openMerchantStand();
-						}
-					}, 2000);
-				});
-			});
-		});
+			await new Promise(r => setTimeout(r, 3000)); //wait 1000ms
+			await smart_move(farmingSpotData);
+			transferPotions();
+			merchantsLuck();
+			await new Promise(r => setTimeout(r, 3000));
+			await smart_move("bank");
+			depositGold();
+			depositSelectedItems();
+			goFishing("checkFishingRod");
+			await new Promise(r => setTimeout(r, 3000));
+			if (buyScrolls("check")) {
+				await smart_move("scrolls");
+				buyScrolls("buy");
+				await new Promise(r => setTimeout(r, 3000));
+				openMerchantStand();
+			} else {
+				openMerchantStand();
+			}
+			await new Promise(r => setTimeout(r, 10000));
+			bigRound = false;
+		}
 	}
 }
 
+/*
+//Make the big round
+smart_move({ to: "main" }, () => {
+	buyPotions();
+	relocateItems();
+	smart_move(farmingSpotData, () => {
+		transferPotions();
+		merchantsLuck();
+		setTimeout(() => {
+			smart_move({ to: "bank" }, () => {
+				depositGold();
+				depositSelectedItems();
+				//Wait after depositing items.
+				//Depositing multiple items and immediately smart_moving can result in a kick (Call-cost too high)
+				setTimeout(() => {
+					if (buyScrolls("check")) {
+						smart_move({ to: "scrolls" }, () => {
+							buyScrolls("buy");
+							openMerchantStand();
+						});
+					} else {
+						openMerchantStand();
+					}
+				}, 3000);
+			});
+		}, 5000);
+	});
+});
+}
+}
+*/
+
 //Buy potions
 function buyPotions() {
+	if (merchantDebugMode) log("Buying Potions", "green");
 	//If farmMonsterType requires a master, buy more potions!	
 	const potionModifier = requiresMaster.includes(farmMonsterType) ? 3 : 1;
 	for (const potion in potions) {
@@ -130,7 +187,8 @@ function buyPotions() {
 }
 
 //Transfer potions to characters
-function tranferPotions() {
+function transferPotions() {
+	if (merchantDebugMode) log("Transferring Potions", "green");
 	//All potions not listed here get sold (Check "trashName"-Array)
 	const essentialPotions = ["hpot0", "mpot0", "hpot1", "mpot1"];
 	const dexPotions = ["elixirdex0", "elixirdex1", "elixirdex2"];
@@ -189,11 +247,13 @@ function buyScrolls(action) {
 		const affordableScrolls = Math.floor(character.gold / G.items[scroll].g);
 		const scrollNum = (missingScrolls <= affordableScrolls) ? missingScrolls : affordableScrolls;
 		if (action === "check") {
+			if (merchantDebugMode) log("Checking Scrolls", "green");
 			if (scrollNum > 0) return true;
 		}
 		else if (action === "buy"
 			&& scrollNum
 			&& scrollNum > 0) {
+			if (merchantDebugMode) log("Buying Scrolls", "green");
 			buy(scroll, scrollNum);
 			log(`Bought ${scrollNum} ${G.items[scroll].name}`);
 		}
@@ -202,7 +262,7 @@ function buyScrolls(action) {
 
 /*
 // ### Works independent of the "Big round" ###
-
+	
 //Buy Compound Scrolls
 function buyScrolls() {
 	const compScrolls = ["cscroll0", "cscroll1"];
@@ -215,7 +275,7 @@ function buyScrolls() {
 			return;
 		}
 	}
-
+	
 	function getScrolls(scroll, scrollNum) {
 		close_stand();
 		smart_move(find_npc("scrolls"), () => {
@@ -232,6 +292,7 @@ function buyScrolls() {
 
 //Sell trash, keep if it's high grade. (Grades: 0 Normal / 1 High /  2 Rare
 function sellTrash() {
+	if (merchantDebugMode) log("Selling Trash", "green");
 	character.items.forEach((item, index) => {
 		if (item
 			&& trashName.includes(item.name)
@@ -244,29 +305,67 @@ function sellTrash() {
 
 //Deposit Gold in bank
 function depositGold() {
+	if (merchantDebugMode) log("Depositing Gold", "green");
 	bank_deposit(character.gold - reserveMoney);
 	log(`Money deposited! Money in Pocket: ${character.gold}`);
 }
-
-/*
-//Deposit items in bank
-function depositValuableItems() {
-	character.items.forEach((item, index) => {
-		if (item
-			&& (item.level
-				&& item.level > sellItemLevel)
-			|| item_grade(item) === 2) {
-			bank_store(index);
-			log("Item stored in bank!");
-		}
-	});
-}
-*/
 
 //Collects similar items in the bank
 //First item has to be stored manually to initialize!
 //This is a precaution not to store unwanted items (Overflow bank)
 function depositSelectedItems() {
+	if (merchantDebugMode) log("Depositing Items", "green");
+	const keepItems = [
+		//Items
+		"stand0", "tracker", "computer", "sshield", "candycanesword", "rod",
+		//Orbs
+		"jacko", "orbg", "talkingskull"
+	];
+	//Loops through character's inventory
+	character.items.forEach((item, index) => {
+		//Flag to break both nested for-loops
+		//[Preventing multiple bank_store() operations of the same item, potentially resulting in a kick]
+		let breakLoop = false;
+		if (item
+			&& !keepItems.includes(item.name)) {
+			//Loops through bank-sections
+			for (const box in character.bank) {
+				if (breakLoop) break;
+				//Can't store anything in gold-box
+				if (box === "gold") continue;
+				//Loops through individual bank-slots
+				for (const slot of character.bank[box]) {
+					if (slot) {
+						if (item_grade(item) === 2
+							|| (item.level
+								&& item.level > sellItemLevel)
+							|| (slot.name === item.name
+								&& (slot.q
+									|| slot.level <= item.level))) {
+							bank_store(index);
+							log(`Stored ${item.name} in bank!`);
+							breakLoop = true;
+							break;
+						}
+					}
+				}
+			}
+		}
+	});
+}
+
+/*
+//Collects similar items in the bank
+//First item has to be stored manually to initialize!
+//This is a precaution not to store unwanted items (Overflow bank)
+function depositSelectedItems() {
+	if (merchantDebugMode) log("Depositing Items", "green");
+	const keepItems = [
+		//Items
+		"stand0", "tracker", "computer", "sshield", "candycanesword", "rod",
+		//Orbs
+		"jacko", "orbg", "talkingskull"
+	];
 	//Loops through bank-sections
 	for (const box in character.bank) {
 		if (box === "gold") continue;
@@ -276,6 +375,7 @@ function depositSelectedItems() {
 				//Loops through character's inventory
 				character.items.forEach((item, index) => {
 					if (item !== null
+						&& !keepItems.includes(item.name)
 						&& (item_grade(item) === 2
 							|| (item.level
 								&& item.level > sellItemLevel)
@@ -290,9 +390,11 @@ function depositSelectedItems() {
 		}
 	}
 }
+*/
 
 //Upgrade Items
 function upgradeItems() {
+	if (merchantDebugMode) log("Upgrading Items", "green");
 	const scrolls = ["scroll0", "scroll1", "scroll2"];
 	for (slot in character.items) {
 		if (!character.q.upgrade
@@ -319,6 +421,7 @@ function upgradeItems() {
 
 //Compound items
 function compoundItems(level) {
+	if (merchantDebugMode) log("Compounding Items", "green");
 	const scrolls = ["cscroll0", "cscroll1", "cscroll2"];
 	const triple = findTriple(level);
 	if (triple
@@ -358,6 +461,7 @@ function compoundItems(level) {
 
 //Mass Production
 function massProduction() {
+	if (merchantDebugMode) log("Using Mass Production Skill", "green");
 	if (character.level >= 60
 		&& character.mp > G.skills.massproductionpp.mp
 		&& !is_on_cooldown("massproductionpp")) {
@@ -373,14 +477,14 @@ function massProduction() {
 
 //Find a triple of items (same item, same level) 
 function findTriple(level) {
+	if (merchantDebugMode) log("Finding Triple", "green");
 	let compoundTriple = [];
 	//Look for triples
 	for (let i = 0; i <= 41; i++) {
-		if (character.items[i]
-			&& character.items[i].level === level
+		if (character.items[i]?.level === level
 			//First loop selects a compoundable item so the two 
 			// nested loops only need to match item name & item level
-			&& G.items[character.items[i].name].compound
+			&& G.items[character.items[i].name]?.compound
 			//Validate Compound: If  item is needed for crafting,
 			//it must NOT be compounded (Craft only takes lvl 0 items!)
 			&& validateCompound(character.items[i].name)) {
@@ -417,6 +521,7 @@ function findTriple(level) {
 
 //Find items to be sold  in the merchant stand
 function searchItems2bSold(sellItemLevel = 3) {
+	if (merchantDebugMode) log("Searching Items to be sold", "green");
 	for (const slot in character.items) {
 		if (character.items[slot]
 			&& !itemsToCraft.includes(character.items[slot].name)
@@ -426,6 +531,7 @@ function searchItems2bSold(sellItemLevel = 3) {
 
 //Sell items that match a certain level, with a profit
 function sellItems(sellItemLevel = 2, profitMargin = 15) {
+	if (merchantDebugMode) log("Selling Items", "green");
 	trade(searchItems2bSold(sellItemLevel), findEmptyTradeSlots(), item_value(character.items[searchItems2bSold(sellItemLevel)]) * profitMargin);
 }
 
@@ -442,6 +548,7 @@ function findEmptyTradeSlots() {
 //Auto-buy items from other merchants if they are sold below their value
 //Also, auto-join Giveaways
 function buyCheapStuff() {
+	if (merchantDebugMode) log("Buying cheap Stuff", "green");
 	for (const i in parent.entities) {
 		const otherPlayer = parent.entities[i];
 		if (otherPlayer.player
@@ -461,7 +568,7 @@ function buyCheapStuff() {
 						&& !otherPlayerTradeSlot.giveaway) {
 						//If it's a single item, buy it.
 						if (!otherPlayerTradeSlot.q) {
-							log(`Buying 1 ${otherPlayerTradeSlot.name} from ${otherPlayer}`);
+							log(`Bought 1 ${otherPlayerTradeSlot.name} from ${otherPlayer.name}`);
 							trade_buy(otherPlayer, tradeSlot, 1);
 							//If the item has a quantity, buy as many as possible
 						} else if (otherPlayerTradeSlot.q) {
@@ -488,6 +595,7 @@ function buyCheapStuff() {
 
 //Buff other characters with Merchants Luck!
 function merchantsLuck() {
+	if (merchantDebugMode) log("Using Merchants Luck Skill", "green");
 	let otherPlayers = [];
 	for (i in parent.entities) {
 		if (parent.entities[i].player
@@ -520,6 +628,7 @@ function merchantsLuck() {
 
 //If a character is not in the party, reatore it
 function restoreParty() {
+	if (merchantDebugMode) log("Restoring Party", "green");
 	if (parent.party_list.length < 4) {
 		loadCharacters();
 		initParty();
@@ -528,6 +637,7 @@ function restoreParty() {
 
 //Go to the market and sell things
 function openMerchantStand() {
+	if (merchantDebugMode) log("Opening Merchant Stand", "green");
 	/*
 	IMPORTANT!!! Because this function gets called with a setTimeout(),
 	it can be called WHILE the character is moving,
@@ -591,7 +701,9 @@ function closeMerchantStand() {
 
 
 //Exchange Gems & Quests at the corresponding NPC
-function exchangeGemsQuests() {
+function exchangeGemsQuests(action = "default") {
+	if (merchantDebugMode) log("Exchanging Gems & Quests", "green");
+	if (action === "check") return locateGems("findGems");
 	if (locateGems("findGems")) {
 		close_stand();
 		//smart_move({ to: "exchange" }, () => {
@@ -642,15 +754,17 @@ function exchangeGemsQuests() {
 }
 
 //Craft Items
-function craftItems() {
+function craftItems(action = "default") {
+	if (merchantDebugMode) log("Crafting Items", "green");
 	for (const item of itemsToCraft) {
 		if (checkCraftIngredients(item)) {
+			if (action === "check") return checkCraftIngredients(item);
 			close_stand();
 			smart_move(find_npc("craftsman"), () => {
 				auto_craft(item);
 				setTimeout(() => {
 					if (!checkCraftIngredients(item)) openMerchantStand();
-				}, 6000);
+				}, 3000);
 			});
 			return;
 		}
@@ -683,14 +797,16 @@ function craftItems() {
 }
 
 //Dismantle Items
-function dismantleItems() {
+function dismantleItems(action = "default") {
+	if (merchantDebugMode) log("Dismantling Items", "green");
+	if (action === "check") return findDismantleItems("find");
 	if (findDismantleItems("find")) {
 		close_stand();
 		smart_move(find_npc("craftsman"), () => {
 			dismantle(findDismantleItems("slot"));
 			setTimeout(() => {
 				if (!findDismantleItems("find")) openMerchantStand();
-			}, 6000);
+			}, 3000);
 		});
 		return;
 	}
@@ -702,6 +818,96 @@ function dismantleItems() {
 				} else if (arg === "slot") {
 					if (itemsToDismantle.indexOf(character.items[slot].name) !== -1) return slot;
 				}
+			}
+		}
+	}
+}
+
+function goFishing(action = "default") {
+	if (fishingToggle) {
+		if (merchantDebugMode) log("Fishing", "green");
+
+		//Equipment to wear when not fishing
+		const mainHand = "candycanesword";
+		const offHand = "sshield";
+		const fishingSpot = {
+			map: "main",
+			x: -1368,
+			y: -34
+		}
+
+		//Check if can go fishing, equip regular Gear if not
+		if (action === "check") {
+			if (is_on_cooldown("fishing")) equipRegularGear();
+			return !is_on_cooldown("fishing");
+			//Check if character has a fishingrod. If not, craft one
+		} else if (action === "checkFishingRod") {
+			checkFishingRod();
+		}
+
+		//Check if character has a fishingrod. If not, craft one.
+		function checkFishingRod() {
+			if (locate_item("rod") === -1
+				&& character.slots.mainhand?.name !== "rod") {
+				if (character.map === "bank"
+					&& locate_item("spidersilk") === -1) {
+					retrieveFromBank("spidersilk");
+				} else if (character.map === "main"
+					&& locate_item("spidersilk") !== -1) {
+					buy("staff");
+				}
+			}
+		}
+
+		//Go fishing
+		if (!is_on_cooldown("fishing")
+			&& (locate_item("rod") !== -1
+				|| character.slots.mainhand?.name === "rod")) {
+			if (character.stand) close_stand();
+			//Move to fishing spot
+			if (distance(character, fishingSpot) > 10) {
+				smart_move(fishingSpot, () => { equipFishingGear() });
+				//If at fishing spot, equip the fishing rod and fish
+			} else if (distance(character, fishingSpot) < 10) {
+				if (character.slots.mainhand?.name !== "rod") {
+					equipFishingGear();
+					//Start fishing!
+				} else if (character.slots.mainhand?.name === "rod"
+					&& !character.c.fishing) {
+					use_skill("fishing");
+					setTimeout(() => {
+						if (is_on_cooldown("fishing")) {
+							equipRegularGear();
+							openMerchantStand();
+						}
+					}, 15000);
+				}
+			}
+			// ###### Still needed?? ######
+			//If fishing is on cooldown, openMerchantStand()
+		} /*else if (is_on_cooldown("fishing")) {
+		if (distance(character, fishingSpot) < 10) openMerchantStand();
+		equipRegularGear();
+	}*/
+
+		//Equip Fishingrod
+		function equipFishingGear() {
+			if (character.slots.offhand) unequip("offhand");
+			if (character.slots.mainhand?.name !== "rod"
+				&& locate_item("rod") !== -1) {
+				equip(locate_item("rod"));
+			}
+		}
+
+		//Equip regular Gear
+		function equipRegularGear() {
+			if (character.slots.mainhand?.name !== mainHand
+				&& locate_item(mainHand) !== -1) {
+				equip(locate_item(mainHand));
+			}
+			if (character.slots.offhand?.name !== offHand
+				&& locate_item(offHand) !== -1) {
+				equip(locate_item(offHand));
 			}
 		}
 	}

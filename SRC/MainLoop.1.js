@@ -44,15 +44,15 @@ let master = characterNames[0];
 //Toggle if character can attack -> Handled by scareMonsters();
 let attackToggle = true;
 //Toggle the pursuit of Hunter Quests
-const hunterToggle = false;
+const hunterToggle = true;
 //Go fishing!
 const fishingToggle = true;
 //Toggle the pursuit of Event-Monsters (like snowman, wabbit)
 const eventMonsterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
 //Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-//const allMonstersToFarm = ["bee", "bbpompom", "ghost", "xscorpion"]; //"porcupine", "croc", "armadillo", "arcticbee", "crabx"
-const allMonstersToFarm = ["xscorpion"];
+const allMonstersToFarm = ["bee", "bbpompom", "ghost", "xscorpion"]; //"porcupine", "croc", "armadillo", "arcticbee", "crabx"
+//const allMonstersToFarm = ["xscorpion"];
 //Monster you are currently farming -> Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
 //Monsters your characters are allowed to hunt. Only enter monsters you are strong enough to defeat!
@@ -72,11 +72,11 @@ Also: Characters will start using their offensive skills if a monster is on this
 (They don't use offensive skills against weak monsters, to conserve MP)
 */
 const requiresMaster = [
-	"snowman", "scorpion", "gscorpion", "stoneworm", //"poisio", "tortoise",
-	"bat", "goldenbat", "iceroamer", "crabx", "jr", "greenjr", //"spider",
-	"bbpompom", "booboo", "prat", "boar", "ghost", "mummy",
-	"mole", "wolfie", "wolf", "xscorpion", "bigbird",
-	"wabbit", "phoenix", "fvampire", "mvampire", "grinch",
+	"snowman", "stoneworm", "bat", "goldenbat",//"poisio", "tortoise", "scorpion", "gscorpion",
+	"iceroamer", "crabx", "jr", "greenjr", "bbpompom",//"spider",
+	"booboo", "prat", "boar", "ghost", "mummy", "mole",
+	"wolfie", "wolf", "xscorpion", "bigbird", "wabbit",
+	"phoenix", "fvampire", "mvampire", "grinch",
 	"", "", "", "", "", "", "", ""];
 //Monsters listed here always get attacked on sight
 const specialMonsters = ["cutebee", "snowman", "goldenbat",
@@ -136,7 +136,7 @@ function main() {
 	if (character.ctype === "merchant") return;
 
 	//If character has enough HP and MP, attack!
-	if (character.hp > (character.max_hp / 2) && character.mp > (character.max_mp / 2)) attackToggle = true;
+	if (character.hp > (character.max_hp * 0.6) && character.mp > (character.max_mp * 0.4)) attackToggle = true;
 
 	//Finds a suitable target and attacks it.
 	let target = getTarget();
@@ -185,7 +185,7 @@ function tier2Actions() {
 	//If merchant moves with the stand open, close it
 	if (is_moving(character) && character.ctype === "merchant" && character.stand) close_stand();
 
-	//Merchant Skills are Tier 4 actions
+	//Merchant Skills are Tier 3 actions
 	if (character.ctype === "merchant") return;
 
 	//If the master is moving, he lays breadcrumbs

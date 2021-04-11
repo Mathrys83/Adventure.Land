@@ -68,6 +68,7 @@ Here's a list of what the code is capable of so far:
 - Auto-move to the designated farming spot, over several maps / continents.
 - Auto-Farm designated monsters
 - New: Multi-monster farming! Designate multiple monsters to be farmed. Your characters will then farm several different monsters per day (in addition to their hunting quests).
+- NEW: Farm Event-Monsters! (Only tested with wabbit [Easter-Event])
 - Auto-use potions (health & mana)
 - Auto-Kite enemies. (All characters I use (Mage, Priest, Ranger) are ranged characters.)
 - Two Kiting-Modes (Walk backwards / circle around the target)
@@ -79,7 +80,8 @@ Here's a list of what the code is capable of so far:
 - Farming / Hunting small enemies get attacked by individual characters
 - Farming / Hunting big enemies get attacked by all characters (All characters target one single enemy)
 - Master-Mode (Define a master the other characters follow. Also: Only the master chooses targets. All characters then attack the chosen target. This lets you take on bigger enemies!)
-- If health falls below 25% of HP, and you have a Jacko in yoir inventory, monsters get scared away (Saving your characters life)
+- If health falls below 25% of HP, and you have a Jacko in your inventory, monsters get scared away (Saving your characters life)
+- Retrieve items from Bank
 
 ## Individual characters
 
@@ -124,6 +126,7 @@ Once the stand is open, the merchant continues his work:
 - Give other players the "merchant's luck"-buff, with a chance to duplicate a free item from them
 - Auto-buy cheap items from other merchants. If they sell an item under it's value, your merchant will buy it automatically. Sneaky!
 - Auto-Join giveaways: Automatically partake when a player hosts a giveaway - Merry christmas!
+- NEW: Fishing! Craft a fishingrod and go fishing!
 
 Other functions
 

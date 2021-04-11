@@ -40,7 +40,7 @@ const trashName = [
 	"hbow", "shield", "mushroomstaff", "swifty", "stramulet",
 	"strbelt", "strearring", "hpbelt", "hpamulet",
 	"throwingstars", "smoke", "phelmet", "basher",
-	"xmace", "dagger", "bataxe", "", "",
+	"xmace", "dagger", "bataxe", "snowball", "",
 	"", "", "", "", "", "", "", "",
 	//XMas Set
 	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",
@@ -65,8 +65,8 @@ function merchantSkills() {
 	if (!bigRound) {
 		//Functions only used on "main" map
 		if (character.map === "main"
-			&& Math.abs(character.x) < 250
-			&& Math.abs(character.y) < 250
+			&& Math.abs(character.x) < 500
+			&& Math.abs(character.y) < 500
 			&& !is_moving(character)) {
 
 			//Sell unwanted items
@@ -89,18 +89,14 @@ function merchantSkills() {
 
 		//These functions can run on any map [not just on the marketplace]
 		//Therefor, they have to run in sequence, not to interfere with each other
-		//Craft items
 		if (craftItems("check")) {
-			craftItems();
-			//Dismantle items
+			craftItems(); //Craft items
 		} else if (dismantleItems("check")) {
-			dismantleItems();
-			//Exchange Gems and Quests
+			dismantleItems(); //Dismantle items
 		} else if (exchangeGemsQuests("check")) {
-			exchangeGemsQuests();
-			//Go Fishing!
+			exchangeGemsQuests(); //Exchange Gems and Quests
 		} else if (goFishing("check")) {
-			goFishing();
+			goFishing();//Go Fishing!
 		}
 	}
 
@@ -193,7 +189,7 @@ function transferPotions() {
 	const essentialPotions = ["hpot0", "mpot0", "hpot1", "mpot1"];
 	const dexPotions = ["elixirdex0", "elixirdex1", "elixirdex2"];
 	const intPotions = ["elixirint0", "elixirint1", "elixirint2"];
-	const luckPotions = ["elixirluck"];
+	const specialPotions = ["elixirluck", "bunnyelixir"];
 
 	for (const name of parent.party_list) {
 		const partyMember = get_player(name);
@@ -206,11 +202,11 @@ function transferPotions() {
 					log("Delivered essential Potions!");
 				}
 			});
-			//Deliver luck potions
-			luckPotions.forEach(potion => {
+			//Deliver special potions
+			specialPotions.forEach(potion => {
 				if (locate_item(potion) !== -1) {
 					send_item(partyMember, locate_item(potion), Math.floor(quantity(potion) / 3));
-					log("Delivered Luck Potions!");
+					log("Delivered Special Potions!");
 				}
 			});
 			//Deliver dexterity potions to ranger
@@ -484,10 +480,10 @@ function findTriple(level) {
 		if (character.items[i]?.level === level
 			//First loop selects a compoundable item so the two 
 			// nested loops only need to match item name & item level
-			&& G.items[character.items[i].name]?.compound
+			&& G.items[character.items[i]?.name]?.compound
 			//Validate Compound: If  item is needed for crafting,
 			//it must NOT be compounded (Craft only takes lvl 0 items!)
-			&& validateCompound(character.items[i].name)) {
+			&& validateCompound(character.items[i]?.name)) {
 			for (let j = i + 1; j <= 41; j++) {
 				if (character.items[j]
 					&& character.items[j].name === character.items[i].name
@@ -725,6 +721,8 @@ function exchangeGemsQuests(action = "default") {
 					|| item.type === "box"
 					|| item.type === "misc"
 					|| item.type === "quest")
+					//Item must not be included in "itemsToDismantle" (e.g. Golden Egg)
+					&& !itemsToDismantle.includes(character.items[slotNum].name)
 					//"e"-key means the item is exchangeable
 					&& item.e
 					//Some quests (seashells, ornaments) need more than 1 item to be exchangeable
@@ -814,7 +812,8 @@ function dismantleItems(action = "default") {
 		for (const slot in character.items) {
 			if (character.items[slot]) {
 				if (arg === "find") {
-					if (itemsToDismantle.indexOf(character.items[slot].name) !== -1) return true;
+					if (itemsToDismantle.indexOf(character.items[slot].name) !== -1
+						&& G.dismantle[character.items[slot].name].cost < character.gold) return true;
 				} else if (arg === "slot") {
 					if (itemsToDismantle.indexOf(character.items[slot].name) !== -1) return slot;
 				}

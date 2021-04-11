@@ -57,7 +57,7 @@ function transferLoot(merchantName) {
 		"elixirint0", "elixirint1", "elixirint2",
 		//"elixirvit0", "elixirvit1", "elixirvit2",
 		//"elixirstr0", "elixirstr1", "elixirstr2",
-		"elixirluck"
+		"elixirluck", "bunnyelixir"
 	];
 	if (character.ctype !== "merchant"
 		&& merchant
@@ -194,7 +194,7 @@ function drinkElixirs() {
 		"elixirint2", "elixirint1", "elixirint0",
 		//"elixirvit0", "elixirvit1", "elixirvit2",
 		//"elixirstr0", "elixirstr1", "elixirstr2",
-		"elixirluck"
+		"elixirluck", "bunnyelixir"
 	];
 	if (!character.slots.elixir) {
 		for (const potion of potions) {

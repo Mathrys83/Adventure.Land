@@ -9,13 +9,12 @@ const minScrolls = 100;
 //Number of potions to buy each round. 
 //Gets tripled if the hunted monster requires a master
 const potions = {
-	hpot0: 50,
-	hpot1: 50,
-	mpot0: 30,
-	mpot1: 30
+	hpot0: 18, //1800 max
+	hpot1: 45, //13500 max
+	mpot0: 180, //18000 max
+	mpot1: 30//9000 max
 };
-//Cost 19000 @ 50 each
-//Cost 30000 @ 50/50/30/30
+//Cost 
 
 //Selling parameters
 const sellItemLevel = 3;
@@ -95,8 +94,12 @@ function merchantSkills() {
 			dismantleItems(); //Dismantle items
 		} else if (exchangeGemsQuests("check")) {
 			exchangeGemsQuests(); //Exchange Gems and Quests
-		} else if (goFishing("check")) {
-			goFishing();//Go Fishing!
+		} else if (specialTask("check", "fishing", "rod")) {
+			specialTask("work", "fishing", "rod");//Go Fishing!
+		} else if (specialTask("check", "mining", "pickaxe")) {
+			specialTask("work", "mining", "pickaxe");//Go Mining!
+		} else if (!specialTask("check", "fishing", "rod") && !specialTask("check", "mining", "pickaxe")) {
+			specialTask("equipRegularGear", "fishing", "rod");//Equip regular gear
 		}
 	}
 
@@ -114,7 +117,8 @@ function merchantSkills() {
 		async function merchantRound() {
 			await smart_move("main"); //code stops here until smart move is finished
 			buyPotions();
-			goFishing("checkFishingRod");
+			specialTask("checkTools", "fishing", "rod");
+			specialTask("checkTools", "mining", "pickaxe");
 			relocateItems();
 			await new Promise(r => setTimeout(r, 3000)); //wait 1000ms
 			await smart_move(farmingSpotData);
@@ -124,7 +128,8 @@ function merchantSkills() {
 			await smart_move("bank");
 			depositGold();
 			depositSelectedItems();
-			goFishing("checkFishingRod");
+			specialTask("checkTools", "fishing", "rod");
+			specialTask("checkTools", "mining", "pickaxe");
 			await new Promise(r => setTimeout(r, 3000));
 			if (buyScrolls("check")) {
 				await smart_move("scrolls");
@@ -139,38 +144,6 @@ function merchantSkills() {
 		}
 	}
 }
-
-/*
-//Make the big round
-smart_move({ to: "main" }, () => {
-	buyPotions();
-	relocateItems();
-	smart_move(farmingSpotData, () => {
-		transferPotions();
-		merchantsLuck();
-		setTimeout(() => {
-			smart_move({ to: "bank" }, () => {
-				depositGold();
-				depositSelectedItems();
-				//Wait after depositing items.
-				//Depositing multiple items and immediately smart_moving can result in a kick (Call-cost too high)
-				setTimeout(() => {
-					if (buyScrolls("check")) {
-						smart_move({ to: "scrolls" }, () => {
-							buyScrolls("buy");
-							openMerchantStand();
-						});
-					} else {
-						openMerchantStand();
-					}
-				}, 3000);
-			});
-		}, 5000);
-	});
-});
-}
-}
-*/
 
 //Buy potions
 function buyPotions() {
@@ -189,7 +162,7 @@ function transferPotions() {
 	const essentialPotions = ["hpot0", "mpot0", "hpot1", "mpot1"];
 	const dexPotions = ["elixirdex0", "elixirdex1", "elixirdex2"];
 	const intPotions = ["elixirint0", "elixirint1", "elixirint2"];
-	const specialPotions = ["elixirluck", "bunnyelixir"];
+	const specialPotions = ["elixirluck", "bunnyelixir", "pumpkinspice"];
 
 	for (const name of parent.party_list) {
 		const partyMember = get_player(name);
@@ -313,7 +286,7 @@ function depositSelectedItems() {
 	if (merchantDebugMode) log("Depositing Items", "green");
 	const keepItems = [
 		//Items
-		"stand0", "tracker", "computer", "sshield", "candycanesword", "rod",
+		"stand0", "tracker", "computer", "sshield", "candycanesword", "rod", "pickaxe",
 		//Orbs
 		"jacko", "orbg", "talkingskull"
 	];
@@ -358,7 +331,7 @@ function depositSelectedItems() {
 	if (merchantDebugMode) log("Depositing Items", "green");
 	const keepItems = [
 		//Items
-		"stand0", "tracker", "computer", "sshield", "candycanesword", "rod",
+		"stand0", "tracker", "computer", "sshield", "candycanesword", "rod", "pickaxe",
 		//Orbs
 		"jacko", "orbg", "talkingskull"
 	];
@@ -653,49 +626,6 @@ function openMerchantStand() {
 	});
 }
 
-
-/*
-//Go to the market and sell things
-function openMerchantStand() {
-	if (is_moving(character)) return;
-	if (character.map !== "main") {
-		smart_move({ to: "main" }, () => {
-			goTownOpenStand();
-		});
-	} else {
-		goTownOpenStand();
-	}
-	function goTownOpenStand() {
-		smart_move({ to: "town" }, () => {
-			smart_move({ x: -20 - Math.round(Math.random() * 180), y: - 85 }, () => {
-				//Turn around, face front
-				smart_move({ x: character.x, y: character.y + 1 }, () => {
-					//parent.socket.emit("merchant",{num:41});
-					//parent.open_merchant(locate_item("stand0"));
-					open_stand();
-				});
-			});
-		});
-	}
-}
-*/
-
-
-
-
-/*
-//Close the merchant stand
-function closeMerchantStand() {
-	//Close merchant Stand
-	//parent.socket.emit("merchant", {close:1})
-	//parent.close_merchant(locate_item("stand0"));
-	close_stand();
-}
-*/
-
-
-
-
 //Exchange Gems & Quests at the corresponding NPC
 function exchangeGemsQuests(action = "default") {
 	if (merchantDebugMode) log("Exchanging Gems & Quests", "green");
@@ -755,7 +685,8 @@ function exchangeGemsQuests(action = "default") {
 function craftItems(action = "default") {
 	if (merchantDebugMode) log("Crafting Items", "green");
 	for (const item of itemsToCraft) {
-		if (checkCraftIngredients(item)) {
+		if (checkTools(item)
+			&& checkCraftIngredients(item)) {
 			if (action === "check") return checkCraftIngredients(item);
 			close_stand();
 			smart_move(find_npc("craftsman"), () => {
@@ -767,6 +698,7 @@ function craftItems(action = "default") {
 			return;
 		}
 	}
+
 	//Checks inventory if all needed ingredients are available
 	function checkCraftIngredients(item) {
 		let ingredientsComplete = [];
@@ -791,6 +723,15 @@ function craftItems(action = "default") {
 			}
 		}
 		return ingredients.length === ingredientsComplete.length ? true : false;
+	}
+
+	//Check if special Tools need to be crafted (Ony one needed)
+	function checkTools(tool) {
+		const tools = ["rod", "pickaxe"];
+		if ((tools.includes(tool)
+			&& locate_item(tool) === -1
+			&& character.slots.mainhand?.name !== tool)
+			|| !tools.includes(tool)) return true;
 	}
 }
 
@@ -822,79 +763,95 @@ function dismantleItems(action = "default") {
 	}
 }
 
-function goFishing(action = "default") {
-	if (fishingToggle) {
-		if (merchantDebugMode) log("Fishing", "green");
+function specialTask(action = "default", skill = "fishing", tool = "rod") {
+	if (specialTaskToggle) {
+		if (merchantDebugMode) log("Special Task", "green");
 
-		//Equipment to wear when not fishing
+		//Regular Equipemtn to wear
 		const mainHand = "candycanesword";
 		const offHand = "sshield";
+
+		//Spots
 		const fishingSpot = {
 			map: "main",
 			x: -1368,
 			y: -34
-		}
+		};
+		const miningSpot = {
+			map: "tunnel",
+			x: 280,
+			y: -94
+		};
 
-		//Check if can go fishing, equip regular Gear if not
+		//Check if special task is available, equip regular Gear if not
 		if (action === "check") {
-			if (is_on_cooldown("fishing")) equipRegularGear();
-			return !is_on_cooldown("fishing");
-			//Check if character has a fishingrod. If not, craft one
-		} else if (action === "checkFishingRod") {
-			checkFishingRod();
+			//If skill isn't on cooldown and required Tool is available, return true
+			return !is_on_cooldown(skill) && (locate_item(tool) !== -1 || character.slots.mainhand?.name === tool);
+			//Check if character has the tools needed. If not, craft them
+		} else if (action === "checkTools") {
+			checkTools(tool);
+		} else if (action === "equipRegularGear") {
+			equipRegularGear();
 		}
 
-		//Check if character has a fishingrod. If not, craft one.
-		function checkFishingRod() {
-			if (locate_item("rod") === -1
-				&& character.slots.mainhand?.name !== "rod") {
+		//Check if character has a the required tool. If not, craft one.
+		function checkTools(tool) {
+			if (locate_item(tool) === -1
+				&& character.slots.mainhand?.name !== tool) {
 				if (character.map === "bank"
 					&& locate_item("spidersilk") === -1) {
 					retrieveFromBank("spidersilk");
 				} else if (character.map === "main"
 					&& locate_item("spidersilk") !== -1) {
-					buy("staff");
+					if (tool === "rod") {
+						if (locate_item("staff") === -1) buy("staff");
+					} else if (tool === "pickaxe") {
+						if (locate_item("staff") === -1) buy("staff");
+						if (locate_item("blade") === -1) buy("blade");
+					}
 				}
 			}
 		}
 
-		//Go fishing
-		if (!is_on_cooldown("fishing")
-			&& (locate_item("rod") !== -1
-				|| character.slots.mainhand?.name === "rod")) {
+		//Perform special Task
+		if (action === "work"
+			&& !is_on_cooldown(skill)
+			&& (locate_item(tool) !== -1
+				|| character.slots.mainhand?.name === tool)) {
 			if (character.stand) close_stand();
-			//Move to fishing spot
-			if (distance(character, fishingSpot) > 10) {
-				smart_move(fishingSpot, () => { equipFishingGear() });
-				//If at fishing spot, equip the fishing rod and fish
-			} else if (distance(character, fishingSpot) < 10) {
-				if (character.slots.mainhand?.name !== "rod") {
-					equipFishingGear();
-					//Start fishing!
-				} else if (character.slots.mainhand?.name === "rod"
-					&& !character.c.fishing) {
-					use_skill("fishing");
+			//Move to designated spot
+			let destination;
+			if (skill === "fishing") {
+				destination = fishingSpot;
+			} else if (skill === "mining") {
+				destination = miningSpot;
+			}
+			if (distance(character, destination) > 10) {
+				smart_move(destination, () => { equipTool(tool) });
+				//If at special-task spot, equip the correct tool
+			} else if (distance(character, destination) < 10) {
+				if (character.slots.mainhand?.name !== tool) {
+					equipTool(tool);
+					//Start working!
+				} else if (character.slots.mainhand?.name === tool
+					&& !character?.c[skill]) {
+					use_skill(skill);
 					setTimeout(() => {
-						if (is_on_cooldown("fishing")) {
+						if (is_on_cooldown(skill)) {
 							equipRegularGear();
 							openMerchantStand();
 						}
 					}, 15000);
 				}
 			}
-			// ###### Still needed?? ######
-			//If fishing is on cooldown, openMerchantStand()
-		} /*else if (is_on_cooldown("fishing")) {
-		if (distance(character, fishingSpot) < 10) openMerchantStand();
-		equipRegularGear();
-	}*/
+		}
 
-		//Equip Fishingrod
-		function equipFishingGear() {
+		//Equip Tool
+		function equipTool(tool) {
 			if (character.slots.offhand) unequip("offhand");
-			if (character.slots.mainhand?.name !== "rod"
-				&& locate_item("rod") !== -1) {
-				equip(locate_item("rod"));
+			if (character.slots.mainhand?.name !== tool
+				&& locate_item(tool) !== -1) {
+				equip(locate_item(tool));
 			}
 		}
 

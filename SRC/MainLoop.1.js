@@ -45,14 +45,14 @@ let master = characterNames[0];
 let attackToggle = true;
 //Toggle the pursuit of Hunter Quests
 const hunterToggle = true;
-//Go fishing!
-const fishingToggle = true;
+//Go Fishing and Mining!
+const specialTaskToggle = true;
 //Toggle the pursuit of Event-Monsters (like snowman, wabbit)
 const eventMonsterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
 //Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-const allMonstersToFarm = ["bee", "bbpompom", "ghost", "xscorpion"]; //"porcupine", "croc", "armadillo", "arcticbee", "crabx"
-//const allMonstersToFarm = ["xscorpion"];
+const allMonstersToFarm = ["poisio", "bat", "bat", "bbpompom", "ghost", "xscorpion"]; //"porcupine", "croc", "armadillo", "arcticbee", "crabx"
+//const allMonstersToFarm = ["stoneworm"];
 //Monster you are currently farming -> Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
 //Monsters your characters are allowed to hunt. Only enter monsters you are strong enough to defeat!
@@ -89,7 +89,7 @@ const eventMonsters = ["wabbit", "snowman"];
 const itemsToUpgrade = [
 	"sshield", "slimestaff", "staffofthedead", "maceofthedead", "pmace",
 	"firebow", "frostbow", "firestaff", "t2bow", "gphelmet", "xmassweater",
-	"cape", "bcape", "harbringer", "mcape", "oozingterror",
+	"cape", "bcape", "harbringer", "mcape", "oozingterror", "bowofthedead",
 	//Hunter Sets
 	"mchat", "mcgloves", "mcpants", "mcarmor", "mcboots",
 	"mmhat", "mmgloves", "mmpants", "mmarmor", "mmshoes",
@@ -101,7 +101,7 @@ const itemsToUpgrade = [
 	"merry"];
 //The merchant auto-crafts below listed items if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = ["rod", "ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox", "basketofeggs"];
+const itemsToCraft = ["rod", "pickaxe", "ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox", "basketofeggs"];
 //Items to be dismantled are listed below
 //Auto-dismantle items to get rare crafting-materials
 const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead", "goldenegg", "", ""];

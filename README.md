@@ -13,7 +13,7 @@ The basic idea of the game itself is super appealing: The most forbidden thing i
 
 (This is not my first coding game, I also played [Screeps](https://screeps.com/), and you can [check out my source here](https://github.com/johnnyawesome/Screeps)).
 
-## Battletested
+## ⚔️ Battletested ⚔️
 
 This code is simple, but *it works*, I try to make sure of that.
 
@@ -34,10 +34,10 @@ These are two great guides that will give you an overview over the game:
 
 The game lets you create multiple modules, which I did, to keep things organized.
 
-**Update: Now, the only place where you have to adjust character-names, is in the "Main" module.**
+## Best Performance
 
 Most code I've seen has one single "main" loop that runs ~250ms, so 4 times per second. This is suggested for optimal farming performance.
-My code does have two "main" loops. Running everything every 250 milliseconds might give you great farming-performance, but it's horrible for performance overall. Therefor, I made a "tierTwo" loop that only runs every 5 seconds. All non-essential routines get called from there. This saves a tremendous amount of resources.
+My code does have three "main" loops. Running everything every 250 milliseconds might give you great farming-performance, but it's horrible for performance overall. Therefor, I made three different "main"-loops (running every 250ms / 1s / 5s). All non-essential routines get called from the loops that run less frequent. This saves a tremendous amount of resources.
 
 ## The Characters
 
@@ -68,8 +68,8 @@ Here's a list of what the code is capable of so far:
 - Auto-move to the designated farming spot, over several maps / continents.
 - Auto-Farm designated monsters
 - New: Multi-monster farming! Designate multiple monsters to be farmed. Your characters will then farm several different monsters per day (in addition to their hunting quests).
-- NEW: Farm Event-Monsters! (Only tested with wabbit [Easter-Event])
-- Auto-use potions (health & mana)
+- NEW: Ability to farm Seasonal Event-Monsters! (Only tested with Wabbit [Easter-Event])
+- Auto-use potions (Health & Mana)
 - Auto-Kite enemies. (All characters I use (Mage, Priest, Ranger) are ranged characters.)
 - Two Kiting-Modes (Walk backwards / circle around the target)
 - Seashells get exchanged for buff-potions
@@ -80,7 +80,7 @@ Here's a list of what the code is capable of so far:
 - Farming / Hunting small enemies get attacked by individual characters
 - Farming / Hunting big enemies get attacked by all characters (All characters target one single enemy)
 - Master-Mode (Define a master the other characters follow. Also: Only the master chooses targets. All characters then attack the chosen target. This lets you take on bigger enemies!)
-- If health falls below 25% of HP, and you have a Jacko in your inventory, monsters get scared away (Saving your characters life)
+- If health falls below 50% of HP, and you have a Jacko in your inventory, monsters get scared away (Saving your characters life)
 - Retrieve items from Bank
 
 ## Individual characters
@@ -112,36 +112,41 @@ Every 10 minutes, the merchant does his round and fulfills a lot of automated ta
 - Exchange any gems / chests he received
 - Deposit all gold above a certain limit in the bank. (Remember, to auto-buy things, the merchant cannot deposit all gold, he needs to keep some)
 - Deposit designated items at the bank (Auto-Store high-level / rare items, and items of your choosing)
-- Go back to town and open up his little merchant-stand
+- The merchant then goes back to town and opens up his little merchant-stand
 
 Once the stand is open, the merchant continues his work:
 
 - Auto-Upgrade designated items into a higher level item
 - Auto-Compound several designated items at once into a higher level item
-- NEW: Mass-Production! Both new skills are implemented! If the merchant has enough Mana, Upgrading and Compounding now is 90% faster! If the merchant doesn't have enough Mana for the fastest Upgrading / Compounding skill, but enough Mana for the 50% faster Upgrading / Compounding skill, then that skill will be used. If he doesn't have enough Mana for both skills, he will Upgrade / Compound at a normal speed.
+- NEW: 🏭 Mass-Production! Both new skills are implemented! If the merchant has enough Mana, Upgrading and Compounding now is 90% faster! If the merchant doesn't have enough Mana for the fastest Upgrading / Compounding skill, but enough Mana for the 50% faster Upgrading / Compounding skill, then that skill will be used. If he doesn't have enough Mana for both skills, he will Upgrade / Compound at a normal speed.
 - The merchant will put these higher level items on the merchant-stand for sale (if needed)
 - NEW: Auto-Dismantle designated items to get rare crafting-materials
 - Sell "trash", so your inventory doesn't fill up. You can choose what items are considered "trash". This "trash" will be auto-sold to keep your inventory free
 - Tidy the inventory so there are no gaps (from crafting / selling things)
-- Give other players the "merchant's luck"-buff, with a chance to duplicate a free item from them
+- Give other players the "merchant's luck"-buff, with a chance to duplicate a free item from them!
 - Auto-buy cheap items from other merchants. If they sell an item under it's value, your merchant will buy it automatically. Sneaky!
 - Auto-Join giveaways: Automatically partake when a player hosts a giveaway - Merry christmas!
-- NEW: Fishing! Craft a fishingrod and go fishing!
+- NEW: ⛏️ Mining! Craft a Pickaxe and go Mining!
+- NEW: 🎣 Fishing! Craft a Fishingrod and go fishing!
 
 Other functions
 
-- Auto-exchange: If your merchant has an exchangeable in his inventory, he'll exchange it at Xyn automatically. 
+- Auto-Exchange: If your merchant has an exchangeable in his inventory, he'll exchange it at Xyn automatically. 
 
-- Auto-exchange seashells: When your merchant has 20 seashells in his inventory, he'll go to the fisherman and exchange it for a buff-potion. He then delivers the potion to the appropriate character (e.g. dexterity-potion for ranger) on the next round he does.
+- Auto-Exchange seashells: When your merchant has 20 seashells in his inventory, he'll go to the fisherman and exchange it for a buff-potion. He then delivers the potion to the appropriate character (e.g. dexterity-potion for ranger) on the next round he does.
 
-- Autocraft: Designate items you want to craft. Farm several, different ingredients with the new multi-monster farming function! As soon as the merchant has all necessary ingredients in his inventory, he'll auto-craft the item for you automatically!
+- Auto-Exchange Seasonal Gems / Quests: Seasonal events (like 🎄 Christmas or 🐰 Easter) have seasonal drops. These get exchanged automatically at the corresponding NPC (e.g. 🎅 Santa Claus). 
+
+- Auto-Craft: Designate items you want to craft. Farm several, different ingredients with the new multi-monster farming function! As soon as the merchant has all necessary ingredients in his inventory, he'll auto-craft the item for you automatically!
 
 - Auto-Dismantle: Dismantle items of your choosing to get rare crafting-materials
 
-## Code Messages (CM's)
+- Auto-Store Items: Put an item you'd like to keep into the bank (manually). If the merchant receives more of that item, he'll drop them off at the bank automatically. This is especially useful for collecting crafting-materials. 
 
-- If a character runs out of healtp-potions, it will ask party-members to pass some health-potions
-- Party-members will send the potions to the requesting character, if they are in range.
+## ✉️ Code Messages (CM's)
+
+- If a character runs out of Health-Potions or Mana-Potions, it will ask party-members to pass some Potions
+- The Party-members will send the Potions to the requesting character, if they are in range.
 
 I didn't do much with CM's yet, but the modules to create ("sendCodeMessages") and handle ("handleCodeMessages") CM's are in place and ready to use.
 

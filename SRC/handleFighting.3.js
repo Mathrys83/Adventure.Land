@@ -110,12 +110,15 @@ function scareMonsters() {
 	const mainOrb = "orbg";
 	const rareMonsters = ["greenjr", "grinch"];
 	if (get_nearest_monster({ target: character.name })
+		//If not attacking, scare
 		&& (!attackToggle
-			//If the attacking monster isn't farmed, scare it away immediately...
-			|| ((get_nearest_monster({ target: character.name })?.mtype !== farmMonsterType
-				//...except if it's a rare monster
-				&& !rareMonsters.includes(get_nearest_monster({ target: character.name })?.mtype))
-				//...or if the character is a merchant
+			//If multiple monsters are attacking, scare
+			|| (Object.values(parent.entities).filter(e => e.type == "monster").filter(e => e.target == character.name).length >= 2
+				//If the attacking monster isn't farmed, scare...
+				|| (get_nearest_monster({ target: character.name })?.mtype !== farmMonsterType
+					//...except if it's a rare monster
+					&& !rareMonsters.includes(get_nearest_monster({ target: character.name })?.mtype))
+				//If the character is a merchant, scare
 				|| character.ctype === "merchant"
 				//If the HP are lower that the monster's attack times 3,
 				//or if the characters HP are below 30%

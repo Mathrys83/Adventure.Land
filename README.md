@@ -128,6 +128,7 @@ Once the stand is open, the merchant continues his work:
 - Auto-Join giveaways: Automatically partake when a player hosts a giveaway - Merry christmas!
 - NEW: ⛏️ Mining! Craft a Pickaxe and go Mining!
 - NEW: 🎣 Fishing! Craft a Fishingrod and go fishing!
+- NEW: 💲 Snipe Ponty! Automatically buy Items you want from Ponty.
 
 Other functions
 
@@ -135,7 +136,7 @@ Other functions
 
 - Auto-Exchange seashells: When your merchant has 20 seashells in his inventory, he'll go to the fisherman and exchange it for a buff-potion. He then delivers the potion to the appropriate character (e.g. dexterity-potion for ranger) on the next round he does.
 
-- Auto-Exchange Seasonal Gems / Quests: Seasonal events (like 🎄 Christmas or 🐰 Easter) have seasonal drops. These get exchanged automatically at the corresponding NPC (e.g. 🎅 Santa Claus). 
+- Auto-Exchange Seasonal Gems / Quests: Seasonal events (like 🎄 Christmas or 🐰 Easter) have seasonal drops. These get exchanged automatically at the corresponding NPC (e.g. 🎅 Santa Clause). 
 
 - Auto-Craft: Designate items you want to craft. Farm several, different ingredients with the new multi-monster farming function! As soon as the merchant has all necessary ingredients in his inventory, he'll auto-craft the item for you automatically!
 

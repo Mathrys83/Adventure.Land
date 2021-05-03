@@ -23,7 +23,7 @@ const profitMargin = 20;
 //Max level to be compounded
 const maxCompoundLevel = 3;
 //Max level to be upgraded
-const maxUpgradeLevel = 6;
+const maxUpgradeLevel = 5;
 
 //Items to be sold
 const trashName = [
@@ -74,6 +74,9 @@ function merchantSkills() {
 			//Buy cheap items from other merchants
 			buyCheapStuff();
 
+			//Snipe Ponty for items you want
+			snipePonty();
+
 			//Upgrade items
 			upgradeItems();
 
@@ -94,12 +97,12 @@ function merchantSkills() {
 			dismantleItems(); //Dismantle items
 		} else if (exchangeGemsQuests("check")) {
 			exchangeGemsQuests(); //Exchange Gems and Quests
-		} else if (specialTask("check", "fishing", "rod")) {
-			specialTask("work", "fishing", "rod");//Go Fishing!
-		} else if (specialTask("check", "mining", "pickaxe")) {
-			specialTask("work", "mining", "pickaxe");//Go Mining!
+		} else if (fishingToggle && specialTask("check", "fishing", "rod")) {
+			specialTask("work", "fishing", "rod"); //Go Fishing!
+		} else if (miningToggle && specialTask("check", "mining", "pickaxe")) {
+			specialTask("work", "mining", "pickaxe"); //Go Mining!
 		} else if (!specialTask("check", "fishing", "rod") && !specialTask("check", "mining", "pickaxe")) {
-			specialTask("equipRegularGear", "fishing", "rod");//Equip regular gear
+			specialTask("equipRegularGear", "fishing", "rod"); //Equip regular gear
 		}
 	}
 
@@ -514,6 +517,14 @@ function findEmptyTradeSlots() {
 	}
 }
 
+//Snipe Ponty for wanted items
+function snipePonty() {
+	parent.secondhands.forEach(item => {
+		if (wantedItems.includes(item.name)
+			&& character.gold >= parent.calculate_item_value(item) * 2 * (item.q ?? 1)) parent.socket.emit("sbuy", { "rid": item.rid });
+	});
+}
+
 //Auto-buy items from other merchants if they are sold below their value
 //Also, auto-join Giveaways
 function buyCheapStuff() {
@@ -764,107 +775,105 @@ function dismantleItems(action = "default") {
 }
 
 function specialTask(action = "default", skill = "fishing", tool = "rod") {
-	if (specialTaskToggle) {
-		if (merchantDebugMode) log("Special Task", "green");
+	if (merchantDebugMode) log("Special Task", "green");
 
-		//Regular Equipemtn to wear
-		const mainHand = "candycanesword";
-		const offHand = "sshield";
+	//Regular Equipemtn to wear
+	const mainHand = "candycanesword";
+	const offHand = "sshield";
 
-		//Spots
-		const fishingSpot = {
-			map: "main",
-			x: -1368,
-			y: -34
-		};
-		const miningSpot = {
-			map: "tunnel",
-			x: 280,
-			y: -94
-		};
+	//Spots
+	const fishingSpot = {
+		map: "main",
+		x: -1368,
+		y: -34
+	};
+	const miningSpot = {
+		map: "tunnel",
+		x: 280,
+		y: -94
+	};
 
-		//Check if special task is available, equip regular Gear if not
-		if (action === "check") {
-			//If skill isn't on cooldown and required Tool is available, return true
-			return !is_on_cooldown(skill) && (locate_item(tool) !== -1 || character.slots.mainhand?.name === tool);
-			//Check if character has the tools needed. If not, craft them
-		} else if (action === "checkTools") {
-			checkTools(tool);
-		} else if (action === "equipRegularGear") {
-			equipRegularGear();
+	//Check if special task is available, equip regular Gear if not
+	if (action === "check") {
+		//If skill isn't on cooldown and required Tool is available, return true
+		return !is_on_cooldown(skill) && (locate_item(tool) !== -1 || character.slots.mainhand?.name === tool);
+		//Check if character has the tools needed. If not, craft them
+	} else if (action === "checkTools") {
+		checkTools(tool);
+	} else if (action === "equipRegularGear") {
+		equipRegularGear();
+	}
+
+	//Check if character has a the required tool. If not, craft one.
+	function checkTools(tool) {
+		if (locate_item(tool) === -1
+			&& character.slots.mainhand?.name !== tool) {
+			if (character.map === "bank"
+				&& locate_item("spidersilk") === -1) {
+				retrieveFromBank("spidersilk");
+			} else if (character.map === "main"
+				&& locate_item("spidersilk") !== -1) {
+				if (tool === "rod") {
+					if (locate_item("staff") === -1) buy("staff");
+				} else if (tool === "pickaxe") {
+					if (locate_item("staff") === -1) buy("staff");
+					if (locate_item("blade") === -1) buy("blade");
+				}
+			}
 		}
+	}
 
-		//Check if character has a the required tool. If not, craft one.
-		function checkTools(tool) {
-			if (locate_item(tool) === -1
-				&& character.slots.mainhand?.name !== tool) {
-				if (character.map === "bank"
-					&& locate_item("spidersilk") === -1) {
-					retrieveFromBank("spidersilk");
-				} else if (character.map === "main"
-					&& locate_item("spidersilk") !== -1) {
-					if (tool === "rod") {
-						if (locate_item("staff") === -1) buy("staff");
-					} else if (tool === "pickaxe") {
-						if (locate_item("staff") === -1) buy("staff");
-						if (locate_item("blade") === -1) buy("blade");
+	//Perform special Task
+	if (action === "work"
+		&& !is_on_cooldown(skill)
+		&& (locate_item(tool) !== -1
+			|| character.slots.mainhand?.name === tool)) {
+		if (character.stand) close_stand();
+		//Move to designated spot
+		let destination;
+		if (skill === "fishing") {
+			destination = fishingSpot;
+		} else if (skill === "mining") {
+			destination = miningSpot;
+		}
+		if (distance(character, destination) > 10) {
+			smart_move(destination, () => { equipTool(tool) });
+			//If at special-task spot, equip the correct tool
+		} else if (distance(character, destination) < 10) {
+			if (character.slots.mainhand?.name !== tool) {
+				equipTool(tool);
+				//Start working!
+			} else if (character.slots.mainhand?.name === tool
+				&& !character?.c[skill]) {
+				use_skill(skill);
+				setTimeout(() => {
+					if (is_on_cooldown(skill)) {
+						equipRegularGear();
+						openMerchantStand();
 					}
-				}
+				}, 15000);
 			}
 		}
+	}
 
-		//Perform special Task
-		if (action === "work"
-			&& !is_on_cooldown(skill)
-			&& (locate_item(tool) !== -1
-				|| character.slots.mainhand?.name === tool)) {
-			if (character.stand) close_stand();
-			//Move to designated spot
-			let destination;
-			if (skill === "fishing") {
-				destination = fishingSpot;
-			} else if (skill === "mining") {
-				destination = miningSpot;
-			}
-			if (distance(character, destination) > 10) {
-				smart_move(destination, () => { equipTool(tool) });
-				//If at special-task spot, equip the correct tool
-			} else if (distance(character, destination) < 10) {
-				if (character.slots.mainhand?.name !== tool) {
-					equipTool(tool);
-					//Start working!
-				} else if (character.slots.mainhand?.name === tool
-					&& !character?.c[skill]) {
-					use_skill(skill);
-					setTimeout(() => {
-						if (is_on_cooldown(skill)) {
-							equipRegularGear();
-							openMerchantStand();
-						}
-					}, 15000);
-				}
-			}
+	//Equip Tool
+	function equipTool(tool) {
+		if (character.slots.offhand) unequip("offhand");
+		if (character.slots.mainhand?.name !== tool
+			&& locate_item(tool) !== -1) {
+			equip(locate_item(tool));
 		}
+	}
 
-		//Equip Tool
-		function equipTool(tool) {
-			if (character.slots.offhand) unequip("offhand");
-			if (character.slots.mainhand?.name !== tool
-				&& locate_item(tool) !== -1) {
-				equip(locate_item(tool));
-			}
+	//Equip regular Gear
+	function equipRegularGear() {
+		if (character.slots.mainhand?.name !== mainHand
+			&& locate_item(mainHand) !== -1) {
+			equip(locate_item(mainHand));
 		}
-
-		//Equip regular Gear
-		function equipRegularGear() {
-			if (character.slots.mainhand?.name !== mainHand
-				&& locate_item(mainHand) !== -1) {
-				equip(locate_item(mainHand));
-			}
-			if (character.slots.offhand?.name !== offHand
-				&& locate_item(offHand) !== -1) {
-				equip(locate_item(offHand));
-			}
+		if (character.slots.offhand?.name !== offHand
+			&& locate_item(offHand) !== -1) {
+			equip(locate_item(offHand));
 		}
 	}
 }

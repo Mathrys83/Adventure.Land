@@ -45,8 +45,10 @@ let master = characterNames[0];
 let attackToggle = true;
 //Toggle the pursuit of Hunter Quests
 const hunterToggle = true;
-//Go Fishing and Mining!
-const specialTaskToggle = true;
+//Fishing Toggle
+const fishingToggle = true;
+//Mining Toggle
+const miningToggle = true;
 //Toggle the pursuit of Event-Monsters (like snowman, wabbit)
 const eventMonsterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
@@ -85,6 +87,9 @@ const specialMonsters = ["cutebee", "snowman", "goldenbat",
 //eventMonsters is sequential! Order matters here! eventMonsters[0] gets attacked first, then eventMonsters[1]...
 //All Event-Monsters: pinkgoo, wabbit, franky, grinch, dragold, mrpumpkin, mrgreen
 const eventMonsters = ["wabbit", "snowman"];
+//Wanted items - Checks Ponty for the items listed below
+const wantedItems = ["lostearring", "spidersilk", "shadowstone",
+	"cdarktristone", "lantern", "talkingskull", "jacko", "rabbitsfoot"];
 //Items to upgrade
 const itemsToUpgrade = [
 	"sshield", "slimestaff", "staffofthedead", "maceofthedead", "pmace",

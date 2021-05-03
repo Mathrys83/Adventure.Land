@@ -8,7 +8,7 @@ function on_cm(name, data) {
   }
 }
 
-//Sends Health Potions to Partymembers
+//Sends Potions to Partymembers
 function sendPotion(name, data) {
   if (character.ctype === "merchant") return;
   for (potion of data.potions) if (locate_item(potion) !== -1 && quantity(potion) >= 2) send_item(name, locate_item(potion), Math.floor(quantity(potion) / 2));

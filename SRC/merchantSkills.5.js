@@ -2,7 +2,7 @@
 const merchantDebugMode = false;
 
 //Money in pocked [Used to buy Potions, Scrolls and cheap Items]
-const reserveMoney = 1000000;
+const reserveMoney = 5000000;
 //Minimal number of Upgrade & Compound Scrolls to have
 const minScrolls = 100;
 
@@ -10,8 +10,8 @@ const minScrolls = 100;
 //Gets tripled if the hunted monster requires a master
 const potions = {
 	hpot0: 18, //1800 max
-	hpot1: 45, //13500 max
-	mpot0: 180, //18000 max
+	hpot1: 50, //13500 max
+	mpot0: 180, //10800 max
 	mpot1: 30//9000 max
 };
 //Cost 
@@ -39,7 +39,7 @@ const trashName = [
 	"hbow", "shield", "mushroomstaff", "swifty", "stramulet",
 	"strbelt", "strearring", "hpbelt", "hpamulet",
 	"throwingstars", "smoke", "phelmet", "basher",
-	"xmace", "dagger", "bataxe", "snowball", "",
+	"xmace", "dagger", "bataxe", "snowball", "t2stramulet",
 	"", "", "", "", "", "", "", "",
 	//XMas Set
 	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",

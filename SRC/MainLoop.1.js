@@ -52,21 +52,21 @@ const miningToggle = true;
 //Toggle the pursuit of Event-Monsters (like snowman, wabbit)
 const eventMonsterToggle = true;
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
-//Fill in the monsters you want to farm. (Can be one or multiple monsters). IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-const allMonstersToFarm = ["poisio", "bat", "bat", "bbpompom", "ghost", "xscorpion"]; //"porcupine", "croc", "armadillo", "arcticbee", "crabx"
-//const allMonstersToFarm = ["stoneworm"];
+//Fill in the monsters you want to farm. (Can be one or multiple monsters).
+//IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
+const allMonstersToFarm = ["bat", "bbpompom", "boar", "ghost", "xscorpion", "bigbird"];
+//const allMonstersToFarm = ["poisio"];
 //Monster you are currently farming -> Handled by updateFarmingSpot()
 let farmMonsterType = scheduleFarming();
 //Monsters your characters are allowed to hunt. Only enter monsters you are strong enough to defeat!
 const allowedMonsters = [
 	"hen", "rooster", "goo", "crab", "bee", "cutebee", "minimush", "frog",
-	"squigtoad", "osnake", "snake", "rat", "armadillo", "croc",
-	"squig", "poisio", "snowman", "porcupine", "arcticbee",
-	"spider", "tortoise", "stoneworm", "bat", "goldenbat", "wabbit", "scorpion", "gscorpion",
-	"iceroamer", "crabx", "jr", "greenjr", "bbpompom", "ghost",
-	"xscorpion", "", "", "", "", "", "", "",
-	"phoenix", "fvampire", "mvampire", "grinch",
-	"", "", "", "", "", "", "", ""];
+	"squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig",
+	"poisio", "snowman", "porcupine", "arcticbee", "spider", "tortoise",
+	"stoneworm", "bat", "goldenbat", "wabbit", "scorpion", "gscorpion",
+	"iceroamer", "crabx", "jr", "greenjr", "bbpompom", "boar", "ghost",
+	"mole", "wolfie", "wolf", "xscorpion", "bigbird",
+	"phoenix", "fvampire", "mvampire", "grinch"];
 /*
 Monsters that are too strong for a single character are listed below.
 Your Master-Character will choose a monster, which the whole party will then attack.
@@ -74,22 +74,17 @@ Also: Characters will start using their offensive skills if a monster is on this
 (They don't use offensive skills against weak monsters, to conserve MP)
 */
 const requiresMaster = [
-	"snowman", "stoneworm", "bat", "goldenbat",//"poisio", "tortoise", "scorpion", "gscorpion",
-	"iceroamer", "crabx", "jr", "greenjr", "bbpompom",//"spider",
-	"booboo", "prat", "boar", "ghost", "mummy", "mole",
-	"wolfie", "wolf", "xscorpion", "bigbird", "wabbit",
-	"phoenix", "fvampire", "mvampire", "grinch",
-	"", "", "", "", "", "", "", ""];
+	"snowman", "stoneworm", "bat", "goldenbat", "iceroamer", "crabx",
+	"jr", "greenjr", "bbpompom", "booboo", "prat", "boar", "ghost",
+	"mummy", "mole", "wolfie", "wolf", "xscorpion", "bigbird",
+	"wabbit", "phoenix", "fvampire", "mvampire", "grinch"];
 //Monsters listed here always get attacked on sight
 const specialMonsters = ["cutebee", "snowman", "goldenbat",
-	"wabbit", "phoenix", "fvampire", "mvampire", "grinch", "", ""];
+	"wabbit", "phoenix", "fvampire", "mvampire", "grinch"];
 //Event-Monster to farm
 //eventMonsters is sequential! Order matters here! eventMonsters[0] gets attacked first, then eventMonsters[1]...
 //All Event-Monsters: pinkgoo, wabbit, franky, grinch, dragold, mrpumpkin, mrgreen
-const eventMonsters = ["wabbit", "snowman"];
-//Wanted items - Checks Ponty for the items listed below
-const wantedItems = ["lostearring", "spidersilk", "shadowstone",
-	"cdarktristone", "lantern", "talkingskull", "jacko", "rabbitsfoot"];
+const eventMonsters = ["wabbit", "snowman", "grinch"];
 //Items to upgrade
 const itemsToUpgrade = [
 	"sshield", "slimestaff", "staffofthedead", "maceofthedead", "pmace",
@@ -101,12 +96,30 @@ const itemsToUpgrade = [
 	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
 	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
 	"mrnhat", "mrngloves", "mrnpants", "mrnarmor", "mrnboots",
-	"", "", "", "", "",
-	"", "", "", "", "",
 	"merry"];
-//The merchant auto-crafts below listed items if he has the ingredients in his inventory
+//Wanted items - Checks Ponty for the items listed below
+const wantedItems = ["lostearring", "spidersilk", "shadowstone",
+	"cdarktristone", "lantern", "talkingskull", "jacko", "rabbitsfoot",
+	"poker", "handofmidas", "powerglove", "goldenpowerglove", "mpxgloves",
+	"stealthcape", "warpvest", "oxhelmet", "cyber", "starkillers",
+	"suckerpunch", "cring", "cdarktristone", "fcape", "vcape", "goldring",
+	"trigger", "ringofluck", "zapper", "vring", "sanguine", "amuletofm",
+	"molesteeth", "cearring", "lostearring", "mpxbelt", "northstar",
+	"mpxamulet", "t2intamulet", "t2dexamulet", "orbofint", "orbofdex",
+	"charmer", "talkingskull", "ftrinket", "t3bow", "crossbow",
+	"harbringer", "firestaff", "firebow", "scythe", "dragondagger",
+	"hdagger", "gstaff", "lmace", "dartgun", "vstaff", "vdagger",
+	"vsword", "gbow", "offeringp", "t2quiver", "wbook1", "mshield",
+	"sshield", "electronics", "bronzeingot", "goldnugget",
+	"platinumnugget", "offering", "emotionjar", "cxjar",
+	"essenceofnature", "essenceoffire", "essenceoffrost",
+	"essenceofgreed", "pvptoken", "funtoken", "monstertoken"];
+//The merchant auto-crafts below listed items, if he has the ingredients in his inventory
 //Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = ["rod", "pickaxe", "ctristone", "firebow", "frostbow", "fierygloves", "wingedboots", "elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2", "xbox", "basketofeggs"];
+const itemsToCraft = [
+	"rod", "pickaxe", "ctristone", "firebow", "frostbow", "fierygloves", "wingedboots",
+	"elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2",
+	"xbox", "basketofeggs"];
 //Items to be dismantled are listed below
 //Auto-dismantle items to get rare crafting-materials
 const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead", "goldenegg", "", ""];

@@ -109,21 +109,23 @@ function autoFight(target) {
 function scareMonsters() {
 	const mainOrb = "orbg";
 	const rareMonsters = ["greenjr", "grinch"];
-	if (get_nearest_monster({ target: character.name })
+	const attackingMonster = get_nearest_monster({ target: character.name });
+	if (attackingMonster
+		&& !attackingMonster?.immune
 		//If not attacking, scare
 		&& (!attackToggle
 			//If multiple monsters are attacking, scare
 			|| (Object.values(parent.entities).filter(e => e.type === "monster").filter(e => e.target === character.name).length >= 2
 				//If the attacking monster isn't farmed, scare...
-				|| (get_nearest_monster({ target: character.name })?.mtype !== farmMonsterType
+				|| (attackingMonster?.mtype !== farmMonsterType
 					//...except if it's a rare monster
-					&& !rareMonsters.includes(get_nearest_monster({ target: character.name })?.mtype))
+					&& !rareMonsters.includes(attackingMonster?.mtype))
 				//If the character is a merchant, scare
 				|| character.ctype === "merchant"
 				//If the HP are lower that the monster's attack times 3,
 				//or if the characters HP are below 30%
 				//or if the characters MP are low
-				|| (character.hp <= get_nearest_monster({ target: character.name }).attack * 3
+				|| (character.hp <= attackingMonster?.attack * 3
 					|| character.hp <= (character.max_hp * 0.5)
 					|| character.mp <= (character.max_mp * 0.3)
 					|| character.mp <= (G.skills.scare.mp * 5))))

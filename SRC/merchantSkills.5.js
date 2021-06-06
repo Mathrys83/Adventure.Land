@@ -679,7 +679,7 @@ function openMerchantStand() {
 	smart_move({
 		map: "main",
 		x: - 20 - Math.round(Math.random() * 180),
-		y: - 70 - Math.round(Math.random() * 50)
+		y: - 70
 	}, () => {
 		//Face front
 		move(character.x, character.y + 1);

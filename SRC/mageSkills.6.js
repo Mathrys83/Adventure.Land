@@ -48,7 +48,7 @@ function mageSkills(target) {
 			game_log("Bursting enemy");
 		}
 
-		//Controlled burst
+		//Controlled Burst
 		if (character.level >= 75
 			&& !master
 			//Only use these skills against weak monsters
@@ -60,10 +60,12 @@ function mageSkills(target) {
 			for (target of targets) {
 				const manaModifier = target.max_hp * 1.85
 				const maxTargets = Math.floor(character.mp / manaModifier);
-				targets2.push([target, manaModifier]);
+				if (character.mp >= manaModifier) targets2.push([target, manaModifier]);
 				if (targets2.length === maxTargets) break;
 			}
-			if (targets2.length) {
+			if (targets2.length
+				//Must be more than 1 target, not to waste Mana
+				&& targets2.length >= 2) {
 				use_skill("cburst", targets2);
 				game_log("Used controlled Burst");
 			}

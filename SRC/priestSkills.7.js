@@ -29,7 +29,10 @@ function priestSkills(target) {
 				&& is_in_range(partyMember, "heal")
 				&& !is_on_cooldown("heal")) {
 				heal(partyMember).then((message) => {
-					reduce_cooldown("heal", character.ping);
+					//Old Lag-Compensation
+					//reduce_cooldown("heal", character.ping);
+					//New Lag-Compensation
+					reduce_cooldown("heal", Math.min(...parent.pings));
 					game_log(`Healing ${partyMember.name}`);
 				}).catch((message) => {
 					log(`Heal failed: ${message.reason}`);

@@ -1,7 +1,8 @@
 //on_party_invite gets called _automatically_ by the game on an Invite-Event 
 function on_party_invite(name) {
-	if (get_player(name) &&
-		get_player(name).owner !== character.owner) return;
+	//if (get_player(name) &&		get_player(name).owner !== character.owner) return;
+	//if (!get_player(name) || get_player(name).owner !== character.owner) return;
+	if (name !== merchantName) return;
 	accept_party_invite(name);
 }
 
@@ -13,6 +14,7 @@ Reference Character-Events: https://adventure.land/docs/code/character/events
 
 //Handles "Stacked" Character-Event
 character.on("stacked", (data) => {
+	//log("Stacked damage - scattering characters");
 	//If there's a master, stay close
 	if (requiresMaster.includes(farmMonsterType)) {
 		//if (character.name === characterNames[0]) xmove(character.x, character.y + 20);

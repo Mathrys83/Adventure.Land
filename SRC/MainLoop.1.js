@@ -1,3 +1,21 @@
+/*
+###################################################################
+
+############################# Credits #############################
+
+						Adventure.Land code written by JohnnyAwesome
+										Welcome to the Awesome Army!
+
+							A big thanks to the community on Discord!
+							https://discord.com/invite/5Erz7XA
+
+					And thank you Wizard, for making my favorite game!
+
+###################################################################
+*/
+
+
+
 load_code("helperFunctions");
 load_code("handleFighting");
 load_code("handleHunting");
@@ -24,11 +42,12 @@ addButtons();
 ######################### Custom Settings #########################
 
 								Adjust below variables to your needs
+	(Adjust Merchant-Variables inside the "merchantSkills"-Module)
 
 ###################################################################
 
 			The code works better with these items in your inventory:
-					jacko, handofmidas, lantern [Priest & Mage only]
+		jacko [all], handofmidas [all], lantern [Priest & Mage only]
 
 ###################################################################
 */
@@ -41,8 +60,21 @@ const characterNames = ["Hierophant", "Magos", "Patroclus"];
 const hunterMaster = characterNames[0];
 //Master for hunting tough monsters -> Handled by updateFarmingSpot()
 let master = characterNames[0];
-//Toggle if character can attack -> Handled by scareMonsters();
-let attackToggle = true;
+//Max Distance to Master until followMaster() is triggered
+const masterMaxDist = 200;
+//Max Distance to Farming Spot until Go-To-Farming-Spot is triggered
+const farmingSpotMaxDist = 200 + character.range / 2;
+
+/*
+###################################################################
+
+########################### Switches ##############################
+
+						Toggle specific functions / actions on or off 
+
+###################################################################
+*/
+
 //Toggle the pursuit of Hunter Quests
 const hunterToggle = true;
 //Fishing Toggle
@@ -51,83 +83,75 @@ const fishingToggle = true;
 const miningToggle = true;
 //Toggle the pursuit of Event-Monsters (like snowman, wabbit)
 const eventMonsterToggle = true;
+//Draw Stats
+const drawToggle = true;
+//Toggle if character can attack -> Handled by scareMonsters();
+let attackToggle = true;
+
+/*
+###################################################################
+
+################# Farming-Related Variables #######################
+
+###################################################################
+*/
+
 //Your characters will cycle through this array of monsters, farming a new monster every few hours!
 //Fill in the monsters you want to farm. (Can be one or multiple monsters).
 //IMPORTANT: 24 % allMonstersToFarm.length MUST be 0!!!
-const allMonstersToFarm = ["bat", "bbpompom", "boar", "ghost", "xscorpion", "bigbird"];
-//const allMonstersToFarm = ["poisio"];
-//Monster you are currently farming -> Handled by updateFarmingSpot()
-let farmMonsterType = scheduleFarming();
+const allMonstersToFarm = ["boar", "mole", "wolfie", "bigbird", "plantoid", "mechagnome"];
+//Next Monsters 2 Farm (Above 100k but below 1M): "bat", "bbpompom", "ghost", "xscorpion",
+//const allMonstersToFarm = ["mechagnome"];
+
 //Monsters your characters are allowed to hunt. Only enter monsters you are strong enough to defeat!
 const allowedMonsters = [
-	"hen", "rooster", "goo", "crab", "bee", "cutebee", "minimush", "frog",
-	"squigtoad", "osnake", "snake", "rat", "armadillo", "croc", "squig",
-	"poisio", "snowman", "porcupine", "arcticbee", "spider", "tortoise",
-	"stoneworm", "bat", "goldenbat", "wabbit", "scorpion", "gscorpion",
-	"iceroamer", "crabx", "jr", "greenjr", "bbpompom", "boar", "ghost",
+	"hen", "rooster", "goo", "crab", "bee", "minimush", "frog",
+	"squigtoad", "osnake", "snake", "rat", "armadillo", "croc",
+	"squig", "cgoo", "poisio", "porcupine", "arcticbee", "spider",
+	"tortoise", "stoneworm", "bat", "scorpion", "iceroamer",
+	"crabx", "jr", "greenjr", "bbpompom", "boar", "ghost",
 	"mole", "wolfie", "wolf", "xscorpion", "bigbird",
-	"phoenix", "fvampire", "mvampire", "grinch"];
+	"plantoid", "mechagnome"];
+
 /*
 Monsters that are too strong for a single character are listed below.
 Your Master-Character will choose a monster, which the whole party will then attack.
-Also: Characters will start using their offensive skills if a monster is on this list
+Also: Characters will start using their offensive skills if a monster is on this list.
 (They don't use offensive skills against weak monsters, to conserve MP)
 */
 const requiresMaster = [
-	"snowman", "stoneworm", "bat", "goldenbat", "iceroamer", "crabx",
-	"jr", "greenjr", "bbpompom", "booboo", "prat", "boar", "ghost",
-	"mummy", "mole", "wolfie", "wolf", "xscorpion", "bigbird",
+	"snowman", "goldenbat", "jr", "greenjr", "bbpompom",
+	"booboo", "prat", "boar", "ghost", "mummy", "mole",
+	"wolfie", "wolf", "xscorpion", "bigbird", "pppompom",
+	"eelemental", "ligerx", "nelemental", "skeletor",
+	"welemental", "fireroamer", "d_wiz", "plantoid",
+	"mechagnome", "vbat",
 	"wabbit", "phoenix", "fvampire", "mvampire", "grinch"];
+
 //Monsters listed here always get attacked on sight
-const specialMonsters = ["cutebee", "snowman", "goldenbat",
-	"wabbit", "phoenix", "fvampire", "mvampire", "grinch"];
+const specialMonsters = ["cutebee", "snowman", "goldenbat", "gscorpion",
+	"jr", "greenjr", "tinyp", "wabbit", "phoenix", "fvampire", "mvampire", "grinch"];
+
 //Event-Monster to farm
 //eventMonsters is sequential! Order matters here! eventMonsters[0] gets attacked first, then eventMonsters[1]...
 //All Event-Monsters: pinkgoo, wabbit, franky, grinch, dragold, mrpumpkin, mrgreen
 const eventMonsters = ["wabbit", "snowman", "grinch"];
-//Items to upgrade
-const itemsToUpgrade = [
-	"sshield", "slimestaff", "staffofthedead", "maceofthedead", "pmace",
-	"firebow", "frostbow", "firestaff", "t2bow", "gphelmet", "xmassweater",
-	"cape", "bcape", "harbringer", "mcape", "oozingterror", "bowofthedead",
-	//Hunter Sets
-	"mchat", "mcgloves", "mcpants", "mcarmor", "mcboots",
-	"mmhat", "mmgloves", "mmpants", "mmarmor", "mmshoes",
-	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
-	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
-	"mrnhat", "mrngloves", "mrnpants", "mrnarmor", "mrnboots",
-	"merry"];
-//Wanted items - Checks Ponty for the items listed below
-const wantedItems = ["lostearring", "spidersilk", "shadowstone",
-	"cdarktristone", "lantern", "talkingskull", "jacko", "rabbitsfoot",
-	"poker", "handofmidas", "powerglove", "goldenpowerglove", "mpxgloves",
-	"stealthcape", "warpvest", "oxhelmet", "cyber", "starkillers",
-	"suckerpunch", "cring", "cdarktristone", "fcape", "vcape", "goldring",
-	"trigger", "ringofluck", "zapper", "vring", "sanguine", "amuletofm",
-	"molesteeth", "cearring", "lostearring", "mpxbelt", "northstar",
-	"mpxamulet", "t2intamulet", "t2dexamulet", "orbofint", "orbofdex",
-	"charmer", "talkingskull", "ftrinket", "t3bow", "crossbow",
-	"harbringer", "firestaff", "firebow", "scythe", "dragondagger",
-	"hdagger", "gstaff", "lmace", "dartgun", "vstaff", "vdagger",
-	"vsword", "gbow", "offeringp", "t2quiver", "wbook1", "mshield",
-	"sshield", "electronics", "bronzeingot", "goldnugget",
-	"platinumnugget", "offering", "emotionjar", "cxjar",
-	"essenceofnature", "essenceoffire", "essenceoffrost",
-	"essenceofgreed", "pvptoken", "funtoken", "monstertoken"];
-//The merchant auto-crafts below listed items, if he has the ingredients in his inventory
-//Also: If an item is an ingredient for a recipe you list here, it won't get compounded
-const itemsToCraft = [
-	"rod", "pickaxe", "ctristone", "firebow", "frostbow", "fierygloves", "wingedboots",
-	"elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2",
-	"xbox", "basketofeggs"];
-//Items to be dismantled are listed below
-//Auto-dismantle items to get rare crafting-materials
-const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead", "goldenegg", "", ""];
-//Smart-Moveable Object of your farm-location -> Handled by updateFarmingSpot()
-//Farming spots are found in G.maps.main
-let farmingSpotData = getFarmingSpot(farmMonsterType, "getFarmingSpotData");
 
-setInterval(main, 1000 / 4); // Main Loop: Repeats 4 times per second.
+//Monster you are currently farming -> Handled by updateFarmingSpot()
+let farmMonsterType = scheduleFarming();
+
+//Smart-Moveable Object of your farm-location -> Handled by updateFarmingSpot()
+let farmingSpotData = getFarmingSpotData(farmMonsterType);
+
+/*
+#############################################################
+
+######################### Main Code #########################
+
+#############################################################
+*/
+
+setInterval(main, 250); // Main Loop: Repeats 4 times per second.
 setInterval(tier2Actions, 1000); // Tier 2 Loop: Repeats every 1 seconds.
 setInterval(tier3Actions, 5000); // Tier 3 Loop: Repeats every 5 seconds.
 
@@ -140,7 +164,7 @@ function main() {
 	//Replenish Health and Mana
 	usePotions();
 
-	//If low on health, scare monsters away
+	//If low on Health or Mana, scare monsters away
 	scareMonsters();
 
 	//Loot everything [Must be quick interval, or chests get left behind]
@@ -148,7 +172,7 @@ function main() {
 	lootMidas();
 
 	//If character is moving, do nothing
-	if (is_moving(character)) return;
+	if (moveInterrupt()) return;
 
 	//Merchant Skills are Tier 3 actions
 	if (character.ctype === "merchant") return;
@@ -158,12 +182,12 @@ function main() {
 
 	//Finds a suitable target and attacks it.
 	let target = getTarget();
+
 	if (target) {
 		//log(character.name + " got target " + target);
 
 		//Kites Target
 		//kiteTarget(target);
-
 		//Circles Target
 		//circleTarget(target);
 
@@ -179,12 +203,10 @@ function main() {
 		autoFight(target);
 	} else {
 		//Go to farming Area
-		if ((!master
-			|| character.name === master)
-			&& (character.map !== farmingSpotData.map
-				|| (Math.abs(character.x - farmingSpotData.x) > 150
-					|| Math.abs(character.y - farmingSpotData.y) > 150))) {
-			getFarmingSpot(farmMonsterType, "move");
+		if ((!master || character.name === master)
+			&& distance(character, farmingSpotData) > farmingSpotMaxDist) {
+			updateFarmingSpot();
+			smart_move(farmingSpotData);
 		}
 	}
 }
@@ -200,8 +222,10 @@ function tier2Actions() {
 		return;
 	}
 
-	//If merchant moves with the stand open, close it
-	if (is_moving(character) && character.ctype === "merchant" && character.stand) close_stand();
+	//Opens the Merchant-Stand when standing. Closes it when moving.
+	if (character.ctype === "merchant" && is_moving(character) && character.stand) close_stand();
+	if (character.ctype === "merchant" && !is_moving(character) && !character.stand) open_stand();
+	tipDev();
 
 	//Merchant Skills are Tier 3 actions
 	if (character.ctype === "merchant") return;
@@ -210,7 +234,7 @@ function tier2Actions() {
 	if (master && character.name === master) masterBreadcrumbs();
 
 	//If character is moving, do nothing
-	if (is_moving(character)) return;
+	if (moveInterrupt()) return;
 
 	//Party follows master [Except the merchant]
 	if (master && character.name !== master) followMaster();
@@ -226,7 +250,7 @@ function tier3Actions() {
 	updateFarmingSpot();
 
 	//If character is moving, do nothing
-	if (is_moving(character)) return;
+	if (moveInterrupt()) return;
 
 	//Get Holiday Buffs
 	//getHolidayBuff();
@@ -243,7 +267,7 @@ function tier3Actions() {
 		requestPotions();
 		drinkElixirs();
 		transferLoot(merchantName);
-		if (hunterToggle) handleHuntQuest();
+		handleHuntQuest();
 	}
 
 	//Run Merchant Skills

@@ -19,13 +19,13 @@ send_item("Patroclus", 0, 1);
 
 
 for(let i = 0; i <= 34; i++){
-    send_item("Plutus", i, 500);
+	send_item("Plutus", i, 500);
 }
 
 //############# HOLIDAY BUFF ##############
 
 smart_move({to:"town"}, () => {
-    parent.socket.emit("interaction",{type:"newyear_tree"});
+	parent.socket.emit("interaction",{type:"newyear_tree"});
 });
 
 //############# Move Somewhere #############
@@ -40,7 +40,7 @@ smart_move({to:"goo"});
 
 //or with callback-function...
 smart_move({to:"goo"}, () => {
-    game_log("Arrived at Goo!", "#4CE0CC");
+	game_log("Arrived at Goo!", "#4CE0CC");
 });
 
 //############# Log #############
@@ -72,8 +72,8 @@ parent.party_list
 
 const other_player = get_player("PlayerName")
 if (other_player) {
-    target_id = other_player.target;
-    target = parent.entities[target_id];
+	target_id = other_player.target;
+	target = parent.entities[target_id];
 }
 
 //Iterate over parent.party_list Array to fill other_player
@@ -93,13 +93,13 @@ game_log(parent.entities[x1].max_hp);
 //parent.party_list is an array with the names of PartyMembers
 //We iterate over it
 parent.party_list.forEach((otherPlayerName) => {
-    // !!! IMPORTANT !!! parent.entities ONLY holds OTHER players, NOT
-    //the current player running this code!! Therefor....
-    let partyMember = parent.entities[otherPlayerName];
-    //...we have to check if party member holds something or is undefined!!!
-    if (partyMember) {
-        game_log(partyMember.name)
-    }
+	// !!! IMPORTANT !!! parent.entities ONLY holds OTHER players, NOT
+	//the current player running this code!! Therefor....
+	let partyMember = parent.entities[otherPlayerName];
+	//...we have to check if party member holds something or is undefined!!!
+	if (partyMember) {
+		game_log(partyMember.name)
+	}
 });
 
 //############# Buy Item #############
@@ -117,12 +117,12 @@ var leader = get_player("Playername");
 
 //############# Go to Leader #############
 
-    if (distance(character, leader) > 100) {
-        move(
-            character.real_x+(leader.x-character.real_x) / 2,
-            character.real_y+(leader.y-character.real_y) / 2
-        );
-    }
+	if (distance(character, leader) > 100) {
+		move(
+			character.real_x+(leader.x-character.real_x) / 2,
+			character.real_y+(leader.y-character.real_y) / 2
+		);
+	}
 
 //############# Find item inside inventory #############
 
@@ -193,11 +193,11 @@ show_json(character.s.monsterhunt);
 //smart_move returns a promise. You can do this to handle failed results:
 
 smart_move(...).then(function(data){
-  // on success
+	// on success
 }).catch(function(data) {
-  if (data.reason === "failed") {
-    // Path not found
-  }
+	if (data.reason === "failed") {
+	// Path not found
+	}
 });
 
 //############# See if Map is accessible #############
@@ -205,14 +205,14 @@ smart_move(...).then(function(data){
 let accessible_maps = [];
 let todo = [character.map];
 while(todo.length){
-    let map = todo.pop();
-    if(!accessible_maps.includes(map)){ // Check to see if you have already checked the map
-        accessible_maps.push(map);
-        let doors = parent.G.maps[map].doors;
-        for(let i = 0; i < doors.length; i++){
-            todo.push(doors[i][4]); // Doors contain multiple properties, the map name is the 5th one (so index 4)
-        }
-    }
+	let map = todo.pop();
+	if(!accessible_maps.includes(map)){ // Check to see if you have already checked the map
+		accessible_maps.push(map);
+		let doors = parent.G.maps[map].doors;
+		for(let i = 0; i < doors.length; i++){
+			todo.push(doors[i][4]); // Doors contain multiple properties, the map name is the 5th one (so index 4)
+		}
+	}
 }
 log(accessible_maps);
 
@@ -223,23 +223,23 @@ change_target(null)
 //############# Check Target #############
 
 function validateTarget(target) {
-    if (target
-        && target.visible
-        && parent.entities[target.id]
-        && is_in_range(target, "attack")
-        && !target.dead
-        && target !== null) {
-        return true;
-    } else {
-        return false;
-    }
+	if (target
+		&& target.visible
+		&& parent.entities[target.id]
+		&& is_in_range(target, "attack")
+		&& !target.dead
+		&& target !== null) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 //############# Calculate Monster's Difficulty #############
 
 let m = get_nearest_monster()
 if(is_monster(m)) {
-    show_json(parent.calculate_difficulty(m))
+	show_json(parent.calculate_difficulty(m))
 }
 
 0 is easy
@@ -264,8 +264,8 @@ close_stand();
 
 function smart_move2(destination, on_done)
 {
-    if (smart.moving) return;
-    smart_move(destination, on_done);
+	if (smart.moving) return;
+	smart_move(destination, on_done);
 }
 
 //############# Buttons with HTML #############
@@ -275,10 +275,6 @@ add_bottom_button("btnTest", "<img src='https://www.iconhot.com/icon/png/dot-pic
 //############# Open Inventory #############
 
 parent.on_skill("I") //Presses "I"-Button
-
-//############# TEXT #############
-
-//############# TEXT #############
 
 //############# TEXT #############
 

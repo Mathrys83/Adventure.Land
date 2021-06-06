@@ -2,10 +2,15 @@ function validateTarget(target) {
 	if (attackToggle
 		&& target
 		&& target.visible
+		&& is_monster(target)
 		&& parent.entities[target.id]
 		&& is_in_range(target, "attack")
+		&& (can_move_to(target) || is_in_range(target, "attack"))
 		&& !target.dead
-		&& target !== null) {
+		&& target !== null
+		//New, experimental distance measuring
+		&& distance(character, farmingSpotData) < farmingSpotMaxDist
+		&& distance(target, farmingSpotData) < farmingSpotMaxDist) {
 		return true;
 	} else {
 		return false;
@@ -34,7 +39,9 @@ function getTarget() {
 	if ((!master && !target) || character.name === master) {
 		//Returns any monster that targets any party-member
 		for (const partyMember of parent.party_list) {
-			target = get_nearest_monster({ target: partyMember });
+			target = get_nearest_monster({
+				target: partyMember
+			});
 			if (validateTarget(target)) {
 				//log("Targeting monster that attacks party-member");
 				change_target(target);
@@ -50,7 +57,7 @@ function getTarget() {
 			return target;
 		}
 
-		//Returns any monster that targets nobody
+		//Returns a monster of farmMonsterType that targets nobody
 		target = get_nearest_monster({
 			type: farmMonsterType,
 			no_target: true
@@ -60,6 +67,7 @@ function getTarget() {
 			change_target(target);
 			return target;
 		}
+
 		//If there is a master, target masters target
 	} else if (master
 		&& get_player(master)
@@ -88,7 +96,6 @@ function getTarget() {
 function autoFight(target) {
 	if (validateTarget(target)) {
 		if (!is_in_range(target, "attack")) {
-			log("Target not in range, moving to it");
 			xmove(
 				character.x + Math.floor((target.x - character.x) * 0.3),
 				character.y + Math.floor((target.y - character.y) * 0.3)
@@ -97,7 +104,10 @@ function autoFight(target) {
 		else if (character.mp >= character.mp_cost
 			&& !is_on_cooldown("attack")) {
 			attack(target).then((message) => {
-				reduce_cooldown("attack", character.ping);
+				//Old Lag-Compensation
+				//reduce_cooldown("attack", character.ping);
+				//New Lag-Compensation
+				reduce_cooldown("attack", Math.min(...parent.pings));
 			}).catch((message) => {
 				//log(`Attack failed: ${message.reason}`);
 			});

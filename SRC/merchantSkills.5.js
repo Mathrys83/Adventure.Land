@@ -1,20 +1,29 @@
+/*
+######################### Merchant Settings #########################
+
+						Adjust below Merchant-variables to your needs
+
+#####################################################################
+*/
+
 //Debug mode - Set to True for extensive Logs
 const merchantDebugMode = false;
 
 //Money in pocked [Used to buy Potions, Scrolls and cheap Items]
 const reserveMoney = 5000000;
+
 //Minimal number of Upgrade & Compound Scrolls to have
 const minScrolls = 100;
 
 //Number of potions to buy each round. 
 //Gets tripled if the hunted monster requires a master
 const potions = {
-	hpot0: 18, //1800 max
-	hpot1: 50, //13500 max
-	mpot0: 180, //10800 max
-	mpot1: 30//9000 max
+	hpot0: 9,
+	hpot1: 44,
+	mpot0: 150,
+	mpot1: 45
 };
-//Cost 
+//Cost 35'640
 
 //Selling parameters
 const sellItemLevel = 3;
@@ -22,13 +31,12 @@ const profitMargin = 20;
 
 //Max level to be compounded
 const maxCompoundLevel = 3;
+
 //Max level to be upgraded
 const maxUpgradeLevel = 5;
 
 //Items to be sold
 const trashName = [
-	// ringsj hpamulet hpbelt strring quiver snakeoil snakefang
-	//spidersilk ascale cscale lotusf bfur ink spores
 	"cclaw", "crabclaw", "shoes1", "coat", "coat1", "pants1",
 	"wshoes", "beewings", "wcap", "strearring", "stramulet",
 	"wattire", "poison", "rattail", "wbreeches", "gslime",
@@ -39,18 +47,60 @@ const trashName = [
 	"hbow", "shield", "mushroomstaff", "swifty", "stramulet",
 	"strbelt", "strearring", "hpbelt", "hpamulet",
 	"throwingstars", "smoke", "phelmet", "basher",
-	"xmace", "dagger", "bataxe", "snowball", "t2stramulet",
-	"", "", "", "", "", "", "", "",
+	"xmace", "dagger", "bataxe", "snowball",
+	"iceskates", "ringsj", "", "", "", "", "", "",
 	//XMas Set
 	"xmashat", "mittens", "xmaspants", "xmasshoes", "rednose", "warmscarf", "gcape", "ornamentstaff",
 	//Easter Set
 	"eears", "ecape", "epyjamas", "eslippers", "carrotsword", "pinkie",
 	//Unneeded elixirs
 	"elixirstr0", "elixirstr1", "elixirstr2",
-	"", "", "", "", "", "", "", "",
 	"", "", "", "", "", "", "", ""];
 
-//True when Merchant is making his round
+//Items to upgrade
+const itemsToUpgrade = [
+	"sshield", "slimestaff", "staffofthedead", "maceofthedead", "pmace",
+	"firebow", "frostbow", "firestaff", "t2bow", "gphelmet", "xmassweater",
+	"cape", "bcape", "harbringer", "mcape", "oozingterror", "bowofthedead",
+	"crossbow",
+	//Hunter Sets
+	"mchat", "mcgloves", "mcpants", "mcarmor", "mcboots",
+	"mmhat", "mmgloves", "mmpants", "mmarmor", "mmshoes",
+	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
+	"mphat", "mpgloves", "mppants", "mparmor", "mpshoes",
+	"mrnhat", "mrngloves", "mrnpants", "mrnarmor", "mrnboots",
+	"merry"];
+
+//Wanted items - Checks Ponty for the items listed below
+const wantedItems = ["lostearring", "spidersilk", "shadowstone",
+	"cdarktristone", "lantern", "talkingskull", "jacko", "rabbitsfoot",
+	"poker", "handofmidas", "powerglove", "goldenpowerglove", "mpxgloves",
+	"stealthcape", "warpvest", "oxhelmet", "cyber", "starkillers",
+	"suckerpunch", "cring", "cdarktristone", "fcape", "vcape", "goldring",
+	"trigger", "ringofluck", "zapper", "vring", "sanguine", "amuletofm",
+	"molesteeth", "cearring", "lostearring", "mpxbelt", "northstar",
+	"mpxamulet", "t2intamulet", "t2dexamulet", "orbofint", "orbofdex",
+	"charmer", "talkingskull", "ftrinket", "t3bow", "crossbow",
+	"harbringer", "firestaff", "firebow", "scythe", "dragondagger",
+	"hdagger", "gstaff", "lmace", "dartgun", "vstaff", "vdagger",
+	"vsword", "gbow", "offeringp", "t2quiver", "wbook1", "mshield",
+	"sshield", "electronics", "bronzeingot", "goldnugget",
+	"platinumnugget", "offering", "emotionjar", "cxjar",
+	"essenceofnature", "essenceoffire", "essenceoffrost",
+	"essenceofgreed", "pvptoken", "funtoken", "monstertoken"];
+
+//The merchant auto-crafts below listed items, if he has the ingredients in his inventory
+//Also: If an item is an ingredient for a recipe you list here, it won't get compounded
+const itemsToCraft = [
+	"rod", "pickaxe", "ctristone", "firebow", "firestaff", "frostbow", "fierygloves", "wingedboots",
+	"elixirdex1", "elixirdex2", "elixirint1", "elixirint2", "elixirvit1", "elixirvit2",
+	"xbox", "basketofeggs"];
+
+//Items to be dismantled are listed below
+//Auto-dismantle items to get rare crafting-materials
+const itemsToDismantle = ["fireblade", "daggerofthedead", "swordofthedead", "spearofthedead", "goldenegg"];
+
+//True when Merchant is making his round -> Handled by merchantSkills()
 let bigRound = false;
 
 function merchantSkills() {
@@ -629,7 +679,7 @@ function openMerchantStand() {
 	smart_move({
 		map: "main",
 		x: - 20 - Math.round(Math.random() * 180),
-		y: - 70
+		y: - 70 - Math.round(Math.random() * 50)
 	}, () => {
 		//Face front
 		move(character.x, character.y + 1);

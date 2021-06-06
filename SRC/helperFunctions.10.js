@@ -1,6 +1,13 @@
 function loadCharacters() {
 	characterNames.forEach((name, index) => {
-		setTimeout(() => { if (!Object.keys(get_active_characters()).includes(name)) start_character(name, "MainLoop") }, index * 10000);
+		setTimeout(() => {
+			if (!Object.keys(get_active_characters()).includes(name)) {
+				start_character(name, "MainLoop");
+				//Debug
+				set(`Loaded ${Date().substring(0, 24)}`, name);
+				return;
+			}
+		}, index * 10000);
 	});
 }
 
@@ -30,13 +37,26 @@ function addButtons() {
 		smart_move({ to: "bank" });
 	});
 	add_bottom_button("move2Farm", "🚜", () => {
-		getFarmingSpot(farmMonsterType, "move");
+		smart_move(farmingSpotData);
 	});
 	add_bottom_button("showStatus", "📈", showStatus);
 	add_bottom_button("toggleMerchantStand", "🛒", () => {
 		character.stand ? close_stand() : open_stand();
 	});
 	add_bottom_button("Pause", "⏸️", pause);
+}
+
+//If character is moving, do nothing
+function moveInterrupt() {
+	//If any character is smart_moving, interrupt.
+	//All longer distances are smart_moved
+	if (smart.moving
+		//If the character isn't a merchant
+		//and he's far from the farming spot, interrupt
+		//When close to farming spot, no interrupt (For kiting).
+		|| (character.ctype !== "merchant"
+			&& is_moving(character)
+			&& distance(character, farmingSpotData) > farmingSpotMaxDist)) return true;
 }
 
 function transferLoot(merchantName) {
@@ -103,6 +123,13 @@ function relocateItems() {
 		|| character.ctype !== "mage")
 		&& locate_item("lantern") !== -1
 		&& locate_item("lantern") !== 3) swap(locate_item("lantern"), 3);
+	//Only merchant has fishing-rod and pickaxe
+	if (character.ctype === "merchant") {
+		if (locate_item("rod") !== -1
+			&& locate_item("rod") !== 39) swap(locate_item("rod"), 39);
+		if (locate_item("pickaxe") !== -1
+			&& locate_item("pickaxe") !== 40) swap(locate_item("pickaxe"), 40);
+	}
 	//Potions
 	if (locate_item("hpot1") !== -1
 		&& locate_item("hpot1") !== 35) swap(locate_item("hpot1"), 35);
@@ -284,11 +311,10 @@ function masterBreadcrumbs() {
 //Follow master character
 function followMaster() {
 	const theMaster = get_player(master);
-	const masterMaxDist = 50;
 	if (master && character.name !== master) {
 		//If master is on screen, follow him
 		if (theMaster
-			&& Math.ceil(distance(character, theMaster)) > masterMaxDist) {
+			&& Math.round(distance(character, theMaster)) > masterMaxDist) {
 			//log("Following Master with Get_Player");
 			xmove(theMaster.x, theMaster.y);
 		}
@@ -299,6 +325,9 @@ function followMaster() {
 			//log("Following Master from Local Storage");
 			smart_move(get("MasterPos"));
 		}
+		//Fallback
+	} else {
+		smart_move(farmingSpotData);
 	}
 }
 
@@ -317,5 +346,29 @@ function getHolidayBuff() {
 		smart_move({ to: "town" }, () => {
 			parent.socket.emit("interaction", { type: "newyear_tree" });
 		});
+	}
+}
+
+//Small chance (1 in 100) to send a small tip to the Developer of this code. Thank you. 👋🏼
+function tipDev() {
+	const devChars = ["Plutus", "Hierophant", "Magos", "Patroclus"];
+	for (const char of devChars) {
+		if (get_player(char) && Math.floor(Math.random() * 100) === 1) {
+			let tip = 0;
+			if (character.level < 20) {
+				tip = 9; //One Goo
+			} else if (character.level >= 20 && character.level < 40) {
+				tip = 97; //One Tortoise
+			} else if (character.level >= 40 && character.level < 60) {
+				tip = 196; //One Iceroamer
+			} else if (character.level >= 60 && character.level < 70) {
+				tip = 320; //One BBPomPom
+			} else if (character.level >= 70 && character.level < 80) {
+				tip = 905; //One XScorpion
+			} else if (character.level >= 80) {
+				tip = 999; //If my code brought you to level 80, it's worth it! :)
+			}
+			send_gold(get_player(char), tip);
+		}
 	}
 }
